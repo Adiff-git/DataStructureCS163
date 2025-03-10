@@ -75,7 +75,7 @@
     <Image Include="..\..\..\..\OneDrive - VNU-HCMUS\Pictures\Screenshots\ABC.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\resources\images\SegmentTree.png.png">
+    <Image Include="..\resources\images\SegmentTree.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

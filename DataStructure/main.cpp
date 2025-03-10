@@ -7,4 +7,4 @@ int main() {
 	int n = 2;
 	cout << n;
 	return 0;
-} // hillo
+} /

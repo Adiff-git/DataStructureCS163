@@ -145,6 +145,10 @@
     <ClInclude Include="LinkedList.h" />
     <ClInclude Include="Menu.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="..\resources\fonts\Rubik-Italic-VariableFont_wght.ttf" />
+    <Font Include="..\resources\fonts\Rubik-VariableFont_wght.ttf" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

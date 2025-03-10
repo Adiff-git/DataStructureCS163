@@ -63,4 +63,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="..\resources\fonts\Rubik-Italic-VariableFont_wght.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+    <Font Include="..\resources\fonts\Rubik-VariableFont_wght.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+  </ItemGroup>
 </Project>

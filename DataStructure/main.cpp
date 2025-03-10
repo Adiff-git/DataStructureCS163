@@ -2,27 +2,27 @@
 
 int main() {
     // Khởi tạo cửa sổ
-    InitWindow(800, 600, "Font Example");
+    InitWindow(800, 600, "Background Example");
 
-    // Nạp font từ thư mục resources/fonts/
-    Font myFont = LoadFont("resources/fonts/Rubik-VariableFont_wght.ttf");
-
-    // Khởi tạo vị trí cho văn bản
-    Vector2 position = { 100, 100 }; // Khai báo vị trí (Vector2)
+    // Nạp ảnh background từ thư mục resources/images/
+    Texture2D background = LoadTexture("resources/images/SegmentTree.png");
 
     // Vòng lặp chính
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
-        // Vẽ văn bản với font đã nạp
-        DrawTextEx(myFont, "Hello, World!", position, 40, 2, DARKGREEN);
+        // Vẽ background lên màn hình
+        DrawTexture(background, 0, 0, WHITE);  // Vẽ từ góc trên bên trái
+
+        // Vẽ các đối tượng khác (ví dụ, văn bản)
+        DrawText("Hello, World!", 100, 100, 40, DARKGREEN);
 
         EndDrawing();
     }
 
     // Giải phóng tài nguyên
-    UnloadFont(myFont);
+    UnloadTexture(background);  // Giải phóng ảnh background khi không sử dụng nữa
     CloseWindow();  // Đóng cửa sổ khi thoát
 
     return 0;

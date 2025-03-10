@@ -149,6 +149,10 @@
     <Font Include="..\resources\fonts\Rubik-Italic-VariableFont_wght.ttf" />
     <Font Include="..\resources\fonts\Rubik-VariableFont_wght.ttf" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\..\OneDrive - VNU-HCMUS\Pictures\Screenshots\ABC.png" />
+    <Image Include="..\resources\images\SegmentTree.png.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

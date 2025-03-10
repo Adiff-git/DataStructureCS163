@@ -1,28 +1,31 @@
 ﻿#include "raylib.h"
+#include "GUI.h"
+#include "Menu.h"
 
 int main() {
     // Khởi tạo cửa sổ
-    InitWindow(800, 600, "Background Example");
+    InitWindow(800, 600, "Data Visualization Group 1");
 
-    // Nạp ảnh background từ thư mục resources/images/
-    Texture2D background = LoadTexture("resources/images/SegmentTree.png");
+    // Nạp font từ thư mục resources/fonts/
+    Font myFont = LoadFont("resources/fonts/myFont.ttf");
+
+    // Biến để kiểm tra trạng thái click button
+    bool buttonClicked = false;
+    const char* buttonMessage = "";
 
     // Vòng lặp chính
     while (!WindowShouldClose()) {
         BeginDrawing();
-        ClearBackground(RAYWHITE);
+        ClearBackground(RAYWHITE);  // Xóa màn hình
 
-        // Vẽ background lên màn hình
-        DrawTexture(background, 0, 0, WHITE);  // Vẽ từ góc trên bên trái
-
-        // Vẽ các đối tượng khác (ví dụ, văn bản)
-        DrawText("Hello, World!", 100, 100, 40, DARKGREEN);
+        // Vẽ menu
+        DrawMenu(myFont, buttonClicked, buttonMessage);  // Vẽ giao diện và truyền trạng thái click
 
         EndDrawing();
     }
 
     // Giải phóng tài nguyên
-    UnloadTexture(background);  // Giải phóng ảnh background khi không sử dụng nữa
+    UnloadFont(myFont);  // Giải phóng font khi không sử dụng nữa
     CloseWindow();  // Đóng cửa sổ khi thoát
 
     return 0;

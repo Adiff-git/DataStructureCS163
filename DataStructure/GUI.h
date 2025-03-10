@@ -1,10 +1,9 @@
-// GUI.h
-#ifndef GUI_H
+﻿#ifndef GUI_H
 #define GUI_H
 
-void InitializeWindow(int width, int height, const char* title);
-void DrawUI();
-void HandleInput();
+#include "raylib.h"
+
+// Hàm vẽ giao diện chính
+void DrawMenu(Font font, bool buttonClicked, const char* buttonMessage);
 
 #endif
-

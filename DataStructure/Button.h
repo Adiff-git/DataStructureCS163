@@ -1,17 +1,9 @@
-// Button.h
-#ifndef BUTTON_H
+﻿#ifndef BUTTON_H
 #define BUTTON_H
 
-struct Button {
-    Rectangle rect;
-    const char* text;
-    bool isClicked;
-};
+#include "raylib.h"
 
-void InitButton(Button& button, float x, float y, float width, float height, const char* text);
-void DrawButton(Button& button);
-bool CheckButtonClick(Button& button);
+// Hàm vẽ button
+void DrawButton(const char* text, int x, int y, Font font, bool& buttonClicked, const char* buttonMessage);
 
 #endif
-
-

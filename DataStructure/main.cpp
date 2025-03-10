@@ -7,7 +7,8 @@ int main() {
     InitWindow(800, 600, "Data Visualization Group 1");
 
     // Nạp font từ thư mục resources/fonts/
-    Font myFont = LoadFont("resources/fonts/myFont.ttf");
+    Font myFont = LoadFont("D:\\Downloads\\sproject\\DataStructure\\resources\\fonts\\Rubik-Italic-VariableFont_wght.ttf");
+
 
     // Biến để kiểm tra trạng thái click button
     bool buttonClicked = false;

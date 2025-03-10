@@ -6,5 +6,5 @@ int main() {
 	cout << " hello world";
 	int n = 2;
 	cout << n;
-	return 0;
-} /
+	return 0;';.'
+} 

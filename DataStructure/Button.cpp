@@ -2,17 +2,21 @@
 #include "Button.h"
 
 // Hàm vẽ button
-void DrawButton(const char* text, int x, int y, Font font, bool& buttonClicked, const char* buttonMessage) {
+void DrawButton(const char* text, int x, int y, Font font, bool& buttonClicked, const char*& buttonMessage) {
+    // Định nghĩa kích thước của button
+    Rectangle buttonRect = { x, y, 500, 50 };  // Rectangle cho button
+
     // Vẽ button
-    Rectangle buttonRect = { x, y, 500, 50 };
     DrawRectangleRec(buttonRect, LIGHTGRAY);
 
-    // Vẽ văn bản vào button
+    // Tính toán vị trí văn bản để căn giữa trong button
     Vector2 textSize = MeasureTextEx(font, text, 30, 1);
     Vector2 textPosition = { (buttonRect.x + buttonRect.width / 2) - textSize.x / 2, buttonRect.y + buttonRect.height / 2 - textSize.y / 2 };
+
+    // Vẽ văn bản vào button
     DrawTextEx(font, text, textPosition, 30, 1, DARKGRAY);
 
-    // Kiểm tra sự kiện click
+    // Kiểm tra xem người dùng có click vào button không
     if (CheckCollisionPointRec(GetMousePosition(), buttonRect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
         buttonClicked = true;  // Cập nhật trạng thái click
         buttonMessage = text;  // Lưu thông báo khi button được nhấn

@@ -3,7 +3,7 @@
 
 #include "raylib.h"
 
-// Hàm vẽ giao diện chính
+// Hàm vẽ menu
 void DrawMenu(Font font, bool buttonClicked, const char* buttonMessage);
 
 #endif

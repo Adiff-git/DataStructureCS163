@@ -127,7 +127,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AVLTree.cpp" />
+    <ClCompile Include="Button.cpp" />
+    <ClCompile Include="Graph.cpp" />
+    <ClCompile Include="GUI.cpp" />
+    <ClCompile Include="HashTable.cpp" />
+    <ClCompile Include="LinkedList.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Menu.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AVLTree.h" />
+    <ClInclude Include="Button.h" />
+    <ClInclude Include="Graph.h" />
+    <ClInclude Include="GUI.h" />
+    <ClInclude Include="HashTable.h" />
+    <ClInclude Include="LinkedList.h" />
+    <ClInclude Include="Menu.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

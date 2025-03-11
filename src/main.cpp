@@ -28,6 +28,6 @@ int main() {
     // Giải phóng tài nguyên
     UnloadFont(myFont);  // Giải phóng font khi không sử dụng nữa
     CloseWindow();  // Đóng cửa sổ khi thoát
-
+	//Hello world
     return 0;
 }

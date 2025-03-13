@@ -1,62 +1,76 @@
 ﻿#include "raylib.h"
 #include "GUI.h"
-
-// Define screen states
+#include "SettingsManager.h"  // Include the SettingsManager for sound and color mode
 
 int main() {
-    InitWindow(1820, 880, "Data Visualization Group 1");
-    Vector2 pos = { 600, 50 };
+    // Initialize window
+    InitWindow(screenWidth, screenHeight, "Data Visualization Group 1");
+
+    // Load font
     Font myFont = LoadFont("D:\\Downloads\\sproject\\DataStructure\\resources\\fonts\\Rubik-Italic-VariableFont_wght.ttf");
 
-    Screen currentScreen = MENU;  // Initial state is the menu
+    // Set initial screen state
+    Screen currentScreen = MAIN_MENU;
     bool buttonClicked = false;
     const char* buttonMessage = "";
 
+    // Define initial position for the title
+    Vector2 pos = { 600, 50 };
+
     // Main game loop
     while (!WindowShouldClose()) {
+        // Start drawing
         BeginDrawing();
-        ClearBackground(BLUE);  // Clear screen with a bright background
 
-        if (currentScreen == MENU) {
-            DrawMenu(myFont, buttonClicked, buttonMessage, pos, currentScreen);  // Pass state to DrawMenu function
+        // Apply color based on Light/Dark mode
+        if (isLightMode) {
+            ClearBackground(LIGHTGRAY);  // Light background
+        } else {
+            ClearBackground(DARKGRAY);  // Dark background
         }
-        else if (currentScreen == SINGLY_LINKED_LIST) {
-            ClearBackground(ORANGE);  // Change color for different screen
+
+        // Draw different screens based on the current state
+        if (currentScreen == MAIN_MENU) {
+            DrawMainMenu(myFont, buttonClicked, buttonMessage, pos, currentScreen);  // Draw the main menu
+        } else if (currentScreen == SETTINGS) {
+            DrawSettingsMenu(myFont, buttonClicked, buttonMessage, currentScreen);  // Draw the settings menu
+        } else if (currentScreen == DATA_STRUCTURES) {
+            DrawDataStructuresMenu(myFont, buttonClicked, buttonMessage, currentScreen);  // Draw the data structure selection menu
+        } else if (currentScreen == SINGLY_LINKED_LIST) {
+            ClearBackground(ORANGE);
             DrawText("Singly Linked List Screen", 600, 200, 30, DARKGRAY);
             DrawBackButton(myFont, buttonClicked, buttonMessage, currentScreen);
-        }
-        else if (currentScreen == HASH_TABLE) {
-            ClearBackground(LIME);  // Another screen with different background
+        } else if (currentScreen == HASH_TABLE) {
+            ClearBackground(LIME);
             DrawText("Hash Table Screen", 600, 200, 30, DARKGRAY);
             DrawBackButton(myFont, buttonClicked, buttonMessage, currentScreen);
-        } else if ( currentScreen == AVL_TREE) {
-            ClearBackground(RED); // Another screen with different background
-            DrawText("AVL Tree Screen", 600, 200,30, DARKGRAY);
+        } else if (currentScreen == AVL_TREE) {
+            ClearBackground(RED);
+            DrawText("AVL Tree Screen", 600, 200, 30, DARKGRAY);
             DrawBackButton(myFont, buttonClicked, buttonMessage, currentScreen);
         } else if (currentScreen == GRAPH) {
-            ClearBackground(PINK); // Another screen with different background
-            DrawText("Graph Screen", 600, 200,30, DARKGRAY);
+            ClearBackground(PINK);
+            DrawText("Graph Screen", 600, 200, 30, DARKGRAY);
             DrawBackButton(myFont, buttonClicked, buttonMessage, currentScreen);
         }
-        // Add similar screens for AVL_TREE, and GRAPH
 
+        // End drawing
         EndDrawing();
 
-        // Check for exit condition and change screen if necessary
+        // Check for button click and change screen if necessary
         if (buttonClicked) {
-            if (buttonMessage == "Singly Linked List") {
-                currentScreen = SINGLY_LINKED_LIST;
-            } else if (buttonMessage == "Hash Table") {
-                currentScreen = HASH_TABLE;
-            } else if (buttonMessage == "AVL Tree") {
-                currentScreen = AVL_TREE;
-            } else if (buttonMessage == "Graph") {
-                currentScreen = GRAPH;
+            if (buttonMessage == "Start") {
+                currentScreen = DATA_STRUCTURES;  // Go to the data structure selection screen
+            } else if (buttonMessage == "Settings") {
+                currentScreen = SETTINGS;  // Go to Settings screen
+            } else if (buttonMessage == "End") {
+                CloseWindow();  // Close the application
             }
             buttonClicked = false;  // Reset button click state
         }
     }
 
+    // Clean up resources
     UnloadFont(myFont);  // Unload font
     CloseWindow();  // Close window
     return 0;

@@ -16,6 +16,9 @@
     <ClCompile Include="D:\Downloads\sproject\DataStructure\src\GUI\Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D:\Downloads\sproject\DataStructure\src\GUI\SettingsManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="D:\Downloads\sproject\DataStructure\src\Graph.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

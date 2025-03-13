@@ -3,19 +3,25 @@
 
 #include "raylib.h"
 
+// Define the screen dimensions
+const int screenWidth = 1440;
+const int screenHeight = 810;
+
 // Enum to define screen states
 enum Screen {
-    MENU,
+    MAIN_MENU,
+    SETTINGS,
+    DATA_STRUCTURES,
     SINGLY_LINKED_LIST,
     HASH_TABLE,
     AVL_TREE,
     GRAPH
 };
 
-// Function to draw the main menu
-void DrawMenu(Font font, bool buttonClicked, const char* buttonMessage, Vector2 pos, Screen &currentScreen);
-
-// Function to draw the "Back" button for navigating back to the main menu
+// Function declarations for the GUI
+void DrawMainMenu(Font font, bool buttonClicked, const char* buttonMessage, Vector2 pos, Screen &currentScreen);
+void DrawSettingsMenu(Font font, bool buttonClicked, const char* buttonMessage, Screen &currentScreen);
 void DrawBackButton(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen);
+void DrawDataStructuresMenu(Font font, bool buttonClicked, const char* buttonMessage, Screen &currentScreen);
 
 #endif // GUI_H

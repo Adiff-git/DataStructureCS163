@@ -5,7 +5,7 @@
 
 // Function to draw the main menu
 void DrawMainMenu(Font font, bool buttonClicked, const char* buttonMessage, Vector2 pos, Screen &currentScreen) {
-    DrawTextEx(font, "Data Visualization Group 1", pos, 80, 1, DARKBLUE);
+    DrawTextEx(font, "Data Visualization Group 1", pos, 80, 1, RED);
 
     // Calculate button positions based on the screen width and height for centering
     int buttonWidth = 800;
@@ -53,7 +53,7 @@ void DrawSettingsMenu(Font font, bool buttonClicked, const char* buttonMessage, 
 
 // Function to draw the back button
 void DrawBackButton(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen) {
-    if (DrawButton("Back", 50, 50, font, buttonClicked, buttonMessage)) {
+    if (DrawSmallButton("Back", 50, 50, font, buttonClicked, buttonMessage)) {
         currentScreen = MAIN_MENU;  // Go back to the main menu
     }
 }

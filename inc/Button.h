@@ -5,5 +5,5 @@
 
 // Function to draw a button and detect clicks
 bool DrawButton(const char* text, int x, int y, Font font, bool& buttonClicked, const char*& buttonMessage);
-
+bool DrawSmallButton(const char* text, int x, int y, Font font, bool& buttonClicked, const char*& buttonMessage);
 #endif // BUTTON_H

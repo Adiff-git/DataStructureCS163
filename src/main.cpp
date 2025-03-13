@@ -15,7 +15,7 @@ int main() {
     const char* buttonMessage = "";
 
     // Define initial position for the title
-    Vector2 pos = { 600, 50 };
+    Vector2 pos = { 350, 50 };
 
     // Main game loop
     while (!WindowShouldClose()) {
@@ -24,9 +24,9 @@ int main() {
 
         // Apply color based on Light/Dark mode
         if (isLightMode) {
-            ClearBackground(LIGHTGRAY);  // Light background
+            ClearBackground(WHITE);  // Light background
         } else {
-            ClearBackground(DARKGRAY);  // Dark background
+            ClearBackground(BLACK);  // Dark background
         }
 
         // Draw different screens based on the current state

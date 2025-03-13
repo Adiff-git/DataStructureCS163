@@ -325,12 +325,13 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D:\Downloads\sproject\DataStructure\src\AVLTree.cpp" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructure\src\Button.cpp" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructure\src\GUI.cpp" />
+    <ClCompile Include="D:\Downloads\sproject\DataStructure\src\GUI\Arrow.cpp" />
+    <ClCompile Include="D:\Downloads\sproject\DataStructure\src\GUI\Button.cpp" />
+    <ClCompile Include="D:\Downloads\sproject\DataStructure\src\GUI\GUI.cpp" />
+    <ClCompile Include="D:\Downloads\sproject\DataStructure\src\GUI\Menu.cpp" />
     <ClCompile Include="D:\Downloads\sproject\DataStructure\src\Graph.cpp" />
     <ClCompile Include="D:\Downloads\sproject\DataStructure\src\HashTable.cpp" />
     <ClCompile Include="D:\Downloads\sproject\DataStructure\src\LinkedList.cpp" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructure\src\Menu.cpp" />
     <ClCompile Include="D:\Downloads\sproject\DataStructure\src\main.cpp" />
   </ItemGroup>
   <ItemGroup />

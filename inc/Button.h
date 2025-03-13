@@ -3,7 +3,7 @@
 
 #include "raylib.h"
 
-// Hàm vẽ button
-void DrawButton(const char* text, int x, int y, Font font, bool& buttonClicked, const char*& buttonMessage);
+// Function to draw a button and detect clicks
+bool DrawButton(const char* text, int x, int y, Font font, bool& buttonClicked, const char*& buttonMessage);
 
-#endif  // BUTTON_H
+#endif // BUTTON_H

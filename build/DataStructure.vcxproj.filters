@@ -4,10 +4,16 @@
     <ClCompile Include="D:\Downloads\sproject\DataStructure\src\AVLTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\DataStructure\src\Button.cpp">
+    <ClCompile Include="D:\Downloads\sproject\DataStructure\src\GUI\Arrow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\DataStructure\src\GUI.cpp">
+    <ClCompile Include="D:\Downloads\sproject\DataStructure\src\GUI\Button.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Downloads\sproject\DataStructure\src\GUI\GUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Downloads\sproject\DataStructure\src\GUI\Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D:\Downloads\sproject\DataStructure\src\Graph.cpp">
@@ -17,9 +23,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D:\Downloads\sproject\DataStructure\src\LinkedList.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\DataStructure\src\Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D:\Downloads\sproject\DataStructure\src\main.cpp">

@@ -6,7 +6,7 @@ int main() {
     InitWindow(screenWidth, screenHeight, "Data Visualization Group 1");
     SetTargetFPS(60);
 
-    Font myFont = LoadFont("resources/Rubik-Italic-VariableFont_wght.ttf");
+    Font myFont = LoadFont("D:\\Downloads\\sproject\\DataStructureCS163\\resources\\Rubik-Italic-VariableFont_wght.ttf");
     Screen currentScreen = MAIN_MENU;
     bool buttonClicked = false;
     const char* buttonMessage = "";

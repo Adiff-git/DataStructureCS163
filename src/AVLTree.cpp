@@ -5,6 +5,38 @@
 AVLTree::AVLTree() : root(nullptr) {}
 AVLTree::~AVLTree() {
     while (root) Delete(root->data);
+    for (auto state : stepStates) {
+        while (state) {
+            AVLNode* temp = state;
+            state = state->left ? state->left : state->right;
+            delete temp;
+        }
+    }
+}
+
+void AVLTree::ClearSteps() {
+    steps.clear();
+    for (auto state : stepStates) {
+        while (state) {
+            AVLNode* temp = state;
+            state = state->left ? state->left : state->right;
+            delete temp;
+        }
+    }
+    stepStates.clear();
+}
+
+AVLNode* AVLTree::CopyTree(AVLNode* source) {
+    if (!source) return nullptr;
+    AVLNode* newNode = new AVLNode{source->data, source->height, nullptr, nullptr};
+    newNode->left = CopyTree(source->left);
+    newNode->right = CopyTree(source->right);
+    return newNode;
+}
+
+void AVLTree::SaveStep(const std::string& description) {
+    steps.push_back(description);
+    stepStates.push_back(CopyTree(root));
 }
 
 int AVLTree::Height(AVLNode* node) {
@@ -22,6 +54,7 @@ AVLNode* AVLTree::RotateRight(AVLNode* y) {
     y->left = T2;
     y->height = std::max(Height(y->left), Height(y->right)) + 1;
     x->height = std::max(Height(x->left), Height(x->right)) + 1;
+    SaveStep("Performed right rotation");
     return x;
 }
 
@@ -32,13 +65,18 @@ AVLNode* AVLTree::RotateLeft(AVLNode* x) {
     x->right = T2;
     x->height = std::max(Height(x->left), Height(x->right)) + 1;
     y->height = std::max(Height(y->left), Height(y->right)) + 1;
+    SaveStep("Performed left rotation");
     return y;
 }
 
-AVLNode* AVLTree::Insert(AVLNode* node, int value) {
-    if (!node) return new AVLNode{value, 1, nullptr, nullptr};
-    if (value < node->data) node->left = Insert(node->left, value);
-    else if (value > node->data) node->right = Insert(node->right, value);
+AVLNode* AVLTree::Insert(AVLNode* node, int value, bool saveSteps) {
+    if (!node) {
+        AVLNode* newNode = new AVLNode{value, 1, nullptr, nullptr};
+        if (saveSteps) SaveStep("Added node: " + std::to_string(value));
+        return newNode;
+    }
+    if (value < node->data) node->left = Insert(node->left, value, saveSteps);
+    else if (value > node->data) node->right = Insert(node->right, value, saveSteps);
     else return node;
 
     node->height = std::max(Height(node->left), Height(node->right)) + 1;
@@ -54,6 +92,7 @@ AVLNode* AVLTree::Insert(AVLNode* node, int value) {
         node->right = RotateRight(node->right);
         return RotateLeft(node);
     }
+    if (saveSteps) SaveStep("Updated height of node: " + std::to_string(node->data));
     return node;
 }
 
@@ -70,10 +109,12 @@ AVLNode* AVLTree::Delete(AVLNode* node, int value) {
         if (!node->left) {
             AVLNode* temp = node->right;
             delete node;
+            SaveStep("Deleted node: " + std::to_string(value));
             return temp;
         } else if (!node->right) {
             AVLNode* temp = node->left;
             delete node;
+            SaveStep("Deleted node: " + std::to_string(value));
             return temp;
         }
         AVLNode* temp = FindMin(node->right);
@@ -94,10 +135,14 @@ AVLNode* AVLTree::Delete(AVLNode* node, int value) {
         node->right = RotateRight(node->right);
         return RotateLeft(node);
     }
+    SaveStep("Updated height of node: " + std::to_string(node->data));
     return node;
 }
 
 void AVLTree::Initialize(int size) {
+    ClearSteps();
+    while (root) Delete(root->data);
+    SaveStep("Initial state (empty)");
     for (int i = 0; i < size; i++) Add(rand() % 100);
 }
 
@@ -115,12 +160,18 @@ void AVLTree::Update(int oldValue, int newValue) {
 }
 
 bool AVLTree::Search(int value) {
+    ClearSteps();
     AVLNode* current = root;
     while (current) {
-        if (value == current->data) return true;
+        SaveStep("Visiting node: " + std::to_string(current->data));
+        if (value == current->data) {
+            SaveStep("Found " + std::to_string(value));
+            return true;
+        }
         if (value < current->data) current = current->left;
         else current = current->right;
     }
+    SaveStep("Not found: " + std::to_string(value));
     return false;
 }
 
@@ -138,6 +189,8 @@ void AVLTree::DrawNode(Font font, AVLNode* node, int x, int y, int level) {
     }
 }
 
-void AVLTree::Draw(Font font, int x, int y) {
-    DrawNode(font, root, x, y, 1);
+void AVLTree::Draw(Font font, int x, int y, int step) {
+    if (step < 0 || step >= stepStates.size()) return;
+    DrawNode(font, stepStates[step], x, y, 1);
+    DrawTextEx(font, steps[step].c_str(), {static_cast<float>(x), static_cast<float>(y + 300)}, 20, 1, BLACK);
 }

@@ -16,13 +16,13 @@
     <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\HashTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\LinkedList.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\SettingsManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\SinglyLinkedList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\main.cpp">

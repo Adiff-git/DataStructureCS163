@@ -17,5 +17,6 @@ void DrawHashTableScreen(Font font, bool& buttonClicked, const char*& buttonMess
 void DrawAVLTreeScreen(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen);
 void DrawGraphScreen(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen);
 void DrawBackButton(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen);
+void DrawAnimationControls(Font font, bool& buttonClicked, const char*& buttonMessage, int& currentStep, int totalSteps, bool& isRunning);
 
 #endif

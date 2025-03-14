@@ -1,8 +1,8 @@
-# Install script for directory: D:/Downloads/sproject/DataStructure/raylib/src/external/glfw/src
+# Install script for directory: D:/Downloads/sproject/DataStructureCS163/raylib/src/external/glfw/src
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/DataStructure")
+  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/DataStructureCS163")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -35,6 +35,6 @@ endif()
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "D:/Downloads/sproject/DataStructure/build/raylib/raylib/external/glfw/src/install_local_manifest.txt"
+  file(WRITE "D:/Downloads/sproject/DataStructureCS163/build/raylib/raylib/external/glfw/src/install_local_manifest.txt"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

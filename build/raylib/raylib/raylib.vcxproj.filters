@@ -1,119 +1,119 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="D:\Downloads\sproject\DataStructure\raylib\src\raudio.c">
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\raudio.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\DataStructure\raylib\src\rcore.c">
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\rcore.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\DataStructure\raylib\src\rmodels.c">
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\rmodels.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\DataStructure\raylib\src\rshapes.c">
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\rshapes.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\DataStructure\raylib\src\rtext.c">
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\rtext.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\DataStructure\raylib\src\rtextures.c">
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\rtextures.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\DataStructure\raylib\src\utils.c">
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\utils.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="D:\Downloads\sproject\DataStructure\raylib\src\raylib.h">
+    <ClInclude Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\raylib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\Downloads\sproject\DataStructure\raylib\src\rcamera.h">
+    <ClInclude Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\rcamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\Downloads\sproject\DataStructure\raylib\src\rlgl.h">
+    <ClInclude Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\rlgl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\Downloads\sproject\DataStructure\raylib\src\raymath.h">
+    <ClInclude Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\raymath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="D:\Downloads\sproject\DataStructure\raylib\src\CMakeLists.txt" />
+    <CustomBuild Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Object Include="D:\Downloads\sproject\DataStructure\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\context.obj">
+    <Object Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\context.obj">
       <Filter>Object Libraries</Filter>
     </Object>
-    <Object Include="D:\Downloads\sproject\DataStructure\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\init.obj">
+    <Object Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\init.obj">
       <Filter>Object Libraries</Filter>
     </Object>
-    <Object Include="D:\Downloads\sproject\DataStructure\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\input.obj">
+    <Object Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\input.obj">
       <Filter>Object Libraries</Filter>
     </Object>
-    <Object Include="D:\Downloads\sproject\DataStructure\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\monitor.obj">
+    <Object Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\monitor.obj">
       <Filter>Object Libraries</Filter>
     </Object>
-    <Object Include="D:\Downloads\sproject\DataStructure\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\platform.obj">
+    <Object Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\platform.obj">
       <Filter>Object Libraries</Filter>
     </Object>
-    <Object Include="D:\Downloads\sproject\DataStructure\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\vulkan.obj">
+    <Object Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\vulkan.obj">
       <Filter>Object Libraries</Filter>
     </Object>
-    <Object Include="D:\Downloads\sproject\DataStructure\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\window.obj">
+    <Object Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\window.obj">
       <Filter>Object Libraries</Filter>
     </Object>
-    <Object Include="D:\Downloads\sproject\DataStructure\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\egl_context.obj">
+    <Object Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\egl_context.obj">
       <Filter>Object Libraries</Filter>
     </Object>
-    <Object Include="D:\Downloads\sproject\DataStructure\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\osmesa_context.obj">
+    <Object Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\osmesa_context.obj">
       <Filter>Object Libraries</Filter>
     </Object>
-    <Object Include="D:\Downloads\sproject\DataStructure\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\null_init.obj">
+    <Object Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\null_init.obj">
       <Filter>Object Libraries</Filter>
     </Object>
-    <Object Include="D:\Downloads\sproject\DataStructure\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\null_monitor.obj">
+    <Object Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\null_monitor.obj">
       <Filter>Object Libraries</Filter>
     </Object>
-    <Object Include="D:\Downloads\sproject\DataStructure\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\null_window.obj">
+    <Object Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\null_window.obj">
       <Filter>Object Libraries</Filter>
     </Object>
-    <Object Include="D:\Downloads\sproject\DataStructure\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\null_joystick.obj">
+    <Object Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\null_joystick.obj">
       <Filter>Object Libraries</Filter>
     </Object>
-    <Object Include="D:\Downloads\sproject\DataStructure\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\win32_module.obj">
+    <Object Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\win32_module.obj">
       <Filter>Object Libraries</Filter>
     </Object>
-    <Object Include="D:\Downloads\sproject\DataStructure\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\win32_time.obj">
+    <Object Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\win32_time.obj">
       <Filter>Object Libraries</Filter>
     </Object>
-    <Object Include="D:\Downloads\sproject\DataStructure\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\win32_thread.obj">
+    <Object Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\win32_thread.obj">
       <Filter>Object Libraries</Filter>
     </Object>
-    <Object Include="D:\Downloads\sproject\DataStructure\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\win32_init.obj">
+    <Object Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\win32_init.obj">
       <Filter>Object Libraries</Filter>
     </Object>
-    <Object Include="D:\Downloads\sproject\DataStructure\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\win32_joystick.obj">
+    <Object Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\win32_joystick.obj">
       <Filter>Object Libraries</Filter>
     </Object>
-    <Object Include="D:\Downloads\sproject\DataStructure\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\win32_monitor.obj">
+    <Object Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\win32_monitor.obj">
       <Filter>Object Libraries</Filter>
     </Object>
-    <Object Include="D:\Downloads\sproject\DataStructure\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\win32_window.obj">
+    <Object Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\win32_window.obj">
       <Filter>Object Libraries</Filter>
     </Object>
-    <Object Include="D:\Downloads\sproject\DataStructure\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\wgl_context.obj">
+    <Object Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\wgl_context.obj">
       <Filter>Object Libraries</Filter>
     </Object>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{442FDE2D-33B4-37AC-A99E-FED65BC2161F}</UniqueIdentifier>
+      <UniqueIdentifier>{B248058F-BDFD-32EE-AAF8-E0F5967F161A}</UniqueIdentifier>
     </Filter>
     <Filter Include="Object Libraries">
-      <UniqueIdentifier>{AF404ED6-C14A-3212-AA58-5CE9C55D4F13}</UniqueIdentifier>
+      <UniqueIdentifier>{6060B373-42E0-3CE7-AF31-01203DD3FA82}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{5DA45DF4-A178-3227-A4C6-7157C6C49483}</UniqueIdentifier>
+      <UniqueIdentifier>{0B60D853-7ACE-3AE3-B39B-0DE2DEC41E39}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

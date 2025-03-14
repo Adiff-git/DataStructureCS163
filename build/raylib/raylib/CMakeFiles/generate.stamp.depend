@@ -6,14 +6,14 @@ C:/Program Files/CMake/share/cmake-3.31/Modules/FindPackageHandleStandardArgs.cm
 C:/Program Files/CMake/share/cmake-3.31/Modules/FindPackageMessage.cmake
 C:/Program Files/CMake/share/cmake-3.31/Modules/GNUInstallDirs.cmake
 C:/Program Files/CMake/share/cmake-3.31/Templates/CPackConfig.cmake.in
-D:/Downloads/sproject/DataStructure/raylib/cmake/CompileDefinitions.cmake
-D:/Downloads/sproject/DataStructure/raylib/cmake/GlfwImport.cmake
-D:/Downloads/sproject/DataStructure/raylib/cmake/InstallConfigurations.cmake
-D:/Downloads/sproject/DataStructure/raylib/cmake/JoinPaths.cmake
-D:/Downloads/sproject/DataStructure/raylib/cmake/LibraryConfigurations.cmake
-D:/Downloads/sproject/DataStructure/raylib/cmake/LibraryPathToLinkerFlags.cmake
-D:/Downloads/sproject/DataStructure/raylib/cmake/PackConfigurations.cmake
-D:/Downloads/sproject/DataStructure/raylib/cmake/PopulateConfigVariablesLocally.cmake
-D:/Downloads/sproject/DataStructure/raylib/cmake/raylib-config-version.cmake
-D:/Downloads/sproject/DataStructure/raylib/raylib.pc.in
-D:/Downloads/sproject/DataStructure/raylib/src/CMakeLists.txt
+D:/Downloads/sproject/DataStructureCS163/raylib/cmake/CompileDefinitions.cmake
+D:/Downloads/sproject/DataStructureCS163/raylib/cmake/GlfwImport.cmake
+D:/Downloads/sproject/DataStructureCS163/raylib/cmake/InstallConfigurations.cmake
+D:/Downloads/sproject/DataStructureCS163/raylib/cmake/JoinPaths.cmake
+D:/Downloads/sproject/DataStructureCS163/raylib/cmake/LibraryConfigurations.cmake
+D:/Downloads/sproject/DataStructureCS163/raylib/cmake/LibraryPathToLinkerFlags.cmake
+D:/Downloads/sproject/DataStructureCS163/raylib/cmake/PackConfigurations.cmake
+D:/Downloads/sproject/DataStructureCS163/raylib/cmake/PopulateConfigVariablesLocally.cmake
+D:/Downloads/sproject/DataStructureCS163/raylib/cmake/raylib-config-version.cmake
+D:/Downloads/sproject/DataStructureCS163/raylib/raylib.pc.in
+D:/Downloads/sproject/DataStructureCS163/raylib/src/CMakeLists.txt

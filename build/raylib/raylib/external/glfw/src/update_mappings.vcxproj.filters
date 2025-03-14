@@ -1,24 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <CustomBuild Include="D:\Downloads\sproject\DataStructure\build\CMakeFiles\714c3b54c232d98735a9fd7575223528\update_mappings.rule">
+    <CustomBuild Include="D:\Downloads\sproject\DataStructureCS163\build\CMakeFiles\fc76eab755010e33de7b5133cc60d876\update_mappings.rule">
       <Filter>CMake Rules</Filter>
     </CustomBuild>
-    <CustomBuild Include="D:\Downloads\sproject\DataStructure\raylib\src\external\glfw\src\CMakeLists.txt" />
+    <CustomBuild Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="D:\Downloads\sproject\DataStructure\raylib\src\external\glfw\src\mappings.h.in">
+    <None Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\mappings.h.in">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="D:\Downloads\sproject\DataStructure\raylib\src\external\glfw\CMake\GenerateMappings.cmake" />
-    <None Include="D:\Downloads\sproject\DataStructure\build\raylib\raylib\external\glfw\src\CMakeFiles\update_mappings" />
+    <None Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\CMake\GenerateMappings.cmake" />
+    <None Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\CMakeFiles\update_mappings" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="CMake Rules">
-      <UniqueIdentifier>{7F93B5C8-9102-39E9-869A-058D6F26F127}</UniqueIdentifier>
+      <UniqueIdentifier>{229A12B5-FCCC-315E-B40F-C996EFC7F0DE}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{442FDE2D-33B4-37AC-A99E-FED65BC2161F}</UniqueIdentifier>
+      <UniqueIdentifier>{B248058F-BDFD-32EE-AAF8-E0F5967F161A}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

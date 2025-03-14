@@ -10,5 +10,5 @@ C:/Program Files/CMake/share/cmake-3.31/Modules/FindPackageMessage.cmake
 C:/Program Files/CMake/share/cmake-3.31/Modules/FindThreads.cmake
 C:/Program Files/CMake/share/cmake-3.31/Modules/GNUInstallDirs.cmake
 C:/Program Files/CMake/share/cmake-3.31/Modules/WriteBasicConfigVersionFile.cmake
-D:/Downloads/sproject/DataStructure/raylib/src/external/glfw/CMake/glfw3Config.cmake.in
-D:/Downloads/sproject/DataStructure/raylib/src/external/glfw/CMakeLists.txt
+D:/Downloads/sproject/DataStructureCS163/raylib/src/external/glfw/CMake/glfw3Config.cmake.in
+D:/Downloads/sproject/DataStructureCS163/raylib/src/external/glfw/CMakeLists.txt

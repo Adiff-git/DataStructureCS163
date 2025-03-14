@@ -1,27 +1,21 @@
 ﻿#ifndef GUI_H
 #define GUI_H
-
 #include "raylib.h"
 
-// Define the screen dimensions
 const int screenWidth = 1440;
 const int screenHeight = 810;
 
-// Enum to define screen states
 enum Screen {
-    MAIN_MENU,
-    SETTINGS,
-    DATA_STRUCTURES,
-    SINGLY_LINKED_LIST,
-    HASH_TABLE,
-    AVL_TREE,
-    GRAPH
+    MAIN_MENU, SETTINGS, DATA_STRUCTURES, SINGLY_LINKED_LIST, HASH_TABLE, AVL_TREE, GRAPH
 };
 
-// Function declarations for the GUI
-void DrawMainMenu(Font font, bool buttonClicked, const char* buttonMessage, Vector2 pos, Screen &currentScreen);
-void DrawSettingsMenu(Font font, bool buttonClicked, const char* buttonMessage, Screen &currentScreen);
+void DrawMainMenu(Font font, bool& buttonClicked, const char*& buttonMessage, Vector2 pos, Screen& currentScreen);
+void DrawSettingsMenu(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen);
+void DrawDataStructuresMenu(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen);
+void DrawSinglyLinkedListScreen(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen);
+void DrawHashTableScreen(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen);
+void DrawAVLTreeScreen(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen);
+void DrawGraphScreen(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen);
 void DrawBackButton(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen);
-void DrawDataStructuresMenu(Font font, bool buttonClicked, const char* buttonMessage, Screen &currentScreen);
 
-#endif // GUI_H
+#endif

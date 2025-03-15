@@ -1,32 +1,30 @@
 #ifndef SINGLY_LINKED_LIST_H
 #define SINGLY_LINKED_LIST_H
+
+#include "DataStructureLogic.h"
 #include "raylib.h"
-#include <vector>
 #include <string>
 
-struct Node {
-    int data;
-    Node* next;
-};
-
-class SinglyLinkedList {
+class SinglyLinkedList : public DataStructureLogic {
 private:
+    struct Node {
+        int data;
+        Node* next;
+        Node(int d) : data(d), next(nullptr) {}
+    };
     Node* head;
-    std::vector<std::string> steps;
-    std::vector<Node*> stepStates; // Lưu trạng thái của danh sách tại mỗi bước
-    void ClearSteps();
-    void SaveStep(const std::string& description);
-    Node* CopyList(Node* source);
+    void* CopyState() override;
+    void Draw(Font font, void* state, int x, int y) override;
+    void ClearStates() override;
+
 public:
     SinglyLinkedList();
-    ~SinglyLinkedList();
-    void Initialize(int size);
-    void Add(int value);
-    void Delete(int value);
-    void Update(int oldValue, int newValue);
-    bool Search(int value);
-    void Draw(Font font, int x, int y, int step);
-    int GetTotalSteps() const { return steps.size(); }
+    ~SinglyLinkedList() override;
+    void Initialize(int param) override;
+    void Add(int value) override;
+    void Delete(int value) override;
+    void Update(int oldValue, int newValue) override;
+    bool Search(int value) override;
 };
 
 #endif

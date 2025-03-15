@@ -4,7 +4,13 @@
     <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\AVLTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\Animation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\Button.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\DataStructureLogic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\GUI.cpp">
@@ -17,6 +23,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\Menu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\Program.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\SettingsManager.cpp">

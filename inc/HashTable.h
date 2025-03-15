@@ -1,34 +1,33 @@
 #ifndef HASH_TABLE_H
 #define HASH_TABLE_H
+
+#include "DataStructureLogic.h"
 #include "raylib.h"
 #include <vector>
 #include <string>
 
-struct HashNode {
-    int key;
-    HashNode* next;
-};
-
-class HashTable {
+class HashTable : public DataStructureLogic {
 private:
+    struct HashNode {
+        int key;
+        HashNode* next;
+        HashNode(int k) : key(k), next(nullptr) {}
+    };
     std::vector<HashNode*> table;
     int size;
-    std::vector<std::string> steps;
-    std::vector<std::vector<HashNode*>> stepStates;
     int hash(int key) { return key % size; }
-    void ClearSteps();
-    void SaveStep(const std::string& description);
-    HashNode* CopyList(HashNode* source);
+    void* CopyState() override;
+    void Draw(Font font, void* state, int x, int y) override;
+    void ClearStates() override;
+
 public:
     HashTable(int size);
-    ~HashTable();
-    void Initialize(int count);
-    void Add(int key);
-    void Delete(int key);
-    void Update(int oldKey, int newKey);
-    bool Search(int key);
-    void Draw(Font font, int x, int y, int step);
-    int GetTotalSteps() const { return steps.size(); }
+    ~HashTable() override;
+    void Initialize(int param) override;
+    void Add(int value) override;
+    void Delete(int value) override;
+    void Update(int oldValue, int newValue) override;
+    bool Search(int value) override;
 };
 
 #endif

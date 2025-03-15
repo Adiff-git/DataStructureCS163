@@ -1,39 +1,41 @@
 #ifndef GRAPH_H
 #define GRAPH_H
+
+#include "DataStructureLogic.h"
 #include "raylib.h"
 #include <vector>
 #include <string>
 
-struct Edge {
-    int to;
-    int weight;
-    Edge* next;
-};
-
-struct Vertex {
-    int data;
-    Edge* edges;
-};
-
-class Graph {
+class Graph : public DataStructureLogic {
 private:
+    struct Edge {
+        int to;
+        int weight;
+        Edge* next;
+        Edge(int t, int w) : to(t), weight(w), next(nullptr) {}
+    };
+    struct Vertex {
+        int data;
+        Edge* edges;
+        Vertex() : data(-1), edges(nullptr) {} // Hàm tạo mặc định
+        Vertex(int d) : data(d), edges(nullptr) {} // Hàm tạo có tham số
+    };
     std::vector<Vertex> vertices;
     int size;
-    std::vector<std::string> steps;
-    std::vector<std::vector<Edge*>> stepStates; // Lưu trạng thái cạnh của các đỉnh
-    void ClearSteps();
-    void SaveStep(const std::string& description);
     Edge* CopyEdges(Edge* source);
+    void* CopyState() override;
+    void Draw(Font font, void* state, int x, int y) override;
+    void ClearStates() override;
+
 public:
     Graph(int size);
-    ~Graph();
-    void Initialize();
-    void AddEdge(int from, int to, int weight);
-    void DeleteEdge(int from, int to);
-    void UpdateEdge(int from, int to, int newWeight);
-    bool SearchEdge(int from, int to);
-    void Draw(Font font, int x, int y, int step);
-    int GetTotalSteps() const { return steps.size(); }
+    ~Graph() override;
+    void Initialize(int param) override;
+    void Add(int value) override;
+    void AddEdge(int from, int to, int weight); // Đổi tên để không xung đột
+    void Delete(int value) override;
+    void Update(int oldValue, int newValue) override;
+    bool Search(int value) override;
 };
 
 #endif

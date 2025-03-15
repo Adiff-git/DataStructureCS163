@@ -1,33 +1,25 @@
 ﻿#include "Button.h"
+#include "raylib.h"
 
-bool DrawButton(const char* text, int x, int y, Font font, bool& buttonClicked, const char*& buttonMessage) {
-    Rectangle buttonRect = {(float)x, (float)y, 800, 50};
-    Color buttonColor = LIGHTGRAY;
-    if (CheckCollisionPointRec(GetMousePosition(), buttonRect)) buttonColor = YELLOW;
-    DrawRectangleRec(buttonRect, buttonColor);
+bool DrawButton(const char* text, float x, float y, Font font, bool& buttonClicked, const char*& buttonMessage) {
+    Rectangle button = { x, y, 200.0f, 50.0f };
+    bool isHovered = CheckCollisionPointRec(GetMousePosition(), button);
+    bool isClicked = false;
+
+    if (isHovered) {
+        DrawRectangleRec(button, DARKGRAY);
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            isClicked = true;
+            buttonClicked = true;
+            buttonMessage = text;
+        }
+    } else {
+        DrawRectangleRec(button, GRAY);
+    }
+
+    DrawRectangleLines(x, y, 200.0f, 50.0f, BLACK);
     Vector2 textSize = MeasureTextEx(font, text, 30, 1);
-    Vector2 textPosition = {buttonRect.x + buttonRect.width / 2 - textSize.x / 2, buttonRect.y + buttonRect.height / 2 - textSize.y / 2};
-    DrawTextEx(font, text, textPosition, 30, 1, DARKBLUE);
-    if (CheckCollisionPointRec(GetMousePosition(), buttonRect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-        buttonClicked = true;
-        buttonMessage = text;
-        return true;
-    }
-    return false;
-}
+    DrawTextEx(font, text, { x + 100.0f - textSize.x / 2, y + 10.0f }, 30, 1, WHITE);
 
-bool DrawSmallButton(const char* text, int x, int y, Font font, bool& buttonClicked, const char*& buttonMessage) {
-    Rectangle buttonRect = {(float)x, (float)y, 50, 50};
-    Color buttonColor = LIGHTGRAY;
-    if (CheckCollisionPointRec(GetMousePosition(), buttonRect)) buttonColor = YELLOW;
-    DrawRectangleRec(buttonRect, buttonColor);
-    Vector2 textSize = MeasureTextEx(font, text, 20, 1);
-    Vector2 textPosition = {buttonRect.x + buttonRect.width / 2 - textSize.x / 2, buttonRect.y + buttonRect.height / 2 - textSize.y / 2};
-    DrawTextEx(font, text, textPosition, 20, 1, DARKBLUE);
-    if (CheckCollisionPointRec(GetMousePosition(), buttonRect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-        buttonClicked = true;
-        buttonMessage = text;
-        return true;
-    }
-    return false;
+    return isClicked;
 }

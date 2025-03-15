@@ -5,208 +5,220 @@
 #include "HashTable.h"
 #include "AVLTree.h"
 #include "Graph.h"
+#include "raylib.h"
 
 static SinglyLinkedList sll;
 static HashTable ht(10);
 static AVLTree avl;
 static Graph graph(5);
 
-static int currentStep = 0;
-static bool isRunning = false;
-static double lastStepTime = 0.0;
+void DrawMainMenu(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen) {
+    ClearBackground(BLUE);
+    DrawTextEx(font, "Data Structure Visualization", { 600.0f, 50.0f }, 40, 1, DARKGRAY);
 
-void DrawMainMenu(Font font, bool& buttonClicked, const char*& buttonMessage, Vector2 pos, Screen& currentScreen) {
-    DrawTextEx(font, "Data Visualization Group 1", pos, 80, 1, RED);
-    int xPos = (screenWidth - 800) / 2;
-    if (DrawButton("Start", xPos, 150, font, buttonClicked, buttonMessage)) currentScreen = DATA_STRUCTURES;
-    if (DrawButton("Settings", xPos, 220, font, buttonClicked, buttonMessage)) currentScreen = SETTINGS;
-    if (DrawButton("End", xPos, 290, font, buttonClicked, buttonMessage)) CloseWindow();
+    float buttonX = 600.0f;
+    float buttonY = 200.0f;
+    if (DrawButton("Data Structures", buttonX, buttonY, font, buttonClicked, buttonMessage)) {
+        currentScreen = Screen::DATA_STRUCTURES;
+    }
+    if (DrawButton("Settings", buttonX, buttonY + 70.0f, font, buttonClicked, buttonMessage)) {
+        currentScreen = Screen::SETTINGS;
+    }
+    if (DrawButton("Exit", buttonX, buttonY + 140.0f, font, buttonClicked, buttonMessage)) {
+        CloseWindow();
+    }
 }
 
 void DrawSettingsMenu(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen) {
-    int xPos = (screenWidth - 800) / 2;
-    if (DrawButton(soundEnabled ? "Disable Sound" : "Enable Sound", xPos, 150, font, buttonClicked, buttonMessage)) ToggleSound();
-    if (DrawButton(isLightMode ? "Switch to Dark Mode" : "Switch to Light Mode", xPos, 220, font, buttonClicked, buttonMessage)) ToggleColorMode();
-    if (DrawButton("Increase Animation Speed", xPos, 290, font, buttonClicked, buttonMessage)) IncreaseAnimationSpeed();
-    if (DrawButton("Decrease Animation Speed", xPos, 360, font, buttonClicked, buttonMessage)) DecreaseAnimationSpeed();
-    DrawTextEx(font, TextFormat("Animation Speed: %.1f s/step", animationSpeed), {static_cast<float>(xPos), 430}, 30, 1, DARKBLUE);
+    ClearBackground(GREEN);
+    DrawTextEx(font, "Settings", { 600.0f, 50.0f }, 40, 1, DARKGRAY);
+
+    float buttonX = 50.0f;
+    float buttonY = 150.0f;
+    if (DrawButton("Increase Speed", buttonX, buttonY, font, buttonClicked, buttonMessage)) {
+        animationSpeed -= 0.1;
+        if (animationSpeed < 0.1) animationSpeed = 0.1;
+    }
+    if (DrawButton("Decrease Speed", buttonX, buttonY + 70.0f, font, buttonClicked, buttonMessage)) {
+        animationSpeed += 0.1;
+        if (animationSpeed > 2.0) animationSpeed = 2.0;
+    }
+
+    DrawTextEx(font, TextFormat("Animation Speed: %.1f", animationSpeed), { 50.0f, 300.0f }, 30, 1, DARKGRAY);
     DrawBackButton(font, buttonClicked, buttonMessage, currentScreen);
 }
 
 void DrawDataStructuresMenu(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen) {
-    int xPos = (screenWidth - 800) / 2;
-    if (DrawButton("Singly Linked List", xPos, 150, font, buttonClicked, buttonMessage)) currentScreen = SINGLY_LINKED_LIST;
-    if (DrawButton("Hash Table", xPos, 220, font, buttonClicked, buttonMessage)) currentScreen = HASH_TABLE;
-    if (DrawButton("AVL Tree", xPos, 290, font, buttonClicked, buttonMessage)) currentScreen = AVL_TREE;
-    if (DrawButton("Graph", xPos, 360, font, buttonClicked, buttonMessage)) currentScreen = GRAPH;
+    ClearBackground(YELLOW);
+    DrawTextEx(font, "Choose a Data Structure", { 600.0f, 50.0f }, 40, 1, DARKGRAY);
+
+    float buttonX = 600.0f;
+    float buttonY = 150.0f;
+    if (DrawButton("Singly Linked List", buttonX, buttonY, font, buttonClicked, buttonMessage)) {
+        currentScreen = Screen::SINGLY_LINKED_LIST;
+    }
+    if (DrawButton("Hash Table", buttonX, buttonY + 70.0f, font, buttonClicked, buttonMessage)) {
+        currentScreen = Screen::HASH_TABLE;
+    }
+    if (DrawButton("AVL Tree", buttonX, buttonY + 140.0f, font, buttonClicked, buttonMessage)) {
+        currentScreen = Screen::AVL_TREE;
+    }
+    if (DrawButton("Graph", buttonX, buttonY + 210.0f, font, buttonClicked, buttonMessage)) {
+        currentScreen = Screen::GRAPH;
+    }
     DrawBackButton(font, buttonClicked, buttonMessage, currentScreen);
 }
 
-void DrawSinglyLinkedListScreen(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen) {
+void DrawSinglyLinkedListScreen(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen, SinglyLinkedList* sll) {
     ClearBackground(ORANGE);
-    DrawTextEx(font, "Singly Linked List", {600, 50}, 40, 1, DARKGRAY);
-    int xPos = 300;
-    if (DrawButton("Initialize", xPos, 150, font, buttonClicked, buttonMessage)) {
-        sll.Initialize(5);
-        currentStep = 0;
-        isRunning = false;
+    DrawTextEx(font, "Singly Linked List", { 600.0f, 50.0f }, 40, 1, DARKGRAY);
+    float buttonX = 50.0f;
+    float buttonY = 150.0f;
+    if (DrawButton("Initialize (5)", buttonX, buttonY, font, buttonClicked, buttonMessage)) {
+        sll->Initialize(5);
+        sll->ResetAnimation();
     }
-    if (DrawButton("Add (42)", xPos, 220, font, buttonClicked, buttonMessage)) {
-        sll.Add(42);
-        currentStep = 0;
-        isRunning = false;
+    if (DrawButton("Add (42)", buttonX, buttonY + 70.0f, font, buttonClicked, buttonMessage)) {
+        sll->Add(42);
+        sll->ResetAnimation();
     }
-    if (DrawButton("Delete (42)", xPos, 290, font, buttonClicked, buttonMessage)) {
-        sll.Delete(42);
-        currentStep = 0;
-        isRunning = false;
+    if (DrawButton("Delete (42)", buttonX, buttonY + 140.0f, font, buttonClicked, buttonMessage)) {
+        sll->Delete(42);
+        sll->ResetAnimation();
     }
-    if (DrawButton("Update (42->99)", xPos, 360, font, buttonClicked, buttonMessage)) {
-        sll.Update(42, 99);
-        currentStep = 0;
-        isRunning = false;
+    if (DrawButton("Update (42->99)", buttonX, buttonY + 210.0f, font, buttonClicked, buttonMessage)) {
+        sll->Update(42, 99);
+        sll->ResetAnimation();
     }
-    if (DrawButton("Search (42)", xPos, 430, font, buttonClicked, buttonMessage)) {
-        sll.Search(42);
-        currentStep = 0;
-        isRunning = false;
+    if (DrawButton("Search (42)", buttonX, buttonY + 280.0f, font, buttonClicked, buttonMessage)) {
+        sll->Search(42);
+        sll->ResetAnimation();
     }
-    sll.Draw(font, 600, 400, currentStep);
-    DrawAnimationControls(font, buttonClicked, buttonMessage, currentStep, sll.GetTotalSteps(), isRunning);
+    sll->DrawAnimation(font, 800, 200);
+    DrawAnimationControls(font, buttonClicked, buttonMessage, sll);
     DrawBackButton(font, buttonClicked, buttonMessage, currentScreen);
 }
 
-void DrawHashTableScreen(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen) {
+void DrawHashTableScreen(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen, HashTable* ht) {
     ClearBackground(LIME);
-    DrawTextEx(font, "Hash Table", {600, 50}, 40, 1, DARKGRAY);
-    int xPos = 300;
-    if (DrawButton("Initialize", xPos, 150, font, buttonClicked, buttonMessage)) {
-        ht.Initialize(5);
-        currentStep = 0;
-        isRunning = false;
+    DrawTextEx(font, "Hash Table", { 600.0f, 50.0f }, 40, 1, DARKGRAY);
+    float buttonX = 50.0f;
+    float buttonY = 150.0f;
+    if (DrawButton("Initialize (5)", buttonX, buttonY, font, buttonClicked, buttonMessage)) {
+        ht->Initialize(5);
+        ht->ResetAnimation();
     }
-    if (DrawButton("Add (42)", xPos, 220, font, buttonClicked, buttonMessage)) {
-        ht.Add(42);
-        currentStep = 0;
-        isRunning = false;
+    if (DrawButton("Add (42)", buttonX, buttonY + 70.0f, font, buttonClicked, buttonMessage)) {
+        ht->Add(42);
+        ht->ResetAnimation();
     }
-    if (DrawButton("Delete (42)", xPos, 290, font, buttonClicked, buttonMessage)) {
-        ht.Delete(42);
-        currentStep = 0;
-        isRunning = false;
+    if (DrawButton("Delete (42)", buttonX, buttonY + 140.0f, font, buttonClicked, buttonMessage)) {
+        ht->Delete(42);
+        ht->ResetAnimation();
     }
-    if (DrawButton("Update (42->99)", xPos, 360, font, buttonClicked, buttonMessage)) {
-        ht.Update(42, 99);
-        currentStep = 0;
-        isRunning = false;
+    if (DrawButton("Update (42->99)", buttonX, buttonY + 210.0f, font, buttonClicked, buttonMessage)) {
+        ht->Update(42, 99);
+        ht->ResetAnimation();
     }
-    if (DrawButton("Search (42)", xPos, 430, font, buttonClicked, buttonMessage)) {
-        ht.Search(42);
-        currentStep = 0;
-        isRunning = false;
+    if (DrawButton("Search (42)", buttonX, buttonY + 280.0f, font, buttonClicked, buttonMessage)) {
+        ht->Search(42);
+        ht->ResetAnimation();
     }
-    ht.Draw(font, 600, 400, currentStep);
-    DrawAnimationControls(font, buttonClicked, buttonMessage, currentStep, ht.GetTotalSteps(), isRunning);
+    ht->DrawAnimation(font, 800, 200);
+    DrawAnimationControls(font, buttonClicked, buttonMessage, ht);
     DrawBackButton(font, buttonClicked, buttonMessage, currentScreen);
 }
 
-void DrawAVLTreeScreen(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen) {
+void DrawAVLTreeScreen(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen, AVLTree* avl) {
     ClearBackground(RED);
-    DrawTextEx(font, "AVL Tree", {600, 50}, 40, 1, DARKGRAY);
-    int xPos = 300;
-    if (DrawButton("Initialize", xPos, 150, font, buttonClicked, buttonMessage)) {
-        avl.Initialize(5);
-        currentStep = 0;
-        isRunning = false;
+    DrawTextEx(font, "AVL Tree", { 600.0f, 50.0f }, 40, 1, DARKGRAY);
+    float buttonX = 50.0f;
+    float buttonY = 150.0f;
+    if (DrawButton("Initialize (5)", buttonX, buttonY, font, buttonClicked, buttonMessage)) {
+        avl->Initialize(5);
+        avl->ResetAnimation();
     }
-    if (DrawButton("Add (42)", xPos, 220, font, buttonClicked, buttonMessage)) {
-        avl.Add(42);
-        currentStep = 0;
-        isRunning = false;
+    if (DrawButton("Add (42)", buttonX, buttonY + 70.0f, font, buttonClicked, buttonMessage)) {
+        avl->Add(42);
+        avl->ResetAnimation();
     }
-    if (DrawButton("Delete (42)", xPos, 290, font, buttonClicked, buttonMessage)) {
-        avl.Delete(42);
-        currentStep = 0;
-        isRunning = false;
+    if (DrawButton("Delete (42)", buttonX, buttonY + 140.0f, font, buttonClicked, buttonMessage)) {
+        avl->Delete(42);
+        avl->ResetAnimation();
     }
-    if (DrawButton("Update (42->99)", xPos, 360, font, buttonClicked, buttonMessage)) {
-        avl.Update(42, 99);
-        currentStep = 0;
-        isRunning = false;
+    if (DrawButton("Update (42->99)", buttonX, buttonY + 210.0f, font, buttonClicked, buttonMessage)) {
+        avl->Update(42, 99);
+        avl->ResetAnimation();
     }
-    if (DrawButton("Search (42)", xPos, 430, font, buttonClicked, buttonMessage)) {
-        avl.Search(42);
-        currentStep = 0;
-        isRunning = false;
+    if (DrawButton("Search (42)", buttonX, buttonY + 280.0f, font, buttonClicked, buttonMessage)) {
+        avl->Search(42);
+        avl->ResetAnimation();
     }
-    avl.Draw(font, 600, 400, currentStep);
-    DrawAnimationControls(font, buttonClicked, buttonMessage, currentStep, avl.GetTotalSteps(), isRunning);
+    avl->DrawAnimation(font, 800, 200);
+    DrawAnimationControls(font, buttonClicked, buttonMessage, avl);
     DrawBackButton(font, buttonClicked, buttonMessage, currentScreen);
 }
 
-void DrawGraphScreen(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen) {
+void DrawGraphScreen(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen, Graph* graph) {
     ClearBackground(PINK);
-    DrawTextEx(font, "Graph", {600, 50}, 40, 1, DARKGRAY);
-    int xPos = 300;
-    if (DrawButton("Initialize", xPos, 150, font, buttonClicked, buttonMessage)) {
-        graph.Initialize();
-        currentStep = 0;
-        isRunning = false;
+    DrawTextEx(font, "Graph", { 600.0f, 50.0f }, 40, 1, DARKGRAY);
+    float buttonX = 50.0f;
+    float buttonY = 150.0f;
+    if (DrawButton("Initialize", buttonX, buttonY, font, buttonClicked, buttonMessage)) {
+        graph->Initialize(0);
+        graph->ResetAnimation();
     }
-    if (DrawButton("Add Edge (0-1)", xPos, 220, font, buttonClicked, buttonMessage)) {
-        graph.AddEdge(0, 1, 4);
-        currentStep = 0;
-        isRunning = false;
+    if (DrawButton("Add Edge (0-1)", buttonX, buttonY + 70.0f, font, buttonClicked, buttonMessage)) {
+        graph->AddEdge(0, 1, 4);
+        graph->ResetAnimation();
     }
-    if (DrawButton("Delete Edge (0-1)", xPos, 290, font, buttonClicked, buttonMessage)) {
-        graph.DeleteEdge(0, 1);
-        currentStep = 0;
-        isRunning = false;
+    if (DrawButton("Delete Vertex (1)", buttonX, buttonY + 140.0f, font, buttonClicked, buttonMessage)) {
+        graph->Delete(1);
+        graph->ResetAnimation();
     }
-    if (DrawButton("Update Edge (0-1->5)", xPos, 360, font, buttonClicked, buttonMessage)) {
-        graph.UpdateEdge(0, 1, 5);
-        currentStep = 0;
-        isRunning = false;
+    if (DrawButton("Update Vertex (1->5)", buttonX, buttonY + 210.0f, font, buttonClicked, buttonMessage)) {
+        graph->Update(1, 5);
+        graph->ResetAnimation();
     }
-    if (DrawButton("Search Edge (0-1)", xPos, 430, font, buttonClicked, buttonMessage)) {
-        graph.SearchEdge(0, 1);
-        currentStep = 0;
-        isRunning = false;
+    if (DrawButton("Search Vertex (1)", buttonX, buttonY + 280.0f, font, buttonClicked, buttonMessage)) {
+        graph->Search(1);
+        graph->ResetAnimation();
     }
-    graph.Draw(font, 600, 400, currentStep);
-    DrawAnimationControls(font, buttonClicked, buttonMessage, currentStep, graph.GetTotalSteps(), isRunning);
+    graph->DrawAnimation(font, 800, 200);
+    DrawAnimationControls(font, buttonClicked, buttonMessage, graph);
     DrawBackButton(font, buttonClicked, buttonMessage, currentScreen);
 }
 
 void DrawBackButton(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen) {
-    if (DrawSmallButton("Back", 50, 50, font, buttonClicked, buttonMessage)) currentScreen = MAIN_MENU;
+    float buttonX = 50.0f;
+    float buttonY = 600.0f;
+    if (DrawButton("Back", buttonX, buttonY, font, buttonClicked, buttonMessage)) {
+        if (currentScreen == Screen::DATA_STRUCTURES || currentScreen == Screen::SETTINGS) {
+            currentScreen = Screen::MAIN_MENU;
+        } else {
+            currentScreen = Screen::DATA_STRUCTURES;
+        }
+    }
 }
 
-void DrawAnimationControls(Font font, bool& buttonClicked, const char*& buttonMessage, int& currentStep, int totalSteps, bool& isRunning) {
-    int xPos = 300;
-    int yPos = 600;
-    if (DrawButton("Previous Step", xPos, yPos, font, buttonClicked, buttonMessage)) {
-        if (currentStep > 0) currentStep--;
-        isRunning = false;
+void DrawAnimationControls(Font font, bool& buttonClicked, const char*& buttonMessage, DataStructureLogic* ds) {
+    float buttonX = 800.0f;
+    float buttonY = 500.0f;
+    if (DrawButton("Play", buttonX, buttonY, font, buttonClicked, buttonMessage)) {
+        ds->StartAnimation();
     }
-    if (DrawButton("Next Step", xPos + 300, yPos, font, buttonClicked, buttonMessage)) {
-        if (currentStep < totalSteps - 1) currentStep++;
-        isRunning = false;
+    if (DrawButton("Pause", buttonX + 220.0f, buttonY, font, buttonClicked, buttonMessage)) {
+        ds->PauseAnimation();
     }
-    if (DrawButton(isRunning ? "Stop" : "Run All", xPos + 600, yPos, font, buttonClicked, buttonMessage)) {
-        isRunning = !isRunning;
-        if (isRunning) {
-            currentStep = 0;
-            lastStepTime = GetTime();
-        }
+    if (DrawButton("Next", buttonX + 440.0f, buttonY, font, buttonClicked, buttonMessage)) {
+        ds->NextStep();
     }
-    DrawTextEx(font, TextFormat("Step: %d/%d", currentStep + 1, totalSteps), {static_cast<float>(xPos + 300), static_cast<float>(yPos + 70)}, 30, 1, DARKBLUE);
+    if (DrawButton("Prev", buttonX + 660.0f, buttonY, font, buttonClicked, buttonMessage)) {
+        ds->PrevStep();
+    }
 
-    if (isRunning && currentStep < totalSteps - 1) {
-        double currentTime = GetTime();
-        if (currentTime - lastStepTime >= animationSpeed) {
-            currentStep++;
-            lastStepTime = currentTime;
-        }
+    float stepY = 600.0f;
+    for (int i = 0; i < ds->GetTotalSteps(); i++) {
+        DrawTextEx(font, ds->GetSteps()[i].c_str(), { 800.0f, stepY + i * 30.0f }, 20, 1, (i == ds->GetCurrentStep()) ? RED : DARKGRAY);
     }
 }

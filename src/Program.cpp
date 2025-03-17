@@ -6,7 +6,7 @@
 Program::Program() : currentScreen(Screen::MAIN_MENU), buttonClicked(false), buttonMessage(""), ht(10), graph(5) {
     InitWindow(1400, 800, "Data Structure Visualization");
     SetTargetFPS(60);
-    font = LoadFont("resources/Rubik-Italic-VariableFont_wght.ttf");
+    font = LoadFont("../resources/fonts/Rubik-Italic-VariableFont_wght.ttf");
 }
 
 Program::~Program() {

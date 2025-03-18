@@ -3,17 +3,16 @@
 #include "raylib.h"
 #include "SettingsManager.h"
 
-Program::Program() : currentScreen(Screen::MAIN_MENU), buttonClicked(false), buttonMessage(""), ht(10), graph(5) { // Hàm tạo
-    InitWindow(1400, 800, "Data Structure Visualization"); 
-    SetTargetFPS(60);                          
-    // font = LoadFont("../resources/Rubik-Italic-VariableFont_wght.ttf"); // Tải font
-    font = GetFontDefault();                    
+Program::Program() : currentScreen(Screen::MAIN_MENU), buttonClicked(false), buttonMessage(""), ht(10), graph(5) {
+    InitWindow(1400, 800, "Data Structure Visualization");
+    SetTargetFPS(60);
+    font = LoadFont("../resources/fonts/Rubik-Italic-VariableFont_wght.ttf");
 }
 
 Program::~Program() {                           // Hàm hủy
     UnloadFont(font);                           // Giải phóng font
     CloseWindow();                              // Đóng cửa sổ
-}
+}// fgf
 
 void Program::Run() {                           // Chạy chương trình
     while (!WindowShouldClose()) {              // Vòng lặp chính cho đến khi đóng cửa sổ

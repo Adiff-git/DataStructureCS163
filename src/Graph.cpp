@@ -1,168 +1,255 @@
 #include "Graph.h"
-#include "DataStructureLogic.h"
+#include "GUI.h"
+#include "Button.h"
 #include "raylib.h"
 #include <vector>
 #include <string>
-#define _USE_MATH_DEFINES
-#include <cmath>
 
-const float _PI = 3.14159265358979323846f; // Định nghĩa hằng số PI để tính toán góc trong đồ thị
-
-Graph::Graph(int size) : size(size) {       // Hàm tạo với tham số size để khởi tạo đồ thị
-    vertices.resize(size);                  // Điều chỉnh kích thước vector vertices theo size
-    for (int i = 0; i < size; i++) {        // Duyệt qua từng đỉnh
-        vertices[i] = Vertex(i);            // Khởi tạo mỗi đỉnh với giá trị i
-    }
+Graph::Graph(int size) : size(size) {
+    vertices.resize(size);
 }
 
-Graph::~Graph() {                           // Hàm hủy để giải phóng bộ nhớ
-    for (int i = 0; i < size; i++) {        // Duyệt qua từng đỉnh
-        Edge* current = vertices[i].edges;  // Lấy danh sách cạnh của đỉnh i
-        while (current) {                   // Duyệt qua từng cạnh trong danh sách
-            Edge* temp = current;           // Lưu con trỏ cạnh hiện tại để xóa
-            current = current->next;        // Chuyển sang cạnh tiếp theo
-            delete temp;                    // Giải phóng bộ nhớ của cạnh
-        }
-    }
-    ClearStates();                          // Xóa các trạng thái đã lưu của đồ thị
-}
-
-Graph::Edge* Graph::CopyEdges(Edge* source) { // Sao chép danh sách cạnh
-    if (!source) return nullptr;              // Nếu không có cạnh, trả về nullptr
-    Edge* newEdge = new Edge(source->to, source->weight); // Tạo cạnh mới với cùng đích và trọng số
-    newEdge->next = CopyEdges(source->next);  // Sao chép đệ quy cạnh tiếp theo
-    return newEdge;                           // Trả về con trỏ tới cạnh mới
-}
-
-void* Graph::CopyState() {                    // Sao chép trạng thái hiện tại của đồ thị
-    std::vector<Edge*>* state = new std::vector<Edge*>; // Tạo vector mới để lưu trạng thái
-    state->resize(size, nullptr);             // Điều chỉnh kích thước vector theo số đỉnh
-    for (int i = 0; i < size; i++) {          // Duyệt qua từng đỉnh
-        (*state)[i] = CopyEdges(vertices[i].edges); // Sao chép danh sách cạnh của đỉnh i
-    }
-    return state;                             // Trả về trạng thái dưới dạng con trỏ void*
-}
-
-void Graph::Draw(Font font, void* state, int x, int y) { // Vẽ đồ thị lên màn hình
-    std::vector<Edge*>* edgesState = static_cast<std::vector<Edge*>*>(state); // Ép kiểu trạng thái về vector cạnh
-    const float radius = 200.0f;              // Bán kính vòng tròn để đặt các đỉnh
-    for (int i = 0; i < size; i++) {          // Duyệt qua từng đỉnh
-        float angle = 2.0f * _PI * i / size;  // Tính góc để đặt đỉnh trên vòng tròn
-        int vx = static_cast<int>(x + radius * cos(angle)); // Tọa độ x của đỉnh
-        int vy = static_cast<int>(y + radius * sin(angle)); // Tọa độ y của đỉnh
-        DrawCircle(vx, vy, 25, LIGHTGRAY);    // Vẽ hình tròn biểu diễn đỉnh
-        DrawTextEx(font, TextFormat("%d", vertices[i].data), {static_cast<float>(vx - 10), static_cast<float>(vy - 10)}, 30, 1, DARKBLUE); // Vẽ giá trị của đỉnh
-
-        Edge* edge = (*edgesState)[i];        // Lấy danh sách cạnh của đỉnh i từ trạng thái
-        while (edge) {                        // Duyệt qua từng cạnh
-            float toAngle = 2.0f * _PI * edge->to / size; // Tính góc của đỉnh đích
-            int tx = static_cast<int>(x + radius * cos(toAngle)); // Tọa độ x của đỉnh đích
-            int ty = static_cast<int>(y + radius * sin(toAngle)); // Tọa độ y của đỉnh đích
-            DrawLine(vx, vy, tx, ty, BLACK);  // Vẽ đường nối giữa hai đỉnh
-            DrawTextEx(font, TextFormat("%d", edge->weight), {static_cast<float>((vx + tx) / 2), static_cast<float>((vy + ty) / 2)}, 20, 1, RED); // Vẽ trọng số của cạnh
-            edge = edge->next;                // Chuyển sang cạnh tiếp theo
+Graph::~Graph() {
+    ClearStates();
+    for (auto& vertex : vertices) {
+        while (vertex.edges) {
+            Edge* temp = vertex.edges;
+            vertex.edges = vertex.edges->next;
+            delete temp;
         }
     }
 }
 
-void Graph::ClearStates() {                   // Xóa tất cả trạng thái đã lưu
-    for (auto state : stepStates) {           // Duyệt qua từng trạng thái
-        std::vector<Edge*>* edgesState = static_cast<std::vector<Edge*>*>(state); // Ép kiểu về vector cạnh
-        for (auto edge : *edgesState) {       // Duyệt qua từng danh sách cạnh
-            while (edge) {                    // Duyệt qua từng cạnh trong danh sách
-                Edge* temp = edge;            // Lưu con trỏ cạnh hiện tại
-                edge = edge->next;            // Chuyển sang cạnh tiếp theo
-                delete temp;                  // Giải phóng bộ nhớ của cạnh
-            }
-        }
-        delete edgesState;                    // Giải phóng vector trạng thái
+Graph::Edge* Graph::CopyEdges(Edge* source) {
+    if (!source) return nullptr;
+    Edge* newEdge = new Edge(source->to, source->weight);
+    newEdge->next = CopyEdges(source->next);
+    return newEdge;
+}
+
+void* Graph::CopyState() {
+    std::vector<Vertex>* newVertices = new std::vector<Vertex>(size);
+    for (int i = 0; i < size; i++) {
+        (*newVertices)[i].data = vertices[i].data;
+        (*newVertices)[i].edges = CopyEdges(vertices[i].edges);
     }
+    return newVertices;
 }
 
-void Graph::Initialize(int param) {           // Khởi tạo đồ thị với các cạnh mẫu
-    ClearSteps();                             // Xóa các bước đã lưu
-    ResetAnimation();                         // Đặt lại trạng thái animation
-    for (int i = 0; i < size; i++) {          // Duyệt qua từng đỉnh
-        while (vertices[i].edges) {           // Xóa tất cả cạnh hiện có của đỉnh
-            Edge* temp = vertices[i].edges;   // Lưu con trỏ cạnh hiện tại
-            vertices[i].edges = temp->next;   // Chuyển sang cạnh tiếp theo
-            delete temp;                      // Giải phóng bộ nhớ
-        }
-    }
-    SaveStep("Initial state (empty)", CopyState()); // Lưu trạng thái ban đầu (rỗng)
-    AddEdge(0, 1, 4);                         // Thêm cạnh từ 0 đến 1 với trọng số 4
-    AddEdge(1, 2, 5);                         // Thêm cạnh từ 1 đến 2 với trọng số 5
-    AddEdge(2, 3, 6);                         // Thêm cạnh từ 2 đến 3 với trọng số 6
-    AddEdge(3, 4, 7);                         // Thêm cạnh từ 3 đến 4 với trọng số 7
-}
-
-void Graph::Add(int value) {                  // Thêm đỉnh (không hỗ trợ trong đồ thị này)
-    SaveStep("Add operation not supported for Graph", CopyState()); // Lưu thông báo không hỗ trợ
-}
-
-void Graph::AddEdge(int from, int to, int weight) { // Thêm một cạnh vào đồ thị
-    Edge* newEdge = new Edge(to, weight);     // Tạo cạnh mới với đích và trọng số
-    if (!vertices[from].edges) vertices[from].edges = newEdge; // Nếu chưa có cạnh, gán trực tiếp
-    else {                                    // Nếu đã có cạnh
-        Edge* current = vertices[from].edges; // Bắt đầu từ cạnh đầu tiên
-        while (current->next) current = current->next; // Tìm cạnh cuối cùng
-        current->next = newEdge;              // Thêm cạnh mới vào cuối danh sách
-    }
-    SaveStep("Added edge " + std::to_string(from) + " -> " + std::to_string(to), CopyState()); // Lưu bước thêm cạnh
-}
-
-void Graph::Delete(int value) {               // Xóa đỉnh và các cạnh liên quan
-    for (int i = 0; i < size; i++) {          // Duyệt qua từng đỉnh
-        Edge* current = vertices[i].edges;    // Lấy danh sách cạnh của đỉnh i
-        Edge* prev = nullptr;                 // Con trỏ cạnh trước đó
-        while (current) {                     // Duyệt qua từng cạnh
-            if (current->to == value || i == value) { // Nếu cạnh đến đỉnh cần xóa hoặc đỉnh i là đỉnh cần xóa
-                if (prev) {                   // Nếu có cạnh trước đó
-                    prev->next = current->next; // Bỏ qua cạnh hiện tại
-                    delete current;           // Giải phóng bộ nhớ
-                    current = prev->next;     // Tiếp tục với cạnh tiếp theo
-                } else {                      // Nếu đây là cạnh đầu tiên
-                    vertices[i].edges = current->next; // Cập nhật danh sách cạnh
-                    delete current;           // Giải phóng bộ nhớ
-                    current = vertices[i].edges; // Tiếp tục với cạnh mới
-                }
-            } else {                          // Nếu không cần xóa
-                prev = current;               // Cập nhật prev
-                current = current->next;      // Chuyển sang cạnh tiếp theo
+void Graph::Draw(Font font, void* state, int x, int y) {
+    std::vector<Vertex>* graphState = static_cast<std::vector<Vertex>*>(state);
+    for (int i = 0; i < size; i++) {
+        if ((*graphState)[i].data != -1) {
+            DrawCircle(x + i * 100, y, 20, LIGHTGRAY);
+            DrawTextEx(font, TextFormat("%d", (*graphState)[i].data), {static_cast<float>(x + i * 100 - 10), static_cast<float>(y - 10)}, 20, 1, DARKBLUE);
+            Edge* edge = (*graphState)[i].edges;
+            while (edge) {
+                DrawLine(x + i * 100, y + 20, x + edge->to * 100, y + 20, BLACK);
+                DrawTextEx(font, TextFormat("%d", edge->weight), {static_cast<float>(x + (i + edge->to) * 50), static_cast<float>(y + 25)}, 15, 1, RED);
+                edge = edge->next;
             }
         }
     }
-    SaveStep("Deleted vertex " + std::to_string(value), CopyState()); // Lưu bước xóa đỉnh
 }
 
-void Graph::Update(int oldValue, int newValue) { // Cập nhật giá trị của đỉnh
-    for (int i = 0; i < size; i++) {          // Duyệt qua từng đỉnh
-        Edge* current = vertices[i].edges;    // Lấy danh sách cạnh
-        while (current) {                     // Duyệt qua từng cạnh
-            if (current->to == oldValue) current->to = newValue; // Cập nhật đích nếu trùng
-            current = current->next;          // Chuyển sang cạnh tiếp theo
-        }
-        if (i == oldValue) vertices[i].data = newValue; // Cập nhật giá trị đỉnh nếu trùng
-    }
-    SaveStep("Updated vertex " + std::to_string(oldValue) + " to " + std::to_string(newValue), CopyState()); // Lưu bước cập nhật
-}
-
-bool Graph::Search(int value) {               // Tìm kiếm giá trị trong đồ thị
-    ClearSteps();                             // Xóa các bước cũ
-    for (int i = 0; i < size; i++) {          // Duyệt qua từng đỉnh
-        if (vertices[i].data == value) {      // Nếu tìm thấy ở đỉnh
-            SaveStep("Found vertex " + std::to_string(value), CopyState()); // Lưu bước tìm thấy
-            return true;                      // Trả về true
-        }
-        Edge* current = vertices[i].edges;    // Lấy danh sách cạnh
-        while (current) {                     // Duyệt qua từng cạnh
-            if (current->to == value) {       // Nếu tìm thấy ở đích của cạnh
-                SaveStep("Found edge to " + std::to_string(value), CopyState()); // Lưu bước tìm thấy
-                return true;                  // Trả về true
+void Graph::ClearStates() {
+    for (auto state : stepStates) {
+        std::vector<Vertex>* graphState = static_cast<std::vector<Vertex>*>(state);
+        for (auto& vertex : *graphState) {
+            while (vertex.edges) {
+                Edge* temp = vertex.edges;
+                vertex.edges = vertex.edges->next;
+                delete temp;
             }
-            current = current->next;          // Chuyển sang cạnh tiếp theo
+        }
+        delete graphState;
+    }
+    stepStates.clear();
+}
+
+void Graph::Initialize(int param) {
+    ClearSteps();
+    ResetAnimation();
+    for (auto& vertex : vertices) {
+        while (vertex.edges) {
+            Edge* temp = vertex.edges;
+            vertex.edges = vertex.edges->next;
+            delete temp;
+        }
+        vertex.data = -1;
+    }
+    SaveStep("Initial state (empty)", CopyState());
+}
+
+void Graph::Add(int value) {
+    for (int i = 0; i < size; i++) {
+        if (vertices[i].data == -1) {
+            vertices[i].data = value;
+            SaveStep("Added vertex: " + std::to_string(value), CopyState());
+            break;
         }
     }
-    SaveStep("Vertex " + std::to_string(value) + " not found", CopyState()); // Lưu bước không tìm thấy
-    return false;                             // Trả về false
+}
+
+void Graph::AddEdge(int from, int to, int weight) {
+    if (from >= size || to >= size || vertices[from].data == -1 || vertices[to].data == -1) return;
+    Edge* newEdge = new Edge(to, weight);
+    if (!vertices[from].edges) {
+        vertices[from].edges = newEdge;
+    } else {
+        Edge* current = vertices[from].edges;
+        while (current->next) current = current->next;
+        current->next = newEdge;
+    }
+    SaveStep("Added edge from " + std::to_string(from) + " to " + std::to_string(to), CopyState());
+}
+
+void Graph::Delete(int value) {
+    for (int i = 0; i < size; i++) {
+        if (vertices[i].data == value) {
+            while (vertices[i].edges) { // Sửa 'vertex' thành 'vertices[i]'
+                Edge* temp = vertices[i].edges;
+                vertices[i].edges = vertices[i].edges->next; // Sửa 'vertex' thành 'vertices[i]'
+                delete temp;
+            }
+            vertices[i].data = -1;
+            SaveStep("Deleted vertex: " + std::to_string(value), CopyState());
+            return;
+        }
+    }
+}
+
+void Graph::Update(int oldValue, int newValue) {
+    for (int i = 0; i < size; i++) {
+        if (vertices[i].data == oldValue) {
+            vertices[i].data = newValue;
+            SaveStep("Updated " + std::to_string(oldValue) + " to " + std::to_string(newValue), CopyState());
+            return;
+        }
+    }
+}
+
+bool Graph::Search(int value) {
+    ClearSteps();
+    for (int i = 0; i < size; i++) {
+        if (vertices[i].data != -1) {
+            SaveStep("Searching at vertex " + std::to_string(i) + ": " + std::to_string(vertices[i].data), CopyState());
+            if (vertices[i].data == value) {
+                SaveStep("Found " + std::to_string(value), CopyState());
+                return true;
+            }
+        }
+    }
+    SaveStep("Not found: " + std::to_string(value), CopyState());
+    return false;
+}
+
+void Graph::DrawScreen(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen) {
+    static char inputBuffer1[32] = "";
+    static char inputBuffer2[32] = "";
+    static int inputLength1 = 0;
+    static int inputLength2 = 0;
+    static bool inputActive1 = false;
+    static bool inputActive2 = false;
+
+    auto HandleInput1 = [&]() {
+        int key = GetCharPressed();
+        while (key > 0) {
+            if ((key >= 48 && key <= 57) && inputLength1 < 31) {
+                inputBuffer1[inputLength1] = (char)key;
+                inputLength1++;
+                inputBuffer1[inputLength1] = '\0';
+            }
+            key = GetCharPressed();
+        }
+        if (IsKeyPressed(KEY_BACKSPACE) && inputLength1 > 0) {
+            inputLength1--;
+            inputBuffer1[inputLength1] = '\0';
+        }
+    };
+
+    auto HandleInput2 = [&]() {
+        int key = GetCharPressed();
+        while (key > 0) {
+            if ((key >= 48 && key <= 57) && inputLength2 < 31) {
+                inputBuffer2[inputLength2] = (char)key;
+                inputLength2++;
+                inputBuffer2[inputLength2] = '\0';
+            }
+            key = GetCharPressed();
+        }
+        if (IsKeyPressed(KEY_BACKSPACE) && inputLength2 > 0) {
+            inputLength2--;
+            inputBuffer2[inputLength2] = '\0';
+        }
+    };
+
+    auto GetInputValue1 = [&]() { return inputLength1 == 0 ? 0 : atoi(inputBuffer1); };
+    auto GetInputValue2 = [&]() { return inputLength2 == 0 ? 0 : atoi(inputBuffer2); };
+
+    auto DrawInputBox = [&](float x, float y, char* buffer, bool active) {
+        DrawRectangle(x, y, 200, 50, WHITE);
+        DrawRectangleLines(x, y, 200, 50, BLACK);
+        DrawTextEx(font, buffer, {x + 10, y + 10}, 30, 1, BLACK);
+        if (active && (GetTime() - (int)GetTime()) < 0.5) {
+            DrawTextEx(font, "|", {x + 10 + MeasureTextEx(font, buffer, 30, 1).x, y + 10}, 30, 1, BLACK);
+        }
+    };
+
+    ClearBackground(PINK);
+    DrawTextEx(font, "Graph", { 600.0f, 50.0f }, 40, 1, DARKGRAY);
+
+    float inputX1 = 50.0f;
+    float inputY1 = 100.0f;
+    float inputX2 = 270.0f;
+    float inputY2 = 100.0f;
+    DrawInputBox(inputX1, inputY1, inputBuffer1, inputActive1);
+    DrawInputBox(inputX2, inputY2, inputBuffer2, inputActive2);
+
+    if (CheckCollisionPointRec(GetMousePosition(), {inputX1, inputY1, 200, 50}) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        inputActive1 = true; inputActive2 = false;
+    } else if (CheckCollisionPointRec(GetMousePosition(), {inputX2, inputY2, 200, 50}) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        inputActive1 = false; inputActive2 = true;
+    } else if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        inputActive1 = false; inputActive2 = false;
+    }
+    if (inputActive1) HandleInput1();
+    if (inputActive2) HandleInput2();
+
+    float buttonX = 50.0f;
+    float buttonY = 150.0f;
+    if (DrawButton("Initialize", buttonX, buttonY, font, buttonClicked, buttonMessage)) {
+        Initialize(0);
+        ResetAnimation();
+        inputLength1 = 0; inputBuffer1[0] = '\0';
+    }
+    if (DrawButton("Add Edge", buttonX, buttonY + 70.0f, font, buttonClicked, buttonMessage)) {
+        int value = GetInputValue1();
+        AddEdge(0, value, 4); // Giả sử from = 0, weight = 4
+        ResetAnimation();
+        inputLength1 = 0; inputBuffer1[0] = '\0';
+    }
+    if (DrawButton("Delete", buttonX, buttonY + 140.0f, font, buttonClicked, buttonMessage)) {
+        int value = GetInputValue1();
+        Delete(value);
+        ResetAnimation();
+        inputLength1 = 0; inputBuffer1[0] = '\0';
+    }
+    if (DrawButton("Update", buttonX, buttonY + 210.0f, font, buttonClicked, buttonMessage)) {
+        int oldValue = GetInputValue1();
+        int newValue = GetInputValue2();
+        Update(oldValue, newValue);
+        ResetAnimation();
+        inputLength1 = 0; inputBuffer1[0] = '\0';
+        inputLength2 = 0; inputBuffer2[0] = '\0';
+    }
+    if (DrawButton("Search", buttonX, buttonY + 280.0f, font, buttonClicked, buttonMessage)) {
+        int value = GetInputValue1();
+        Search(value);
+        ResetAnimation();
+        inputLength1 = 0; inputBuffer1[0] = '\0';
+    }
+    DrawAnimation(font, 800, 200);
+    DrawAnimationControls(font, buttonClicked, buttonMessage, this);
+    DrawBackButton(font, buttonClicked, buttonMessage, currentScreen);
 }

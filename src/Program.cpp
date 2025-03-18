@@ -1,57 +1,57 @@
 #include "Program.h"
-#include "GUI.h"
-#include "raylib.h"
-#include "SettingsManager.h"
+#include <stdio.h> // Để sử dụng printf
 
-Program::Program() : currentScreen(Screen::MAIN_MENU), buttonClicked(false), buttonMessage(""), ht(10), graph(5) {
-    InitWindow(1400, 800, "Data Structure Visualization");
+Program::Program() : hashTable(10), graph(5), buttonClicked(false), buttonMessage(nullptr), currentScreen(Screen::MAIN_MENU) {
+    const int screenWidth = 1800;
+    const int screenHeight = 824;
+    InitWindow(screenWidth, screenHeight, "Data Structure Visualization");
     SetTargetFPS(60);
-    font = LoadFont("../resources/fonts/Rubik-Italic-VariableFont_wght.ttf");
+    font = LoadFont("../resources/fonts/Rubik-Italic-VariableFont_wght.ttf"); // Gán trực tiếp cho thành viên font
+    
 }
 
-Program::~Program() {                           // Hàm hủy
-    UnloadFont(font);                           // Giải phóng font
-    CloseWindow();                              // Đóng cửa sổ
-}// fgf
+Program::~Program() {
+    UnloadFont(font); // Giải phóng font thành viên
+    CloseWindow();
+}
 
-void Program::Run() {                           // Chạy chương trình
-    while (!WindowShouldClose()) {              // Vòng lặp chính cho đến khi đóng cửa sổ
-        BeginDrawing();                        
-        sll.SetAnimationSpeed(animationSpeed);  
-        ht.SetAnimationSpeed(animationSpeed);   
-        avl.SetAnimationSpeed(animationSpeed);  
-        graph.SetAnimationSpeed(animationSpeed); 
+void Program::Run() {
+    while (!WindowShouldClose()) {
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
 
-        switch (currentScreen) {                // Chuyển đổi giữa các màn hình
-            case Screen::MAIN_MENU:             // Màn hình menu chính
-                DrawMainMenu(font, buttonClicked, buttonMessage, currentScreen); 
+        switch (currentScreen) {
+            case Screen::MAIN_MENU:
+                DrawMainMenu(font, buttonClicked, buttonMessage, currentScreen);
                 break;
-            case Screen::SETTINGS:              // Màn hình cài đặt
-                DrawSettingsMenu(font, buttonClicked, buttonMessage, currentScreen); 
+            case Screen::SETTINGS:
+                DrawSettingsMenu(font, buttonClicked, buttonMessage, currentScreen);
                 break;
-            case Screen::DATA_STRUCTURES:       // Màn hình chọn cấu trúc dữ liệu
-                DrawDataStructuresMenu(font, buttonClicked, buttonMessage, currentScreen); 
+            case Screen::DATA_STRUCTURES:
+                DrawDataStructuresMenu(font, buttonClicked, buttonMessage, currentScreen);
                 break;
-            case Screen::SINGLY_LINKED_LIST:    // Màn hình danh sách liên kết
-                DrawSinglyLinkedListScreen(font, buttonClicked, buttonMessage, currentScreen, &sll); 
-                sll.UpdateAnimation();          // Cập nhật animation
+            case Screen::SINGLY_LINKED_LIST:
+                singlyLinkedList.DrawScreen(font, buttonClicked, buttonMessage, currentScreen);
                 break;
-            case Screen::HASH_TABLE:            // Màn hình bảng băm
-                DrawHashTableScreen(font, buttonClicked, buttonMessage, currentScreen, &ht); 
-                ht.UpdateAnimation();           // Cập nhật animation
+            case Screen::HASH_TABLE:
+                hashTable.DrawScreen(font, buttonClicked, buttonMessage, currentScreen);
                 break;
-            case Screen::AVL_TREE:              // Màn hình cây AVL
-                DrawAVLTreeScreen(font, buttonClicked, buttonMessage, currentScreen, &avl); 
-                avl.UpdateAnimation();          // Cập nhật animation
+            case Screen::AVL_TREE:
+                avlTree.DrawScreen(font, buttonClicked, buttonMessage, currentScreen);
                 break;
-            case Screen::GRAPH:                 // Màn hình đồ thị
-                DrawGraphScreen(font, buttonClicked, buttonMessage, currentScreen, &graph);
-                graph.UpdateAnimation();        // Cập nhật animation
+            case Screen::GRAPH:
+                graph.DrawScreen(font, buttonClicked, buttonMessage, currentScreen);
                 break;
         }
-        if (buttonClicked) {                    // Nếu có nút được nhấn
-            buttonClicked = false;              // Đặt lại trạng thái nhấn nút
+
+        if (buttonClicked) {
+            if (buttonMessage) {
+                DrawTextEx(font, buttonMessage, {50.0f, 650.0f}, 30, 1, RED);
+            }
+            buttonClicked = false;
         }
-        EndDrawing();                           // Kết thúc vẽ khung hình
+
+        EndDrawing();
     }
 }
+

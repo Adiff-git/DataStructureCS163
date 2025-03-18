@@ -3,6 +3,7 @@
 
 #include "DataStructureLogic.h"
 #include "raylib.h"
+#include "Screen.h" // Include Screen.h
 #include <string>
 
 class SinglyLinkedList : public DataStructureLogic {
@@ -25,6 +26,7 @@ public:
     void Delete(int value) override;
     void Update(int oldValue, int newValue) override;
     bool Search(int value) override;
+    void DrawScreen(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen);
 };
 
 #endif

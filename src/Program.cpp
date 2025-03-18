@@ -6,7 +6,7 @@ Program::Program() : hashTable(10), graph(5), buttonClicked(false), buttonMessag
     const int screenHeight = 824;
     InitWindow(screenWidth, screenHeight, "Data Structure Visualization");
     SetTargetFPS(60);
-    font = LoadFont("resources/Rubik-Italic-VariableFont_wght.ttf");
+    font = LoadFont("../resources/fonts/Rubik-Italic-VariableFont_wght.ttf");
 }
 
 Program::~Program() {

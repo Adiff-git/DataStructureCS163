@@ -22,9 +22,6 @@
     <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\HashTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\Menu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\Program.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

@@ -2,10 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "RelWithDebInfo/DataStructureCS163.exe"
+			"path" : "MinSizeRel/DataStructureCS163.exe"
 		},
 		{
-			"path" : "RelWithDebInfo/DataStructureCS163.pdb"
+			"path" : "MinSizeRel/DataStructureCS163.pdb"
 		}
 	],
 	"backtrace" : 1,
@@ -62,7 +62,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /Zi /O2 /Ob1 /DNDEBUG -MD"
+					"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /O1 /Ob1 /DNDEBUG -MD"
 				}
 			],
 			"defines" : 
@@ -104,8 +104,7 @@
 				7,
 				8,
 				9,
-				10,
-				11
+				10
 			]
 		}
 	],
@@ -113,11 +112,11 @@
 	[
 		{
 			"backtrace" : 2,
-			"id" : "raylib::@7d429ebd5d102775094d"
+			"id" : "glfw::@a896dd99b4a5c6eab3d9"
 		},
 		{
 			"backtrace" : 2,
-			"id" : "glfw::@a896dd99b4a5c6eab3d9"
+			"id" : "raylib::@7d429ebd5d102775094d"
 		},
 		{
 			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
@@ -129,16 +128,16 @@
 		"commandFragments" : 
 		[
 			{
-				"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /Zi /O2 /Ob1 /DNDEBUG -MD",
+				"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /O1 /Ob1 /DNDEBUG -MD",
 				"role" : "flags"
 			},
 			{
-				"fragment" : "/machine:x64 /debug /INCREMENTAL /subsystem:console",
+				"fragment" : "/machine:x64 /INCREMENTAL:NO /subsystem:console",
 				"role" : "flags"
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "raylib\\raylib\\RelWithDebInfo\\raylib.lib",
+				"fragment" : "raylib\\raylib\\MinSizeRel\\raylib.lib",
 				"role" : "libraries"
 			},
 			{
@@ -186,8 +185,7 @@
 				7,
 				8,
 				9,
-				10,
-				11
+				10
 			]
 		}
 	],
@@ -233,12 +231,6 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "src/HashTable.cpp",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 1,
-			"compileGroupIndex" : 0,
-			"path" : "src/Menu.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{

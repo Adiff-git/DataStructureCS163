@@ -1,13 +1,13 @@
-#ifndef SETTINGS_MANAGER_H
+#ifndef SETTINGS_MANAGER_H                          // Bảo vệ chống bao gồm nhiều lần
 #define SETTINGS_MANAGER_H
 
-extern bool soundEnabled;
-extern bool isLightMode;
-extern float animationSpeed; // Tốc độ animation (giây mỗi bước, nhỏ hơn = nhanh hơn)
+extern bool soundEnabled;                           // Biến toàn cục: bật/tắt âm thanh
+extern bool isLightMode;                            // Biến toàn cục: chế độ sáng/tối
+extern float animationSpeed;                        // Biến toàn cục: tốc độ animation (giây/bước)
 
-void ToggleSound();
-void ToggleColorMode();
-void IncreaseAnimationSpeed();
-void DecreaseAnimationSpeed();
+void ToggleSound();                                 // Chuyển đổi trạng thái âm thanh
+void ToggleColorMode();                             // Chuyển đổi chế độ màu
+void IncreaseAnimationSpeed();                      // Tăng tốc độ animation
+void DecreaseAnimationSpeed();                      // Giảm tốc độ animation
 
 #endif

@@ -1,38 +1,47 @@
-#ifndef ANIMATION_H                                  // Bảo vệ chống bao gồm nhiều lần
+#ifndef ANIMATION_H
 #define ANIMATION_H
 
 #include "raylib.h"
 #include <vector>
 #include <string>
 
-class Animation {                                   // Lớp cơ sở quản lý animation
+class Animation {
 protected:
-    std::vector<std::string> steps;                 // Danh sách mô tả các bước
-    std::vector<void*> stepStates;                  // Danh sách trạng thái các bước
-    int currentStep;                                // Bước hiện tại
-    bool isRunning;                                 // Trạng thái chạy/tạm dừng
-    double lastStepTime;                            // Thời gian của bước cuối
-    double animationSpeed;                          // Tốc độ animation (giây/bước)
-// 
+    std::vector<std::string> steps;
+    std::vector<void*> stepStates;
+    int currentStep;
+    bool isRunning;
+    double lastStepTime;
+    double animationSpeed;
+
 public:
-    Animation();                                    // Hàm tạo
-    virtual ~Animation();                           // Hàm hủy ảo
-    void ClearSteps();                              // Xóa các bước và trạng thái
-    void SaveStep(const std::string& description, void* state); // Lưu một bước mới
-    int GetTotalSteps() const { return steps.size(); } // Lấy tổng số bước
-    void ResetAnimation();                          // Đặt lại animation
-    void StartAnimation() { isRunning = true; }     // Bắt đầu animation
-    void PauseAnimation() { isRunning = false; }    // Tạm dừng animation
-    void NextStep();                                // Chuyển sang bước tiếp theo
-    void PrevStep();                                // Quay lại bước trước
-    int GetCurrentStep() const { return currentStep; } // Lấy bước hiện tại
-    bool IsRunning() const { return isRunning; }    // Kiểm tra trạng thái chạy
-    void SetAnimationSpeed(double speed) { animationSpeed = speed; } // Đặt tốc độ animation
-    double GetAnimationSpeed() const { return animationSpeed; } // Lấy tốc độ animation
-    virtual void DrawAnimation(Font font, int x, int y) = 0; // Vẽ animation (ảo)
-    virtual void UpdateAnimation() = 0;             // Cập nhật animation (ảo)
-    std::vector<std::string>& GetSteps() { return steps; } // Trả về tham chiếu đến danh sách bước
+    Animation();
+    virtual ~Animation();
+    virtual void ClearSteps();
+    virtual void SaveStep(const std::string& description, void* state);
+    int GetTotalSteps() const { return steps.size(); }
+    void ResetAnimation();
+    void StartAnimation() { isRunning = true; }
+    void PauseAnimation() { isRunning = false; }
+    void NextStep();
+    void PrevStep();
+    int GetCurrentStep() const { return currentStep; }
+    bool IsRunning() const { return isRunning; }
+    void SetAnimationSpeed(double speed) { animationSpeed = speed; }
+    double GetAnimationSpeed() const { return animationSpeed; }
+    virtual void DrawAnimation(Font font, int x, int y);
+    virtual void UpdateAnimation();
+    std::vector<std::string>& GetSteps() { return steps; }
+
+    // Thêm các phương thức ảo để override
+    virtual void Initialize(int param) {}
+    virtual void Add(int value) {}
+    virtual void Delete(int value) {}
+    virtual void Update(int oldValue, int newValue) {}
+    virtual bool Search(int value) { return false; }
+    virtual void* CopyState() { return nullptr; } // Thêm phương thức ảo
+    virtual void Draw(Font font, void* state, int x, int y) {} // Thêm phương thức ảo
+    virtual void ClearStates() {} // Thêm phương thức ảo
 };
-// tại sao lại sử dụng virtual?
 
 #endif

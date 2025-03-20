@@ -2,10 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "Release/DataStructureCS163.exe"
+			"path" : "Debug/DataStructureCS163.exe"
 		},
 		{
-			"path" : "Release/DataStructureCS163.pdb"
+			"path" : "Debug/DataStructureCS163.pdb"
 		}
 	],
 	"backtrace" : 1,
@@ -62,7 +62,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /O2 /Ob2 /DNDEBUG -MD"
+					"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -MDd"
 				}
 			],
 			"defines" : 
@@ -104,22 +104,25 @@
 				7,
 				8,
 				9,
-				10
+				10,
+				11,
+				12,
+				13
 			]
 		}
 	],
 	"dependencies" : 
 	[
 		{
-			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
+			"backtrace" : 2,
+			"id" : "raylib::@7d429ebd5d102775094d"
 		},
 		{
 			"backtrace" : 2,
 			"id" : "glfw::@a896dd99b4a5c6eab3d9"
 		},
 		{
-			"backtrace" : 2,
-			"id" : "raylib::@7d429ebd5d102775094d"
+			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
 		}
 	],
 	"id" : "DataStructureCS163::@6890427a1f51a3e7e1df",
@@ -128,16 +131,16 @@
 		"commandFragments" : 
 		[
 			{
-				"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /O2 /Ob2 /DNDEBUG -MD",
+				"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -MDd",
 				"role" : "flags"
 			},
 			{
-				"fragment" : "/machine:x64 /INCREMENTAL:NO /subsystem:console",
+				"fragment" : "/machine:x64 /debug /INCREMENTAL /subsystem:console",
 				"role" : "flags"
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "raylib\\raylib\\Release\\raylib.lib",
+				"fragment" : "raylib\\raylib\\Debug\\raylib.lib",
 				"role" : "libraries"
 			},
 			{
@@ -185,7 +188,10 @@
 				7,
 				8,
 				9,
-				10
+				10,
+				11,
+				12,
+				13
 			]
 		}
 	],
@@ -242,13 +248,31 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "src/SettingsManager.cpp",
+			"path" : "src/SLL/Pseudocode.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "src/SinglyLinkedList.cpp",
+			"path" : "src/SLL/SLLAnimation.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/SLL/SLLScreen.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/SLL/SinglyLinkedList.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/SettingsManager.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{

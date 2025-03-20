@@ -25,10 +25,19 @@
     <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\Program.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\SettingsManager.cpp">
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\SLL\Pseudocode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\SinglyLinkedList.cpp">
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\SLL\SLLAnimation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\SLL\SLLScreen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\SLL\SinglyLinkedList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\SettingsManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\main.cpp">

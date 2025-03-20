@@ -115,6 +115,7 @@ void DrawAnimationControls(Font font, bool& buttonClicked, const char*& buttonMe
 
     float stepY = 600.0f;
     for (int i = 0; i < ds->GetTotalSteps(); i++) {
-        DrawTextEx(font, ds->GetSteps()[i].c_str(), { 800.0f, stepY + i * 30.0f }, 20, 1, (i == ds->GetCurrentStep()) ? RED : DARKGRAY); // Thêm tham số spacing = 1
+        DrawTextEx(font, ds->GetSteps()[i].c_str(), { 800.0f, stepY + i * 30.0f }, 20, 1,
+                   (i == ds->GetCurrentStep()) ? RED : DARKGRAY);
     }
 }

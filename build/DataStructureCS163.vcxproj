@@ -332,8 +332,11 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\Graph.cpp" />
     <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\HashTable.cpp" />
     <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\Program.cpp" />
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\SLL\Pseudocode.cpp" />
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\SLL\SLLAnimation.cpp" />
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\SLL\SLLScreen.cpp" />
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\SLL\SinglyLinkedList.cpp" />
     <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\SettingsManager.cpp" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\SinglyLinkedList.cpp" />
     <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\main.cpp" />
   </ItemGroup>
   <ItemGroup />

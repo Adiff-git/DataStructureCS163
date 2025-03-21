@@ -99,6 +99,37 @@ void generateStarGraph(std::vector<Edge>& edges, int numNodes) {
     }
 }
 
+void generateRandomGraph(std::vector<Edge>& edges, int numNodes, int numEdges) {
+    edges.clear();
+    srand(time(0));
+
+    // Tạo một đồ thị đường (path graph) để đảm bảo tính liên thông cơ bản
+    for (int i = 1; i < numNodes; ++i) {
+        edges.push_back({ i, i + 1, GetRandomValue(1, 10) });
+    }
+
+    // Thêm các cạnh ngẫu nhiên cho đến khi đạt đủ số lượng cạnh
+    while (edges.size() < numEdges && edges.size() < (long unsigned int) (numNodes * (numNodes - 1) / 2)) {
+        int from = GetRandomValue(1, numNodes);
+        int to = GetRandomValue(1, numNodes);
+        int weight = GetRandomValue(1, 10);
+        if (from != to && !edgeExists(edges, from, to)) {
+            edges.push_back({ from, to, weight });
+        }
+    }
+    // kiểm tra số cạnh tạo ra để tránh vòng lặp vô hạn.
+    // kiểm tra tính liên thông sau khi thêm đủ số edge.
+    if (!isGraphConnected(edges,numNodes)){
+        edges.clear();
+        for (int i = 1; i < numNodes; ++i) {
+            edges.push_back({ i, i + 1, GetRandomValue(1, 10) });
+        }
+        for (int i = 1; i < numNodes /2; ++i) {
+             edges.push_back({ 1, i+2 , GetRandomValue(1, 10) });
+        }
+    }
+}
+
 int main() {
     const int screenWidth = 1400;
     const int screenHeight = 1000;
@@ -107,14 +138,16 @@ int main() {
     SetTargetFPS(60);
 
     Rectangle createButton = { 10, 10, 100, 30 };
-    Rectangle exampleButton = { 10, 50, 100, 30 };
-    
+    Rectangle randomButton = { 10, createButton.y + createButton.height + 10, 100, 30 }; // Đặt Random dưới Create
+    Rectangle exampleButton = { 10, randomButton.y + randomButton.height + 10, 100, 30 }; // Đặt Example dưới Random
+
     int exampleNumNodes = 0; // Biến lưu trữ số lượng node cho đồ thị mẫu
     int exampleNumEdges = 0; // Biến lưu trữ số lượng edge cho đồ thị mẫu
 
     bool createButtonClicked = false;
     bool exampleButtonClicked = false;
     bool showExampleButtons = false; // Flag to show example graph buttons
+    bool randomButtonClicked = false; // Biến flag cho nút random
 
     bool inputMode = false;
     std::string numNodesStr = "";
@@ -132,259 +165,291 @@ int main() {
     std::string errorMessage = "";
 
    // Thay đổi vị trí và kích thước nút
-   Rectangle k5Button = { exampleButton.x + exampleButton.width + 10, 50, 60, 30 }; // Complete Graph (K5)
-   Rectangle c6Button = { k5Button.x + k5Button.width + 10, 50, 60, 30 }; // Cycle Graph (C6)
-   Rectangle p4Button = { c6Button.x + c6Button.width + 10, 50, 60, 30 }; // Path Graph (P4)
-   Rectangle s7Button = { p4Button.x + p4Button.width + 10, 50, 60, 30 }; // Star Graph (S7)
+   Rectangle k5Button = { randomButton.x + randomButton.width + 10, randomButton.y + randomButton.height + 10, 60, 30 }; // Complete Graph (K5)
+   Rectangle c6Button = { k5Button.x + k5Button.width + 10, randomButton.y + randomButton.height + 10, 60, 30 }; // Cycle Graph (C6)
+   Rectangle p4Button = { c6Button.x + c6Button.width + 10, randomButton.y + randomButton.height + 10, 60, 30 }; // Path Graph (P4)
+   Rectangle s7Button = { p4Button.x + p4Button.width + 10, randomButton.y + randomButton.height + 10, 60, 30 }; // Star Graph (S7)
 
-    while (!WindowShouldClose()) {
-        BeginDrawing();
-        ClearBackground(GRAY);
+   while (!WindowShouldClose()) {
+    BeginDrawing();
+    ClearBackground(GRAY);
 
-         // Khi nhấn nút "Create" hoặc "Example Graphs"
-         if (CheckCollisionPointRec(GetMousePosition(), createButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            createButtonClicked = true;
-            inputMode = true;
-            graphDrawn = false;
-            nodePositions.clear();
-            canCreateGraph = true;
-            showError = false;
-            errorMessage = "";
-            exampleNumNodes = 0; // Reset số node ví dụ
-            exampleNumEdges = 0; // Reset số cạnh ví dụ
+    if (CheckCollisionPointRec(GetMousePosition(), createButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        createButtonClicked = true;
+        inputMode = true;
+        graphDrawn = false;
+        nodePositions.clear();
+        canCreateGraph = true;
+        showError = false;
+        errorMessage = "";
+        exampleNumNodes = 0;
+        exampleNumEdges = 0;
+    }
+
+    if (CheckCollisionPointRec(GetMousePosition(), randomButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        randomButtonClicked = true;
+        inputMode = true;
+        graphDrawn = false;
+        nodePositions.clear();
+        canCreateGraph = true;
+        showError = false;
+        errorMessage = "";
+        exampleNumNodes = 0;
+        exampleNumEdges = 0;
+    }
+
+    if (CheckCollisionPointRec(GetMousePosition(), exampleButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        exampleButtonClicked = true;
+        showExampleButtons = !showExampleButtons;
+        graphDrawn = false;
+        nodePositions.clear();
+        exampleNumNodes = 0;
+        exampleNumEdges = 0;
+    }
+
+    DrawRectangleRec(createButton, WHITE);
+    DrawText("Create", createButton.x + (createButton.width - MeasureText("Create", 20)) / 2, createButton.y + 10, 20, BLACK);
+
+    DrawRectangleRec(randomButton, WHITE);
+    DrawText("Random", randomButton.x + (randomButton.width - MeasureText("Random", 20)) / 2, randomButton.y + 10, 20, BLACK);
+
+    DrawRectangleRec(exampleButton, WHITE);
+    DrawText("Examples", exampleButton.x + (exampleButton.width - MeasureText("Examples", 20)) / 2, exampleButton.y + 10, 20, BLACK);
+
+    if (showExampleButtons) {
+        DrawRectangleRec(k5Button, WHITE);
+        DrawText("K5", k5Button.x + 5, k5Button.y + 5, 20, BLACK);
+
+        DrawRectangleRec(c6Button, WHITE);
+        DrawText("C6", c6Button.x + 5, c6Button.y + 5, 20, BLACK);
+
+        DrawRectangleRec(p4Button, WHITE);
+        DrawText("P4", p4Button.x + 5, p4Button.y + 5, 20, BLACK);
+
+        DrawRectangleRec(s7Button, WHITE);
+        DrawText("S7", s7Button.x + 5, s7Button.y + 5, 20, BLACK);
+
+        if (CheckCollisionPointRec(GetMousePosition(), k5Button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            generateCompleteGraph(edges, 5);
+            nodePositions.resize(5);
+            for (int i = 0; i < 5; ++i) {
+                float angle = 2.0f * PI * i / 5;
+                float layoutRadius = std::min(screenWidth, screenHeight) / 8.0f;
+                nodePositions[i] = { screenWidth / 2.0f + layoutRadius * cosf(angle), screenHeight / 2.0f + layoutRadius * sinf(angle) };
+            }
+            graphDrawn = true;
+            showExampleButtons = false;
+            inputMode = false;
+            exampleNumNodes = 5;
+            exampleNumEdges = 10;
+            numNodesStr = "";
+            numEdgesStr = "";
         }
 
-        if (CheckCollisionPointRec(GetMousePosition(), exampleButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            exampleButtonClicked = true;
-            showExampleButtons = !showExampleButtons;
-            graphDrawn = false; // Xóa đồ thị khi nhấn "Example Graphs"
-            nodePositions.clear();
-            exampleNumNodes = 0; // Reset số node ví dụ
-            exampleNumEdges = 0; // Reset số cạnh ví dụ
+        if (CheckCollisionPointRec(GetMousePosition(), c6Button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            generateCycleGraph(edges, 6);
+            nodePositions.resize(6);
+            for (int i = 0; i < 6; ++i) {
+                float angle = 2.0f * PI * i / 6;
+                float layoutRadius = std::min(screenWidth, screenHeight) / 8.0f;
+                nodePositions[i] = { screenWidth / 2.0f + layoutRadius * cosf(angle), screenHeight / 2.0f + layoutRadius * sinf(angle) };
+            }
+            graphDrawn = true;
+            showExampleButtons = false;
+            inputMode = false;
+            exampleNumNodes = 6;
+            exampleNumEdges = 6;
+            numNodesStr = "";
+            numEdgesStr = "";
         }
 
-        DrawRectangleRec(createButton, WHITE);
-        DrawText("Create", createButton.x + (createButton.width - MeasureText("Create", 20)) / 2, createButton.y + 10, 20, BLACK);
+        if (CheckCollisionPointRec(GetMousePosition(), p4Button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            generatePathGraph(edges, 4, nodePositions, screenWidth, screenHeight);
+            graphDrawn = true;
+            showExampleButtons = false;
+            inputMode = false;
+            exampleNumNodes = 4;
+            exampleNumEdges = 3;
+            numNodesStr = "";
+            numEdgesStr = "";
+        }
 
-        DrawRectangleRec(exampleButton, WHITE);
-        DrawText("Examples", exampleButton.x + (exampleButton.width - MeasureText("Examples", 20)) / 2, exampleButton.y + 10, 20, BLACK);
+        if (CheckCollisionPointRec(GetMousePosition(), s7Button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            generateStarGraph(edges, 7);
+            nodePositions.resize(7);
+            for (int i = 0; i < 7; ++i) {
+                float angle = 2.0f * PI * i / 7;
+                float layoutRadius = std::min(screenWidth, screenHeight) / 8.0f;
+                nodePositions[i] = { screenWidth / 2.0f + layoutRadius * cosf(angle), screenHeight / 2.0f + layoutRadius * sinf(angle) };
+            }
+            graphDrawn = true;
+            showExampleButtons = false;
+            inputMode = false;
+            exampleNumNodes = 7;
+            exampleNumEdges = 6;
+            numNodesStr = "";
+            numEdgesStr = "";
+        }
+    }
+    
+    if (inputMode && randomButtonClicked) {
+        edges.clear();
+        nodePositions.clear();
+        int numNodes = GetRandomValue(2, 7);
+        int numEdges = GetRandomValue(numNodes - 1, numNodes * (numNodes - 1) / 2);
+        generateRandomGraph(edges, numNodes, numEdges);
 
-        // Draw Example Graph Buttons if showExampleButtons is true
-        if (showExampleButtons) {
-            DrawRectangleRec(k5Button, WHITE);
-            DrawText("K5", k5Button.x + 5, k5Button.y + 5, 20, BLACK);
+        nodePositions.resize(numNodes);
+        for (int i = 0; i < numNodes; ++i) {
+            float angle = 2.0f * PI * i / numNodes;
+            float layoutRadius = std::min(screenWidth, screenHeight) / 8.0f;
+            nodePositions[i] = { screenWidth / 2.0f + layoutRadius * cosf(angle), screenHeight / 2.0f + layoutRadius * sinf(angle) };
+        }
 
-            DrawRectangleRec(c6Button, WHITE);
-            DrawText("C6", c6Button.x + 5, c6Button.y + 5, 20, BLACK);
+        graphDrawn = true;
+        inputMode = false;
+        randomButtonClicked = false;
+        numNodesStr = "";
+        numEdgesStr = "";
+    }
 
-            DrawRectangleRec(p4Button, WHITE);
-            DrawText("P4", p4Button.x + 5, p4Button.y + 5, 20, BLACK);
+    if (inputMode && !randomButtonClicked) {
+        if (canCreateGraph) {
+            DrawText("N:", nodesInput.x - 25, nodesInput.y + 5, 20, WHITE);
+            DrawText("E:", edgesInput.x - 25, edgesInput.y + 5, 20, WHITE);
 
-            DrawRectangleRec(s7Button, WHITE);
-            DrawText("S7", s7Button.x + 5, s7Button.y + 5, 20, BLACK);
-
-            // Handle Example Graph Button Clicks
-            if (CheckCollisionPointRec(GetMousePosition(), k5Button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                generateCompleteGraph(edges, 5);
-                nodePositions.resize(5);
-                for (int i = 0; i < 5; ++i) {
-                    float angle = 2.0f * PI * i / 5;
-                    float layoutRadius = std::min(screenWidth, screenHeight) / 8.0f;
-                    nodePositions[i] = { screenWidth / 2.0f + layoutRadius * cosf(angle), screenHeight / 2.0f + layoutRadius * sinf(angle) };
+            DrawRectangleRec(nodesInput, LIGHTGRAY);
+            DrawText(numNodesStr.c_str(), nodesInput.x + 5, nodesInput.y + 5, 20, BLACK);
+            if (CheckCollisionPointRec(GetMousePosition(), nodesInput) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                nodesFocused = true;
+                edgesFocused = false;
+            }
+            if (nodesFocused) {
+                int key = GetCharPressed();
+                if (key >= 32 && key <= 125) {
+                    numNodesStr += (char)key;
                 }
-                graphDrawn = true;
-                showExampleButtons = false;
-                inputMode = false;
-                exampleNumNodes = 5; // Cập nhật số lượng node
-                exampleNumEdges = 10; // Cập nhật số lượng edge (5 * (5 - 1) / 2)
-                numNodesStr = ""; // Đặt lại numNodesStr
-                numEdgesStr = ""; // Đặt lại numEdgesStr
+                if (IsKeyPressed(KEY_BACKSPACE) && numNodesStr.length() > 0) {
+                    numNodesStr.pop_back();
+                }
             }
 
-            if (CheckCollisionPointRec(GetMousePosition(), c6Button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                generateCycleGraph(edges, 6);
-                nodePositions.resize(6);
-                for (int i = 0; i < 6; ++i) {
-                    float angle = 2.0f * PI * i / 6;
-                    float layoutRadius = std::min(screenWidth, screenHeight) / 8.0f;
-                    nodePositions[i] = { screenWidth / 2.0f + layoutRadius * cosf(angle), screenHeight / 2.0f + layoutRadius * sinf(angle) };
-                }
-                graphDrawn = true;
-                showExampleButtons = false;
-                inputMode = false;
-                exampleNumNodes = 6;
-                exampleNumEdges = 6;
-                numNodesStr = ""; // Đặt lại numNodesStr
-                numEdgesStr = ""; // Đặt lại numEdgesStr
+            DrawRectangleRec(edgesInput, LIGHTGRAY);
+            DrawText(numEdgesStr.c_str(), edgesInput.x + 5, edgesInput.y + 5, 20, BLACK);
+            if (CheckCollisionPointRec(GetMousePosition(), edgesInput) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                edgesFocused = true;
+                nodesFocused = false;
             }
-
-            if (CheckCollisionPointRec(GetMousePosition(), p4Button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                generatePathGraph(edges, 4, nodePositions, screenWidth, screenHeight);
-                graphDrawn = true;
-                showExampleButtons = false;
-                inputMode = false;
-                exampleNumNodes = 4;
-                exampleNumEdges = 3;
-                numNodesStr = ""; // Đặt lại numNodesStr
-                numEdgesStr = ""; // Đặt lại numEdgesStr
-            }
-
-            if (CheckCollisionPointRec(GetMousePosition(), s7Button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                generateStarGraph(edges, 7);
-                nodePositions.resize(7);
-                for (int i = 0; i < 7; ++i) {
-                    float angle = 2.0f * PI * i / 7;
-                    float layoutRadius = std::min(screenWidth, screenHeight) / 8.0f;
-                    nodePositions[i] = { screenWidth / 2.0f + layoutRadius * cosf(angle), screenHeight / 2.0f + layoutRadius * sinf(angle) };
+            if (edgesFocused) {
+                int key = GetCharPressed();
+                if (key >= 32 && key <= 125) {
+                    numEdgesStr += (char)key;
                 }
-                graphDrawn = true;
-                showExampleButtons = false;
-                inputMode = false;
-                exampleNumNodes = 7;
-                exampleNumEdges = 6;
-                numNodesStr = ""; // Đặt lại numNodesStr
-                numEdgesStr = ""; // Đặt lại numEdgesStr
+                if (IsKeyPressed(KEY_BACKSPACE) && numEdgesStr.length() > 0) {
+                    numEdgesStr.pop_back();
+                }
             }
         }
-        if (inputMode) {
-            if (canCreateGraph) {
-                DrawText("N:", nodesInput.x - 25, nodesInput.y + 5, 20, WHITE);
-                DrawText("E:", edgesInput.x - 25, edgesInput.y + 5, 20, WHITE);
 
-                DrawRectangleRec(nodesInput, LIGHTGRAY);
-                DrawText(numNodesStr.c_str(), nodesInput.x + 5, nodesInput.y + 5, 20, BLACK);
-                if (CheckCollisionPointRec(GetMousePosition(), nodesInput) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                    nodesFocused = true;
-                    edgesFocused = false;
-                }
-                if (nodesFocused) {
-                    int key = GetCharPressed();
-                    if (key >= 32 && key <= 125) {
-                        numNodesStr += (char)key;
-                    }
-                    if (IsKeyPressed(KEY_BACKSPACE) && numNodesStr.length() > 0) {
-                        numNodesStr.pop_back();
-                    }
-                }
+        if (IsKeyPressed(KEY_ENTER)) {
+            if (numNodesStr == "" || numEdgesStr == "") {
+                canCreateGraph = false;
+                showError = true;
+                errorMessage = "Vui lòng nhập số node và edge.";
+            } else {
+                int numNodes = std::stoi(numNodesStr);
+                int numEdges = std::stoi(numEdgesStr);
 
-                DrawRectangleRec(edgesInput, LIGHTGRAY);
-                DrawText(numEdgesStr.c_str(), edgesInput.x + 5, edgesInput.y + 5, 20, BLACK);
-                if (CheckCollisionPointRec(GetMousePosition(), edgesInput) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                    edgesFocused = true;
-                    nodesFocused = false;
-                }
-                if (edgesFocused) {
-                    int key = GetCharPressed();
-                    if (key >= 32 && key <= 125) {
-                        numEdgesStr += (char)key;
-                    }
-                    if (IsKeyPressed(KEY_BACKSPACE) && numEdgesStr.length() > 0) {
-                        numEdgesStr.pop_back();
-                    }
-                }
-            }
-
-            if (IsKeyPressed(KEY_ENTER)) {
-                if (numNodesStr == "" || numEdgesStr == "") {
-                    canCreateGraph = false;
-                    showError = true;
-                    errorMessage = "Vui lòng nhập số node và edge.";
-                } else {
-                    int numNodes = std::stoi(numNodesStr);
-                    int numEdges = std::stoi(numEdgesStr);
-
-                    // Kiểm tra khả năng tạo đồ thị
-                    if (numNodes <= 0 || numEdges < 0 || numEdges > numNodes * (numNodes - 1) / 2 || numEdges < numNodes - 1) {
+                if (numNodes <= 0 || numEdges < 0 || numEdges > numNodes * (numNodes - 1) / 2 || numEdges < numNodes - 1) {
                     canCreateGraph = false;
                     showError = true;
                     errorMessage = "Can't create a graph";
-                    } else {
-                        // Thử tạo đồ thị
-                        edges.clear();
-                        srand(time(0));
-                        while (edges.size() < numEdges) {
-                            int from = GetRandomValue(1, numNodes);
-                            int to = GetRandomValue(1, numNodes);
-                            int weight = GetRandomValue(1, 10);
-                            if (from != to && !edgeExists(edges, from, to)) {
-                                edges.push_back({ from, to, weight });
-                            }
+                } else {
+                    edges.clear();
+                    srand(time(0));
+                    while (edges.size() < numEdges) {
+                        int from = GetRandomValue(1, numNodes);
+                        int to = GetRandomValue(1, numNodes);
+                        int weight = GetRandomValue(1, 10);
+                        if (from != to && !edgeExists(edges, from, to)) {
+                            edges.push_back({ from, to, weight });
                         }
+                    }
 
-                        // Kiểm tra tính liên thông
-                        if (!isGraphConnected(edges, numNodes)) {
-                            canCreateGraph = false;
-                            showError = true;
-                            errorMessage = "Không thể tạo graph liên thông với số liệu này.";
-                        } else {
-                            nodePositions.resize(numNodes);
-                            int nodeRadius = 20;
-                            float layoutRadius = std::min(screenWidth, screenHeight) / 8.0f;
-                            for (int i = 0; i < numNodes; ++i) {
-                                float angle = 2.0f * PI * i / numNodes;
-                                nodePositions[i] = { screenWidth / 2.0f + layoutRadius * cosf(angle), screenHeight / 2.0f + layoutRadius * sinf(angle) };
-                            }
-                            graphDrawn = true;
-                            inputMode = false;
+                    if (!isGraphConnected(edges, numNodes)) {
+                        canCreateGraph = false;
+                        showError = true;
+                        errorMessage = "Không thể tạo graph liên thông với số liệu này.";
+                    } else {
+                        nodePositions.resize(numNodes);
+                        int nodeRadius = 20;
+                        float layoutRadius = std::min(screenWidth, screenHeight) / 8.0f;
+                        for (int i = 0; i < numNodes; ++i) {
+                            float angle = 2.0f * PI * i / numNodes;
+                            nodePositions[i] = { screenWidth / 2.0f + layoutRadius * cosf(angle), screenHeight / 2.0f + layoutRadius * sinf(angle) };
                         }
+                        graphDrawn = true;
+                        inputMode = false;
                     }
                 }
             }
         }
-
-        if (showError && inputMode) {
-            DrawText(errorMessage.c_str(), createButton.x + createButton.width + 30, createButton.y + 10, 20, RED);
-        }
-       
-        if (graphDrawn) {
-            int numNodesToDraw;
-            if (exampleNumNodes > 0) {
-                numNodesToDraw = exampleNumNodes;
-            } else if (numNodesStr != "") {
-                numNodesToDraw = std::stoi(numNodesStr);
-            } else {
-                numNodesToDraw = 0; // Hoặc giá trị mặc định khác
-            }
-            int nodeRadius = 20;
-            for (const auto& edge : edges) {
-                Vector2 fromPos = nodePositions[edge.from - 1];
-                Vector2 toPos = nodePositions[edge.to - 1];
-                DrawLineV(fromPos, toPos, DARKBLUE);
-                Vector2 weightPos = { fromPos.x + (toPos.x - fromPos.x) * 0.5f, fromPos.y + (toPos.y - fromPos.y) * 0.5f };
-                DrawText(TextFormat("%d", edge.weight), weightPos.x, weightPos.y, 20, SKYBLUE);
-            }
-
-            for (int i = 0; i < numNodesToDraw; ++i) {
-                DrawCircleV(nodePositions[i], nodeRadius, ORANGE);
-                DrawCircleV(nodePositions[i], nodeRadius - 2, WHITE);
-                DrawText(TextFormat("%d", i + 1), nodePositions[i].x - MeasureText(TextFormat("%d", i + 1), 20) / 2, nodePositions[i].y - 10, 20, DARKGRAY);
-            }
-        }
-
-        if (graphDrawn && numNodesStr != "" && numEdgesStr != "") {
-            int numNodes = std::stoi(numNodesStr);
-            int nodeRadius = 20;
-            for (const auto& edge : edges) {
-                Vector2 fromPos = nodePositions[edge.from - 1];
-                Vector2 toPos = nodePositions[edge.to - 1];
-                DrawLineV(fromPos, toPos, DARKBLUE);
-                Vector2 weightPos = {
-                    fromPos.x + (toPos.x - fromPos.x) * 0.5f,
-                    fromPos.y + (toPos.y - fromPos.y) * 0.5f
-                };
-                DrawText(TextFormat("%d", edge.weight), weightPos.x, weightPos.y, 20, SKYBLUE);
-            }
-
-            for (int i = 0; i < numNodes; ++i) {
-                DrawCircleV(nodePositions[i], nodeRadius, ORANGE);
-                DrawCircleV(nodePositions[i], nodeRadius - 2, WHITE);
-                DrawText(TextFormat("%d", i + 1), nodePositions[i].x - MeasureText(TextFormat("%d", i + 1), 20) / 2, nodePositions[i].y - 10, 20, DARKGRAY);
-            }
-        }
-
-        EndDrawing();
     }
 
-    CloseWindow();
-    return 0;
+    if (showError && inputMode) {
+        DrawText(errorMessage.c_str(), createButton.x + createButton.width + 30, createButton.y + 10, 20, RED);
+    }
+
+    if (graphDrawn) {
+        int numNodesToDraw;
+    if (exampleNumNodes > 0) {
+        numNodesToDraw = exampleNumNodes;
+    } else if (numNodesStr != "") {
+        numNodesToDraw = std::stoi(numNodesStr);
+    } else {
+        numNodesToDraw = nodePositions.size(); // Sửa lại thành số lượng node thực tế
+    }
+
+    int nodeRadius = 20;
+        for (const auto& edge : edges) {
+            Vector2 fromPos = nodePositions[edge.from - 1];
+            Vector2 toPos = nodePositions[edge.to - 1];
+            DrawLineV(fromPos, toPos, DARKBLUE);
+            Vector2 weightPos = { fromPos.x + (toPos.x - fromPos.x) * 0.5f, fromPos.y + (toPos.y - fromPos.y) * 0.5f };
+            DrawText(TextFormat("%d", edge.weight), weightPos.x, weightPos.y, 20, SKYBLUE);
+        }
+
+        for (int i = 0; i < numNodesToDraw; ++i) { // Vẽ tất cả các node
+            DrawCircleV(nodePositions[i], nodeRadius, ORANGE);
+            DrawCircleV(nodePositions[i], nodeRadius - 2, WHITE);
+            DrawText(TextFormat("%d", i + 1), nodePositions[i].x - MeasureText(TextFormat("%d", i + 1), 20) / 2, nodePositions[i].y - 10, 20, DARKGRAY);
+        }
+    }
+
+    if (graphDrawn && numNodesStr != "" && numEdgesStr != "") {
+        int numNodes = std::stoi(numNodesStr);
+        int nodeRadius = 20;
+        for (const auto& edge : edges) {
+            Vector2 fromPos = nodePositions[edge.from - 1];
+            Vector2 toPos = nodePositions[edge.to - 1];
+            DrawLineV(fromPos, toPos, DARKBLUE);
+            Vector2 weightPos = {
+                fromPos.x + (toPos.x - fromPos.x) * 0.5f,
+                fromPos.y + (toPos.y - fromPos.y) * 0.5f
+            };
+            DrawText(TextFormat("%d", edge.weight), weightPos.x, weightPos.y, 20, SKYBLUE);
+        }
+
+        for (int i = 0; i < numNodes; ++i) {
+            DrawCircleV(nodePositions[i], nodeRadius, ORANGE);
+            DrawCircleV(nodePositions[i], nodeRadius - 2, WHITE);
+            DrawText(TextFormat("%d", i + 1), nodePositions[i].x - MeasureText(TextFormat("%d", i + 1), 20) / 2, nodePositions[i].y - 10, 20, DARKGRAY);
+        }
+    }
+
+    EndDrawing();
+}
+
+CloseWindow();
+return 0;
 }

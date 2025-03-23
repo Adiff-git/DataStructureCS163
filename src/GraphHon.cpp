@@ -8,6 +8,15 @@
 #include <algorithm>
 #include <sstream>
 
+
+// Kích thước ô ma trận
+const int CELL_WIDTH = 30;
+const int CELL_HEIGHT = 20;
+const int MAX_LINE_LENGTH = 30; // Số ký tự tối đa trên mỗi dòng
+
+// Vị trí cuộn ma trận
+Vector2 scrollOffset = {0, 0};
+
 struct Edge {
     int from;
     int to;
@@ -171,11 +180,10 @@ int main() {
     bool edgesFocused = false;
     bool canCreateGraph = true;
     bool showError = false;
-    std::string matrixInput = "5 10\n1 2 28\n1 3 13\n1 4 13\n1 5 22\n2 3 27\n2 4 13\n2 5 13\n3 4 19\n3 5 14\n4 5 19";
     bool matrixInputFocused = false;
     bool matrixSubmitted = false;
     std::vector<Edge> matrixEdges;
-    int cursorPosition = matrixInput.length(); // Vị trí con trỏ chuột
+    int cursorPosition = 0; // Vị trí con trỏ chuột
     float cursorTimer = 0.0f; // Thời gian nhấp nháy con trỏ
     int maxCols = 50; // Số cột tối đa trong ô nhập (điều chỉnh theo ý bạn)
     std::string errorMessage = "";
@@ -185,6 +193,18 @@ int main() {
    Rectangle c6Button = { k5Button.x + k5Button.width + 10, randomButton.y + randomButton.height + 10, 60, 30 }; // Cycle Graph (C6)
    Rectangle p4Button = { c6Button.x + c6Button.width + 10, randomButton.y + randomButton.height + 10, 60, 30 }; // Path Graph (P4)
    Rectangle s7Button = { p4Button.x + p4Button.width + 10, randomButton.y + randomButton.height + 10, 60, 30 }; // Star Graph (S7)
+ 
+   // Ma trận mẫu (dạng văn bản)
+    std::string matrixInput =
+        "9 0 8 12 0 0 0 0 0\n"
+        "8 0 13 25 9 0 0 0 0\n"
+        "12 13 0 14 0 0 21 0 0\n"
+        "0 25 14 0 20 8 12 12 16\n"
+        "0 9 0 20 0 19 0 0 0\n"
+        "0 0 0 8 19 0 0 11 0\n"
+        "0 0 21 12 0 0 0 0 11\n"
+        "0 0 0 12 0 11 0 0 9\n"
+        "0 0 0 16 0 0 11 9 0";
 
    while (!WindowShouldClose()) {
     BeginDrawing();
@@ -313,9 +333,10 @@ int main() {
         numEdgesStr = "";
     }
 
-    if (showInputScreen)
-    {
+    if (showInputScreen) {
         Rectangle inputWindow = {screenWidth / 4, screenHeight / 4, screenWidth / 2, screenHeight / 2};
+        Rectangle matrixInputRect = {inputWindow.x + 10, inputWindow.y + 40, inputWindow.width - 20, inputWindow.height - 90};
+    
         DrawRectangleRec(inputWindow, LIGHTGRAY);
         DrawText("Input Matrix:", inputWindow.x + 10, inputWindow.y + 10, 20, BLACK);
 
@@ -329,251 +350,234 @@ int main() {
         DrawRectangleRec(submitButton, WHITE);
         DrawText("Submit", submitButton.x + 10, submitButton.y + 10, 20, BLACK);
 
-        // Ô nhập matrix
-        Rectangle matrixInputRect = {inputWindow.x + 10, inputWindow.y + 40, inputWindow.width - 20, inputWindow.height - 90};
-        DrawRectangleRec(matrixInputRect, LIGHTGRAY);
+        // **Khung màu trắng chứa ma trận**
+        Rectangle matrixDisplayRect = {matrixInputRect.x, matrixInputRect.y, matrixInputRect.width, matrixInputRect.height};
+        DrawRectangleRec(matrixDisplayRect, WHITE);
 
-        // Vẽ ô nhập liệu có màu khác biệt
-        Rectangle inputTextArea = {matrixInputRect.x + 5, matrixInputRect.y + 5, matrixInputRect.width - 10, matrixInputRect.height - 10};
-        DrawRectangleRec(inputTextArea, WHITE); // Đặt màu nền là trắng
+        // Xử lý cuộn ma trận
+        if (IsKeyDown(KEY_UP)) scrollOffset.y += 5;
+        if (IsKeyDown(KEY_DOWN)) scrollOffset.y -= 5;
+        if (IsKeyDown(KEY_LEFT)) scrollOffset.x += 5;
+        if (IsKeyDown(KEY_RIGHT)) scrollOffset.x -= 5;
+    
+        // Giới hạn vùng cuộn
+        int matrixWidth = 9 * CELL_WIDTH; // Giả sử ma trận có 9 cột
+        int matrixHeight = 9 * CELL_HEIGHT; // Giả sử ma trận có 9 hàng
+        scrollOffset.x = std::max(scrollOffset.x, 0.0f);
+        scrollOffset.y = std::max(scrollOffset.y, 0.0f);
+        scrollOffset.x = std::min(scrollOffset.x, (float)(matrixWidth - matrixInputRect.width));
+        scrollOffset.y = std::min(scrollOffset.y, (float)(matrixHeight - matrixInputRect.height));
 
-        // Vẽ văn bản nhập liệu
-        DrawText(matrixInput.c_str(), inputTextArea.x, inputTextArea.y, 20, BLACK);
-
-         // Xử lý sự kiện click chuột vào ô nhập liệu
-         if (CheckCollisionPointRec(GetMousePosition(), inputTextArea) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            matrixInputFocused = true;
-
-            // Xác định vị trí con trỏ chuột khi click vào dòng
-            Vector2 mousePos = GetMousePosition();
-            float lineHeight = 20; // Chiều cao dòng
-            float charWidth = MeasureText("A", 20) * 0.5f; // Ước lượng chiều rộng ký tự
-            int row = (mousePos.y - inputTextArea.y) / lineHeight;
-            int col = (mousePos.x - inputTextArea.x) / charWidth;
-
-            cursorPosition = 0;
-            int currentRow = 0;
-            int currentCol = 0;
-            for (int i = 0; i < matrixInput.length(); ++i) {
-                if (currentRow == row && currentCol == col) {
-                    break;
-                }
-                if (matrixInput[i] == '\n') {
-                    currentRow++;
-                    currentCol = 0;
-                } else {
-                    currentCol++;
-                }
-                cursorPosition++;
-            }
+        // Chuyển matrixInput thành vector<string> để vẽ
+        std::vector<std::string> matrixRows;
+        std::stringstream ss(matrixInput);
+        std::string line;
+        while (std::getline(ss, line)) {
+            matrixRows.push_back(line);
         }
-
-         if (matrixInputFocused) {
-             // Xử lý nhập liệu
-             int key = GetCharPressed();
-             if (key >= 32 && key <= 125) {
-                 // Kiểm tra chiều rộng và xuống dòng nếu cần thiết
-                 int currentRow = 0;
-                 int currentCol = 0;
-                 for (int i = 0; i < cursorPosition; ++i) {
-                     if (matrixInput[i] == '\n') {
-                         currentRow++;
-                         currentCol = 0;
-                     } else {
-                         currentCol++;
-                     }
-                 }
-
-                 if (currentCol >= maxCols) {
-                     matrixInput.insert(cursorPosition, "\n");
-                     cursorPosition++;
-                 }
-
-                 matrixInput.insert(cursorPosition, 1, (char)key);
-                 cursorPosition++;
-             }
-             if (key == '\n') {
-                 // Xử lý phím Enter để xuống dòng
-                 matrixInput.insert(cursorPosition, "\n");
-                 cursorPosition++;
-             }
-             if (IsKeyPressed(KEY_BACKSPACE) && cursorPosition > 0) {
-                if (cursorPosition >0)
-                {
-                 matrixInput.erase(cursorPosition - 1, 1);
-                 cursorPosition--;
-                }
-             }
-             if (IsKeyPressed(KEY_LEFT) && cursorPosition > 0) {
-                 cursorPosition--;
-             }
-             if (IsKeyPressed(KEY_RIGHT) && cursorPosition < matrixInput.length()) {
-                 cursorPosition++;
-             }
-             if (IsKeyPressed(KEY_UP)) {
-                 // Xử lý phím lên để di chuyển con trỏ lên hàng trên
-                    int currentRow = 0;
-                    int currentCol = 0;
-                    int currentPos = 0;
-                    int newRow = -1;
-                    int newCol = -1;
-
-                    for (int i = 0; i < matrixInput.length(); ++i) {
-                        if (i == cursorPosition) {
-                            break;
+    
+        // Vẽ ma trận
+        for (int row = 0; row < matrixRows.size(); ++row) {
+            DrawText(matrixRows[row].c_str(), matrixInputRect.x - scrollOffset.x, matrixInputRect.y + row * CELL_HEIGHT - scrollOffset.y, 20, BLACK);
+        }
+    
+        // Xử lý click chuột vào ma trận để di chuyển con trỏ
+        if (CheckCollisionPointRec(GetMousePosition(), matrixInputRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            Vector2 mousePos = {GetMousePosition().x + scrollOffset.x - matrixInputRect.x , GetMousePosition().y + scrollOffset.y - matrixInputRect.y};
+            int clickedRow = mousePos.y / CELL_HEIGHT;
+            int clickedCol = 0;
+            float currentWidth = 0;
+    
+            if (clickedRow < matrixRows.size()) {
+                for (int i = 0; i < matrixRows[clickedRow].length(); ++i) {
+                    float charWidth = MeasureText(matrixRows[clickedRow].substr(i, 1).c_str(), 20);
+                    if (currentWidth + charWidth / 2 >= mousePos.x) {
+                        cursorPosition = 0;
+                        for (int j = 0; j < clickedRow; ++j) {
+                            cursorPosition += matrixRows[j].length() + 1; // +1 cho '\n'
                         }
-                        if (matrixInput[i] == '\n') {
-                            currentRow++;
-                            currentCol = 0;
-                        } else {
-                            currentCol++;
-                        }
-                        currentPos++;
-                    }
-
-                    if (currentRow > 0) {
-                        int count = 0;
-                        for (int i = 0; i < matrixInput.length(); ++i) {
-                            if (matrixInput[i] == '\n') {
-                                count++;
-                            }
-                            if (count == currentRow - 1) {
-                                newRow = count;
-                                newCol = 0;
-
-                                // Tìm vị trí con trỏ mới dựa trên cột hiện tại
-                                int lineLength = 0;
-                                for (int j = i + 1; j < matrixInput.length() && matrixInput[j] != '\n'; ++j) {
-                                    lineLength++;
-                                }
-                                newCol = std::min(currentCol, lineLength);
-
-                                // Tìm vị trí con trỏ mới trong chuỗi
-                                cursorPosition = i + 1;
-                                for (int j = 0; j < newCol; ++j) {
-                                    cursorPosition++;
-                                }
-                                break;
-                            }
-                        }
-                    }
-             }
-             if (IsKeyPressed(KEY_DOWN)) {
-                  // Xử lý phím xuống để di chuyển con trỏ xuống hàng dưới
-                  int currentRow = 0;
-                  int currentCol = 0;
-                  int currentPos = 0;
-                  int newRow = -1;
-                  int newCol = -1;
-
-                  for (int i = 0; i < matrixInput.length(); ++i) {
-                      if (i == cursorPosition) {
-                          break;
-                      }
-                      if (matrixInput[i] == '\n') {
-                          currentRow++;
-                          currentCol = 0;
-                      } else {
-                          currentCol++;
-                      }
-                      currentPos++;
-                  }
-
-                  int lineCount = 0;
-                  for (int i = 0; i < matrixInput.length(); ++i) {
-                      if (matrixInput[i] == '\n') {
-                          lineCount++;
-                      }
-                  }
-
-                  if (currentRow < lineCount) {
-                      int count = 0;
-                      for (int i = 0; i < matrixInput.length(); ++i) {
-                          if (matrixInput[i] == '\n') {
-                              count++;
-                          }
-                          if (count == currentRow + 1) {
-                              newRow = count;
-                              newCol = 0;
-
-                              // Tìm vị trí con trỏ mới dựa trên cột hiện tại
-                              int lineLength = 0;
-                              for (int j = i + 1; j < matrixInput.length() && matrixInput[j] != '\n'; ++j) {
-                                  lineLength++;
-                              }
-                              newCol = std::min(currentCol, lineLength);
-
-                              // Tìm vị trí con trỏ mới trong chuỗi
-                              cursorPosition = i + 1;
-                              for (int j = 0; j < newCol; ++j) {
-                                  cursorPosition++;
-                              }
-                              break;
-                          }
-                      }
-                  }
-              }
-         }
-        
-        // Vẽ con trỏ chuột nhấp nháy
-        if (matrixInputFocused) {
-            cursorTimer += GetFrameTime();
-            if (cursorTimer >= 0.5f) { // Thời gian nhấp nháy (0.5 giây)
-                cursorTimer -= 0.5f;
-            }
-            if (cursorTimer < 0.25f) {
-                // Tính toán vị trí con trỏ dựa trên vị trí hàng và cột
-                int row = 0;
-                int col = 0;
-                int currentPos = 0;
-                for (int i = 0; i < matrixInput.length(); ++i) {
-                    if (i == cursorPosition) {
+                        cursorPosition += i;
+                        matrixInputFocused = true;
                         break;
                     }
-                    if (matrixInput[i] == '\n') {
-                        row++;
-                        col = 0;
-                    } else {
-                        col++;
+                    currentWidth += charWidth;
+                }
+                 // Nếu click sau kí tự cuối cùng của row
+                if (!matrixInputFocused){
+                     cursorPosition = 0;
+                    for (int j = 0; j < clickedRow; ++j) {
+                        cursorPosition += matrixRows[j].length() + 1; // +1 cho '\n'
                     }
-                    currentPos++;
+                    cursorPosition += matrixRows[clickedRow].length();
+                    matrixInputFocused = true;
+                }
+            }
+        }
+    
+        // Vẽ con trỏ
+        if (matrixInputFocused) {
+            int cursorX = matrixInputRect.x - scrollOffset.x;
+            int cursorY = matrixInputRect.y - scrollOffset.y;
+            int row = 0;
+            int col = 0;
+            for (int i = 0; i < cursorPosition; ++i) {
+                if (matrixInput[i] == '\n') {
+                    row++;
+                    col = 0;
+                } else {
+                    col++;
+                }
+            }
+            cursorX += MeasureText(matrixRows[row].substr(0, col).c_str(), 20);
+            cursorY += row * CELL_HEIGHT;
+            DrawLine(cursorX, cursorY, cursorX, cursorY + 20, RED);
+        }
+    
+        // Xử lý nhập liệu
+        if (matrixInputFocused) {
+            int key = GetCharPressed();
+            if (key >= 32 && key <= 125) {
+                // Thêm ký tự và tự động xuống dòng nếu đến cuối dòng
+                matrixInput.insert(cursorPosition, 1, (char)key);
+                cursorPosition++;
+
+                // Kiểm tra và xuống dòng nếu cần
+                int currentRowLength = 0;
+                for (int i = 0; i < cursorPosition; ++i) {
+                    if (matrixInput[i] == '\n') {
+                        currentRowLength = 0;
+                    } else {
+                        currentRowLength++;
+                    }
                 }
 
-                float cursorX = inputTextArea.x + MeasureText(matrixInput.substr(0, cursorPosition).c_str(), 20); // Vị trí X của ô
-                float cursorY = inputTextArea.y + row * 20; // Vị trí Y của ô
-                float charWidth = MeasureText("A", 20) * 0.5f; // Chiều rộng của ký tự
-                float lineHeight = 20; // Chiều cao của dòng
-
-                // Vẽ con trỏ chuột (hình chữ nhật nhấp nháy)
-                Rectangle cursorRect = {cursorX - charWidth * 0.25f, cursorY, charWidth, lineHeight};
-                DrawRectangleRec(cursorRect, BLACK); // Vẽ hình chữ nhật đen
+                if (currentRowLength >= MAX_LINE_LENGTH) {
+                    matrixInput.insert(cursorPosition, "\n");
+                    cursorPosition++;
+                }
+            }
+            if (IsKeyPressed(KEY_BACKSPACE) && cursorPosition > 0) {
+                matrixInput.erase(cursorPosition - 1, 1);
+                cursorPosition--;
+            }
+    
+            // Di chuyển con trỏ bằng phím mũi tên
+            if (IsKeyPressed(KEY_LEFT) && cursorPosition > 0) cursorPosition--;
+            if (IsKeyPressed(KEY_RIGHT) && cursorPosition < matrixInput.length()) cursorPosition++;
+    
+            // di chuyển lên xuống
+            if (IsKeyPressed(KEY_UP)){
+                int currentRow = 0;
+                int currentCol = 0;
+                int tempPos = 0;
+    
+                for (int i =0; i < matrixInput.length(); i++){
+                    if (i == cursorPosition){
+                        break;
+                    }
+    
+                    if (matrixInput[i] == '\n'){
+                        currentRow ++;
+                        currentCol = 0;
+                    }else {
+                        currentCol++;
+                    }
+                    tempPos ++;
+                }
+    
+                if (currentRow > 0){
+                    int countNewline = 0;
+                    for (int i = 0; i < matrixInput.length(); i++){
+                        if (matrixInput[i] == '\n'){
+                            countNewline++;
+                        }
+    
+                        if (countNewline == currentRow - 1){
+    
+                            int colMove = 0;
+                            for(int k = i + 1; k < matrixInput.length();k++){
+    
+                                if(matrixInput[k] == '\n') break;
+                                 colMove ++;
+                            }
+    
+                             cursorPosition = i +1 ;
+                             cursorPosition += std::min(currentCol,colMove);
+    
+                            break;
+                        }
+                    }
+                }
+    
+            }
+    
+            if (IsKeyPressed(KEY_DOWN)){
+    
+                int currentRow = 0;
+                int currentCol = 0;
+                int tempPos =0;
+    
+                for (int i = 0; i < matrixInput.length();i ++){
+                    if (i == cursorPosition) break;
+                     if (matrixInput[i] =='\n'){
+                        currentRow++;
+                        currentCol =0;
+                     } else {
+                        currentCol ++;
+                     }
+    
+                    tempPos++;
+                }
+    
+                int countNewline = 0;
+    
+                for (int i = 0; i < matrixInput.length(); i++){
+                    if (matrixInput[i] == '\n') countNewline++;
+                }
+    
+                if (currentRow < countNewline){
+    
+                    int moveLine = 0;
+    
+                    for (int i =0; i < matrixInput.length(); i++){
+    
+                        if (matrixInput[i] == '\n'){
+                            moveLine ++;
+                        }
+    
+                        if(moveLine == currentRow + 1){
+                             int colMove = 0;
+                             for (int k = i+1; k < matrixInput.length(); k++){
+    
+                                 if (matrixInput[k] == '\n') break;
+                                 colMove ++;
+                             }
+                            cursorPosition = i +1;
+                            cursorPosition+= std::min(currentCol,colMove);
+                            break;
+                        }
+                    }
+    
+                }
             }
         }
-
+    
+        // Xử lý nút back và submit
         if (CheckCollisionPointRec(GetMousePosition(), backButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             showInputScreen = false;
-            matrixInput = "5 10\n1 2 28\n1 3 13\n1 4 13\n1 5 22\n2 3 27\n2 4 13\n2 5 13\n3 4 19\n3 5 14\n4 5 19"; // Reset giá trị ban đầu
-            matrixSubmitted = false;
-            matrixEdges.clear();
-        }
-
-        if (CheckCollisionPointRec(GetMousePosition(), submitButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            // Xử lý khi nút Submit được nhấn
-            matrixSubmitted = true;
             matrixInputFocused = false;
-
-            // Phân tích dữ liệu nhập vào thành các cạnh (Edge)
-            std::stringstream ss(matrixInput);
-            int numNodes, numEdges;
-            ss >> numNodes >> numEdges;
-            matrixEdges.clear();
-
-            int from, to, weight;
-            while (ss >> from >> to >> weight) {
-                matrixEdges.push_back({from, to, weight});
-            }
         }
-    }
+        if (CheckCollisionPointRec(GetMousePosition(), submitButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            showInputScreen = false;
+            matrixInputFocused = false;
+            // Xử lý data ở đây
+            // Ví dụ: In ra ma trận để kiểm tra
+            std::cout << "Ma trận đã nhập:\n" << matrixInput << std::endl;
+    
+            // Hoặc bạn có thể chuyển ma trận thành mảng 2D để xử lý tiếp
+            // ... (code chuyển đổi matrixInput thành mảng 2D)
+        }
+    }    
     else 
     {
         if (CheckCollisionPointRec(GetMousePosition(), createButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {

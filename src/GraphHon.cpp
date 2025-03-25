@@ -236,6 +236,24 @@ std::string ValidateMatrixInput(const std::string& input, std::vector<std::vecto
     return ""; // Trả về chuỗi rỗng nếu ma trận hợp lệ
 }
 
+void ResetStates(std::vector<Edge>& edges, std::vector<Vector2>& nodePositions,
+    bool& isCreating, bool& isRandomizing, bool& isShowingExamples, bool& showMatrixInput,
+    bool& graphDrawn, std::string& numNodesStr, std::string& numEdgesStr,
+    std::string& matrixInput, bool& nodesFocused, bool& edgesFocused) {
+edges.clear();
+nodePositions.clear();
+isCreating = false;
+isRandomizing = false;
+isShowingExamples = false;
+showMatrixInput = false;
+graphDrawn = false;
+numNodesStr = "";
+numEdgesStr = "";
+matrixInput = " ";
+nodesFocused = false;
+edgesFocused = false;
+}
+
 int main() {
     const int screenWidth = 1400;
     const int screenHeight = 1000;
@@ -295,7 +313,7 @@ int main() {
    Rectangle inputWindow = {screenWidth / 4, screenHeight / 4, screenWidth / 2, screenHeight / 2};
    Rectangle matrixInputRect = {inputWindow.x + 10, inputWindow.y + 40, inputWindow.width - 20, inputWindow.height - 90};
    Rectangle submitButton = {inputWindow.x + 10, inputWindow.y + inputWindow.height - 40, 80, 30}; // Nút Submit
-   Rectangle backButton = {submitButton.x + submitButton.width + 10, submitButton.y, 80, 30}; // Nút Back
+   Rectangle closeButton = {submitButton.x + submitButton.width + 10, submitButton.y, 80, 30}; // Nút Back
 
     while (!WindowShouldClose()) {
     BeginDrawing();
@@ -663,7 +681,7 @@ int main() {
             DrawRectangleRec(inputWindow, LIGHTGRAY);
             DrawText("Input Adjacency Matrix", inputWindow.x + 10, inputWindow.y + 10, 20, BLACK);
             DrawRectangleRec(matrixInputRect, WHITE);
-           
+
             // Vẽ thông báo lỗi (nếu có)
             DrawText(errorMessageInput.c_str(), matrixInputRect.x + 5, matrixInputRect.y + 5, 20, RED);
 
@@ -749,45 +767,46 @@ int main() {
                     nodePositions.clear();
                     nodePositions.resize(numNodes);
 
+                // Tạo danh sách cạnh từ ma trận
                 for (int i = 0; i < numNodes; ++i) {
                     for (int j = i + 1; j < numNodes; ++j) {
-                if (adjacencyMatrix[i][j] != 0) {
-                    edges.push_back({i + 1, j + 1, adjacencyMatrix[i][j]});
+                        if (adjacencyMatrix[i][j] != 0) {
+                            edges.push_back({ i + 1, j + 1, adjacencyMatrix[i][j] });
+                        }
+                    }
                 }
-            }
-        }
 
         graphDrawn = true;
         showMatrixInput = false; // Ẩn màn hình nhập ma trận
         matrixInputFocused = false;
 
+        // Tính toán vị trí nút
         float layoutRadius = std::min(screenWidth, screenHeight) / 8.0f;
         for (int i = 0; i < numNodes; ++i) {
-            float angle = 2.0f * PI * i / numNodes;
-            nodePositions[i] = {screenWidth / 2.0f + layoutRadius * cosf(angle), screenHeight / 2.0f + layoutRadius * sinf(angle)};
+           float angle = 2.0f * PI * i / numNodes;
+           nodePositions[i] = { screenWidth / 2.0f + layoutRadius * cosf(angle), screenHeight / 2.0f + layoutRadius * sinf(angle) };
         }
     }
-            }
+}
             // Nút Back
-            DrawRectangleRec(backButton, WHITE);
-            DrawText("Back", backButton.x + 10, backButton.y + 10, 20, BLACK);
- 
-            if (CheckCollisionPointRec(GetMousePosition(), backButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            DrawRectangleRec(closeButton, WHITE);
+            DrawText("Close", closeButton.x + 10, closeButton.y + 10, 20, BLACK);
+            if (CheckCollisionPointRec(GetMousePosition(), closeButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 showMatrixInput = false;
                 matrixInputFocused = false;
-                matrixInput = ""; // Xóa dữ liệu nhập
-                cursorColumn = 0; // Đặt lại vị trí con trỏ
+                matrixInput = ""; 
+                cursorColumn = 0; 
                 cursorRow = 0;
-                errorMessageInput = ""; // Xóa thông báo lỗi
+                errorMessageInput = ""; 
             }
-        }
+
 
         if (showError && inputMode) {
             DrawText(errorMessage.c_str(), createButton.x + createButton.width + 30, createButton.y + 10, 20, RED);
         }
-    
+    }
         if (graphDrawn) {
-            int numNodesToDraw;
+            int numNodesToDraw=nodePositions.size();
         if (exampleNumNodes > 0) {
             numNodesToDraw = exampleNumNodes;
         } else if (numNodesStr != "") {
@@ -797,20 +816,20 @@ int main() {
         }
     
         int nodeRadius = 20;
-            for (const auto& edge : edges) {
-                Vector2 fromPos = nodePositions[edge.from - 1];
-                Vector2 toPos = nodePositions[edge.to - 1];
-                DrawLineV(fromPos, toPos, DARKBLUE);
-                Vector2 weightPos = { fromPos.x + (toPos.x - fromPos.x) * 0.5f, fromPos.y + (toPos.y - fromPos.y) * 0.5f };
-                DrawText(TextFormat("%d", edge.weight), weightPos.x, weightPos.y, 20, SKYBLUE);
-            }
-    
-            for (int i = 0; i < numNodesToDraw; ++i) { // Vẽ tất cả các node
-                DrawCircleV(nodePositions[i], nodeRadius, ORANGE);
-                DrawCircleV(nodePositions[i], nodeRadius - 2, WHITE);
-                DrawText(TextFormat("%d", i + 1), nodePositions[i].x - MeasureText(TextFormat("%d", i + 1), 20) / 2, nodePositions[i].y - 10, 20, DARKGRAY);
-            }
+        for (const auto& edge : edges) {
+            Vector2 fromPos = nodePositions[edge.from - 1];
+            Vector2 toPos = nodePositions[edge.to - 1];
+            DrawLineV(fromPos, toPos, DARKBLUE);
+            Vector2 weightPos = { fromPos.x + (toPos.x - fromPos.x) * 0.5f, fromPos.y + (toPos.y - fromPos.y) * 0.5f };
+            DrawText(TextFormat("%d", edge.weight), weightPos.x, weightPos.y, 20, SKYBLUE);
         }
+
+        for (int i = 0; i < numNodesToDraw; ++i) {
+            DrawCircleV(nodePositions[i], nodeRadius, ORANGE);
+            DrawCircleV(nodePositions[i], nodeRadius - 2, WHITE);
+            DrawText(TextFormat("%d", i + 1), nodePositions[i].x - MeasureText(TextFormat("%d", i + 1), 20) / 2, nodePositions[i].y - 10, 20, DARKGRAY);
+        }
+    }
     
         if (graphDrawn && numNodesStr != "" && numEdgesStr != "") {
             int numNodes = std::stoi(numNodesStr);

@@ -14,6 +14,7 @@ bool isShowingExamplesActive = false;
 bool isInputActive = false;
 bool isFileActive = false;
 
+
 struct Edge {
     int from;
     int to;
@@ -401,28 +402,14 @@ int main() {
                         isCreating = false;
                         numNodesStr = "";
                         numEdgesStr = "";
+                        showError = false;
                     }
                 }
             }
         }
-         if (showError && isCreating) {
-            DrawText(errorMessage.c_str(), createButton.x + createButton.width + 30, createButton.y + 10, 20, RED);
-        }
-        if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)&&
-               !CheckCollisionPointRec(GetMousePosition(),nodesInput) &&
-               !CheckCollisionPointRec(GetMousePosition(),edgesInput)&&
-               !CheckCollisionPointRec(GetMousePosition(), createButton) &&
-                !CheckCollisionPointRec(GetMousePosition(),randomButton)&&
-                !CheckCollisionPointRec(GetMousePosition(), exampleButton)&&
-                !CheckCollisionPointRec(GetMousePosition(), inputButton))
-            {
-               isCreating = false;
-               graphDrawn = false;
-               numNodesStr = "";
-               numEdgesStr = "";
-               edges.clear();
-               nodePositions.clear();
-            }
+    }
+    if (showError && isCreating) {
+        DrawText(errorMessage.c_str(), createButton.x + createButton.width + 30, createButton.y + 10, 20, RED);
     }
     if (!isCreatingActive) 
     {
@@ -451,6 +438,8 @@ int main() {
         isCreatingActive = false;
     }
     if (CheckCollisionPointRec(GetMousePosition(), createButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        showError = false; 
+        errorMessage = ""; 
         ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused);
         edges.clear(); 
         nodePositions.clear(); 
@@ -458,17 +447,24 @@ int main() {
         isCreatingActive = true;
         inputMode = false;
         canCreateGraph = true;
+        showExampleButtons = false;
     }
     else if(CheckCollisionPointRec(GetMousePosition(),randomButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+        showError = false; // Ẩn lỗi.
+        errorMessage = ""; //Reset message lỗi.
         ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused);
         isRandomizing = true;
         isRandomizingActive = true;
         edges.clear(); 
         nodePositions.clear(); 
-        inputMode=false;
+        inputMode = false;
         isCreatingActive = false;
+        isCreating = false;
+        showExampleButtons = false;
     }
     else if(CheckCollisionPointRec(GetMousePosition(), exampleButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+        showError = false; // Ẩn lỗi.
+        errorMessage = ""; //Reset message lỗi.
         ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused);
         edges.clear(); 
         nodePositions.clear(); 
@@ -478,15 +474,21 @@ int main() {
         isCreatingActive = false;
     }
     else if(CheckCollisionPointRec(GetMousePosition(),inputButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+        showError = false; // Ẩn lỗi.
+        errorMessage = ""; //Reset message lỗi.
         ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused);
         edges.clear(); 
         nodePositions.clear(); 
         inputMode = true;
-        showMatrixInput=true;
+        showMatrixInput = true;
         isInputActive = true;
-        isCreating=false;
+        isCreatingActive = false;
+        isShowingExamplesActive = false;
+        showExampleButtons = false;
     }
     else if(CheckCollisionPointRec(GetMousePosition(), fileButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+        showError = false; // Ẩn lỗi.
+        errorMessage = ""; //Reset message lỗi.
         ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused);
         edges.clear(); // Xóa danh sách cạnh (xóa đồ thị)
         nodePositions.clear(); // Xóa vị trí node (xóa đồ thị)
@@ -495,6 +497,7 @@ int main() {
         isRandomizingActive = false;
         isShowingExamplesActive = false;
         isInputActive = false;
+        showExampleButtons = false;
         //ẩn input field và bảng trắng.
     }
         DrawRectangleRec(createButton, WHITE);
@@ -822,13 +825,6 @@ int main() {
 }
         if (graphDrawn) {
             int numNodesToDraw=nodePositions.size();
-        // if (exampleNumNodes > 0) {
-        //     numNodesToDraw = exampleNumNodes;
-        // } else if (numNodesStr != "") {
-        //     numNodesToDraw = std::stoi(numNodesStr);
-        // } else {
-        //     numNodesToDraw = nodePositions.size(); // Sửa lại thành số lượng node thực tế
-        // }
     
         int nodeRadius = 20;
         for (const auto& edge : edges) {
@@ -846,26 +842,26 @@ int main() {
         }
     }
     
-        // if (graphDrawn && numNodesStr != "" && numEdgesStr != "") {
-        //     int numNodes = std::stoi(numNodesStr);
-        //     int nodeRadius = 20;
-        //     for (const auto& edge : edges) {
-        //         Vector2 fromPos = nodePositions[edge.from - 1];
-        //         Vector2 toPos = nodePositions[edge.to - 1];
-        //         DrawLineV(fromPos, toPos, DARKBLUE);
-        //         Vector2 weightPos = {
-        //             fromPos.x + (toPos.x - fromPos.x) * 0.5f,
-        //             fromPos.y + (toPos.y - fromPos.y) * 0.5f
-        //         };
-        //         DrawText(TextFormat("%d", edge.weight), weightPos.x, weightPos.y, 20, SKYBLUE);
-        //     }
+        if (graphDrawn && numNodesStr != "" && numEdgesStr != "") {
+            int numNodes = std::stoi(numNodesStr);
+            int nodeRadius = 20;
+            for (const auto& edge : edges) {
+                Vector2 fromPos = nodePositions[edge.from - 1];
+                Vector2 toPos = nodePositions[edge.to - 1];
+                DrawLineV(fromPos, toPos, DARKBLUE);
+                Vector2 weightPos = {
+                    fromPos.x + (toPos.x - fromPos.x) * 0.5f,
+                    fromPos.y + (toPos.y - fromPos.y) * 0.5f
+                };
+                DrawText(TextFormat("%d", edge.weight), weightPos.x, weightPos.y, 20, SKYBLUE);
+            }
     
-        //     for (int i = 0; i < numNodes; ++i) {
-        //         DrawCircleV(nodePositions[i], nodeRadius, ORANGE);
-        //         DrawCircleV(nodePositions[i], nodeRadius - 2, WHITE);
-        //         DrawText(TextFormat("%d", i + 1), nodePositions[i].x - MeasureText(TextFormat("%d", i + 1), 20) / 2, nodePositions[i].y - 10, 20, DARKGRAY);
-        //     }
-        // }
+            for (int i = 0; i < numNodes; ++i) {
+                DrawCircleV(nodePositions[i], nodeRadius, ORANGE);
+                DrawCircleV(nodePositions[i], nodeRadius - 2, WHITE);
+                DrawText(TextFormat("%d", i + 1), nodePositions[i].x - MeasureText(TextFormat("%d", i + 1), 20) / 2, nodePositions[i].y - 10, 20, DARKGRAY);
+            }
+        }
     EndDrawing();
 }
 

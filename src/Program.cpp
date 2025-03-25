@@ -33,6 +33,7 @@ void Program::Run() {
                 singlyLinkedList.DrawScreen(font, buttonClicked, buttonMessage, currentScreen);
                 break;
             case Screen::HASH_TABLE:
+				hashTable.UpdateAnimation();  
                 hashTable.DrawScreen(font, buttonClicked, buttonMessage, currentScreen);
                 break;
             case Screen::AVL_TREE:

@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <CustomBuild Include="D:\Downloads\sproject\DataStructureCS163\build\CMakeFiles\a8b735076fa6e66e9caf53a0bd3ca7c5\uninstall.rule">
+    <CustomBuild Include="C:\Users\Huyen\Documents\DataStructureCS163\build\CMakeFiles\7da4a7b06d233c9ebdc6d86eb7c1e019\uninstall.rule">
       <Filter>CMake Rules</Filter>
     </CustomBuild>
-    <CustomBuild Include="D:\Downloads\sproject\DataStructureCS163\raylib\CMakeLists.txt" />
+    <CustomBuild Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="D:\Downloads\sproject\DataStructureCS163\build\raylib\CMakeFiles\uninstall" />
+    <None Include="C:\Users\Huyen\Documents\DataStructureCS163\build\raylib\CMakeFiles\uninstall" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="CMake Rules">
-      <UniqueIdentifier>{229A12B5-FCCC-315E-B40F-C996EFC7F0DE}</UniqueIdentifier>
+      <UniqueIdentifier>{30225446-3863-31FF-A5EF-723F70BFCA6A}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

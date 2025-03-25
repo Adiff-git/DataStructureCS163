@@ -22,7 +22,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{6C0A6439-FE7E-3D6E-AB82-0FE582A413C3}</ProjectGuid>
+    <ProjectGuid>{756918FE-FB74-35DC-A588-BEF81B3F3E15}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
     <Platform>x64</Platform>
@@ -78,7 +78,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src;D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src;C:\Users\Huyen\Documents\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -98,10 +98,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;_GLFW_WIN32;UNICODE;_UNICODE;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src;D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src;C:\Users\Huyen\Documents\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src;D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src;C:\Users\Huyen\Documents\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -114,7 +114,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src;D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src;C:\Users\Huyen\Documents\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ExceptionHandling>
@@ -135,10 +135,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_GLFW_WIN32;UNICODE;_UNICODE;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src;D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src;C:\Users\Huyen\Documents\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src;D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src;C:\Users\Huyen\Documents\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -151,7 +151,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src;D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src;C:\Users\Huyen\Documents\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ExceptionHandling>
@@ -172,10 +172,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_GLFW_WIN32;UNICODE;_UNICODE;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src;D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src;C:\Users\Huyen\Documents\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src;D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src;C:\Users\Huyen\Documents\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -188,7 +188,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src;D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src;C:\Users\Huyen\Documents\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -208,10 +208,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_GLFW_WIN32;UNICODE;_UNICODE;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src;D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src;C:\Users\Huyen\Documents\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src;D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src;C:\Users\Huyen\Documents\DataStructureCS163\build\raylib\raylib\external\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -223,11 +223,11 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\CMakeLists.txt">
+    <CustomBuild Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\CMakeLists.txt">
       <UseUtf8Encoding>Always</UseUtf8Encoding>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule D:/Downloads/sproject/DataStructureCS163/raylib/src/external/glfw/src/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/Huyen/Documents/DataStructureCS163/raylib/src/external/glfw/src/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SD:/Downloads/sproject/DataStructureCS163 -BD:/Downloads/sproject/DataStructureCS163/build --check-stamp-file D:/Downloads/sproject/DataStructureCS163/build/raylib/raylib/external/glfw/src/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Huyen/Documents/DataStructureCS163 -BC:/Users/Huyen/Documents/DataStructureCS163/build --check-stamp-file C:/Users/Huyen/Documents/DataStructureCS163/build/raylib/raylib/external/glfw/src/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -235,12 +235,12 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\CMake\glfw3.pc.in;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\CMake\glfw3.pc.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\Huyen\Documents\DataStructureCS163\build\raylib\raylib\external\glfw\src\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule D:/Downloads/sproject/DataStructureCS163/raylib/src/external/glfw/src/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/Huyen/Documents/DataStructureCS163/raylib/src/external/glfw/src/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SD:/Downloads/sproject/DataStructureCS163 -BD:/Downloads/sproject/DataStructureCS163/build --check-stamp-file D:/Downloads/sproject/DataStructureCS163/build/raylib/raylib/external/glfw/src/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Huyen/Documents/DataStructureCS163 -BC:/Users/Huyen/Documents/DataStructureCS163/build --check-stamp-file C:/Users/Huyen/Documents/DataStructureCS163/build/raylib/raylib/external/glfw/src/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -248,12 +248,12 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\CMake\glfw3.pc.in;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\CMake\glfw3.pc.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\Huyen\Documents\DataStructureCS163\build\raylib\raylib\external\glfw\src\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule D:/Downloads/sproject/DataStructureCS163/raylib/src/external/glfw/src/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/Huyen/Documents/DataStructureCS163/raylib/src/external/glfw/src/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SD:/Downloads/sproject/DataStructureCS163 -BD:/Downloads/sproject/DataStructureCS163/build --check-stamp-file D:/Downloads/sproject/DataStructureCS163/build/raylib/raylib/external/glfw/src/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Huyen/Documents/DataStructureCS163 -BC:/Users/Huyen/Documents/DataStructureCS163/build --check-stamp-file C:/Users/Huyen/Documents/DataStructureCS163/build/raylib/raylib/external/glfw/src/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -261,12 +261,12 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\CMake\glfw3.pc.in;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\CMake\glfw3.pc.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\Huyen\Documents\DataStructureCS163\build\raylib\raylib\external\glfw\src\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule D:/Downloads/sproject/DataStructureCS163/raylib/src/external/glfw/src/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/Huyen/Documents/DataStructureCS163/raylib/src/external/glfw/src/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SD:/Downloads/sproject/DataStructureCS163 -BD:/Downloads/sproject/DataStructureCS163/build --check-stamp-file D:/Downloads/sproject/DataStructureCS163/build/raylib/raylib/external/glfw/src/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Huyen/Documents/DataStructureCS163 -BC:/Users/Huyen/Documents/DataStructureCS163/build --check-stamp-file C:/Users/Huyen/Documents/DataStructureCS163/build/raylib/raylib/external/glfw/src/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -274,49 +274,49 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\CMake\glfw3.pc.in;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Downloads\sproject\DataStructureCS163\build\raylib\raylib\external\glfw\src\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\CMake\glfw3.pc.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\Huyen\Documents\DataStructureCS163\build\raylib\raylib\external\glfw\src\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include\GLFW\glfw3.h" />
-    <ClInclude Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include\GLFW\glfw3native.h" />
-    <ClInclude Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\internal.h" />
-    <ClInclude Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\platform.h" />
-    <ClInclude Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\mappings.h" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\context.c" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\init.c" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\input.c" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\monitor.c" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\platform.c" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\vulkan.c" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\window.c" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\egl_context.c" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\osmesa_context.c" />
-    <ClInclude Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\null_platform.h" />
-    <ClInclude Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\null_joystick.h" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\null_init.c" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\null_monitor.c" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\null_window.c" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\null_joystick.c" />
-    <ClInclude Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\win32_time.h" />
-    <ClInclude Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\win32_thread.h" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\win32_module.c" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\win32_time.c" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\win32_thread.c" />
-    <ClInclude Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\win32_platform.h" />
-    <ClInclude Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\win32_joystick.h" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\win32_init.c" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\win32_joystick.c" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\win32_monitor.c" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\win32_window.c" />
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\src\wgl_context.c" />
+    <ClInclude Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include\GLFW\glfw3.h" />
+    <ClInclude Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include\GLFW\glfw3native.h" />
+    <ClInclude Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\internal.h" />
+    <ClInclude Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\platform.h" />
+    <ClInclude Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\mappings.h" />
+    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\context.c" />
+    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\init.c" />
+    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\input.c" />
+    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\monitor.c" />
+    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\platform.c" />
+    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\vulkan.c" />
+    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\window.c" />
+    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\egl_context.c" />
+    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\osmesa_context.c" />
+    <ClInclude Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\null_platform.h" />
+    <ClInclude Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\null_joystick.h" />
+    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\null_init.c" />
+    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\null_monitor.c" />
+    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\null_window.c" />
+    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\null_joystick.c" />
+    <ClInclude Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\win32_time.h" />
+    <ClInclude Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\win32_thread.h" />
+    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\win32_module.c" />
+    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\win32_time.c" />
+    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\win32_thread.c" />
+    <ClInclude Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\win32_platform.h" />
+    <ClInclude Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\win32_joystick.h" />
+    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\win32_init.c" />
+    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\win32_joystick.c" />
+    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\win32_monitor.c" />
+    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\win32_window.c" />
+    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\src\wgl_context.c" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="D:\Downloads\sproject\DataStructureCS163\build\ZERO_CHECK.vcxproj">
-      <Project>{167DD7E5-9B13-3061-8A27-7FCD5A6FA00B}</Project>
+    <ProjectReference Include="C:\Users\Huyen\Documents\DataStructureCS163\build\ZERO_CHECK.vcxproj">
+      <Project>{C3989B94-EF96-397B-B6B3-A29BE030E337}</Project>
       <Name>ZERO_CHECK</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

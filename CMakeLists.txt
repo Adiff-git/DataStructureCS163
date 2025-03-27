@@ -4,8 +4,9 @@ cmake_minimum_required(VERSION 3.16)
 # Đặt tên cho project
 project(DataStructureCS163)
 
-
-
+# Set the C++ standard
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Thêm tất cả file .cpp trong thư mục src/
 file(GLOB_RECURSE SOURCES src/*.cpp)
@@ -18,6 +19,10 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 
 add_subdirectory("raylib")
 target_link_libraries(${PROJECT_NAME} raylib)
+
+# Add raygui
+include_directories(raygui/src)
+# include_directories(raygui/styles)
 
 # Copy thư mục resources vào build để giữ hình ảnh, âm thanh...
 file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_BINARY_DIR})

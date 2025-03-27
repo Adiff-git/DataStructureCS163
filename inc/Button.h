@@ -1,8 +1,15 @@
-﻿#ifndef BUTTON_H                                     // Bảo vệ chống bao gồm nhiều lần
-#define BUTTON_H
+#pragma once
 
 #include "raylib.h"
+#include <vector>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <queue>
+#include <cmath>
 
-bool DrawButton(const char* text, float x, float y, Font font, bool& buttonClicked, const char*& buttonMessage); // Vẽ nút và xử lý sự kiện
+// Hàm kiểm tra click chuột
+bool IsButtonClicked(Rectangle button);
 
-#endif
+// Hàm xử lý thanh kéo
+float UpdateSlider(Rectangle slider, float minValue, float maxValue, float currentValue);

@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include <iostream>
+#include <queue>
 #include <vector>
 #include <string>
 #include <cmath>
@@ -7,6 +8,7 @@
 #include <ctime>
 #include <algorithm>
 #include <sstream>
+#include "raymath.h"
 
 bool isCreatingActive = false;
 bool isRandomizingActive = false;
@@ -14,12 +16,15 @@ bool isShowingExamplesActive = false;
 bool isInputActive = false;
 bool isFileActive = false;
 
-
 struct Edge {
     int from;
     int to;
     int weight;
 };
+
+bool compareEdge(const std::pair<int, Edge>& a, const std::pair<int, Edge>& b) {
+    return a.first > b.first; // So sánh theo trọng số (a.first, b.first)
+}
 
 bool edgeExists(const std::vector<Edge>& edges, int from, int to) {
     for (const auto& edge : edges) {
@@ -256,6 +261,52 @@ void ResetStates(bool &isCreating, bool &isRandomizing, bool &isShowingExamples,
     edgesFocused = false;
 }
 
+std::vector<Edge> calculatePrimMST(const std::vector<Edge>& edges, int numNodes) {
+    std::vector<Edge> mstEdges; // Cạnh của cây MST
+    std::vector<bool> visited(numNodes, false); // Đánh dấu đỉnh đã thăm
+    std::priority_queue<std::pair<int, Edge>, std::vector<std::pair<int, Edge>>, bool(*)(const std::pair<int, Edge>&, const std::pair<int, Edge>&)> pq(compareEdge); // Hàng đợi ưu tiên, sử dụng compareEdge
+
+    // Chọn đỉnh bắt đầu (ví dụ: đỉnh 0)
+    visited[0] = true;
+
+    // Thêm các cạnh kề đỉnh bắt đầu vào hàng đợi ưu tiên
+    for (const auto& edge : edges) {
+        if (edge.from == 1 && !visited[edge.to - 1]) { // Đã sửa chỉ số
+            pq.push({edge.weight, edge});
+        } else if (edge.to == 1 && !visited[edge.from - 1]) {
+            pq.push({edge.weight, edge});
+        }
+    }
+
+    while (!pq.empty() && mstEdges.size() < numNodes - 1) {
+        int weight = pq.top().first;
+        Edge currentEdge = pq.top().second;
+        pq.pop();
+
+        int from = currentEdge.from - 1; // Sửa chỉ số
+        int to = currentEdge.to - 1;     // Sửa chỉ số
+
+        if (visited[from] && visited[to]) {
+            continue; // Cả hai đỉnh đã được thăm
+        }
+
+        mstEdges.push_back(currentEdge);
+
+        int nextNode = visited[from] ? to : from;
+        visited[nextNode] = true;
+
+        for (const auto& edge : edges) {
+            if (edge.from == nextNode + 1 && !visited[edge.to - 1]) {
+                pq.push({edge.weight, edge});
+            } else if (edge.to == nextNode + 1 && !visited[edge.from - 1]) {
+                pq.push({edge.weight, edge});
+            }
+        }
+    }
+
+    return mstEdges;
+}
+
 int main() {
     const int screenWidth = 1400;
     const int screenHeight = 1000;
@@ -316,6 +367,32 @@ int main() {
    Rectangle matrixInputRect = {inputWindow.x + 10, inputWindow.y + 40, inputWindow.width - 20, inputWindow.height - 90};
    Rectangle submitButton = {inputWindow.x + 10, inputWindow.y + inputWindow.height - 40, 80, 30}; // Nút Submit
    Rectangle closeButton = {submitButton.x + submitButton.width + 10, submitButton.y, 80, 30}; // Nút Back
+  
+   // MST
+   Rectangle mstButton = {fileButton.x, fileButton.y + fileButton.height + 10, 100, 30};
+   bool mstButtonClicked = false;
+   bool showMSTMenu = false;
+   Rectangle mstMenuRect = {screenWidth / 4, screenHeight / 4, screenWidth / 2, screenHeight / 2}; 
+   const int buttonWidth = 80;
+   const int buttonHeight = 30;
+   const int buttonSpacing = 10;
+   const float buttonsY = mstMenuRect.y + mstMenuRect.height - buttonHeight - 10; // Đặt các nút ở đáy menu   
+   Rectangle primButton = {mstMenuRect.x+10, buttonsY, buttonWidth, buttonHeight};
+   Rectangle kruskalButton = {primButton.x+buttonWidth+buttonSpacing, buttonsY, buttonWidth, buttonHeight};
+   Rectangle backButton = {kruskalButton.x+buttonWidth+buttonSpacing, buttonsY, buttonWidth, buttonHeight};
+   bool usePrim = false;
+   bool useKruskal = false;
+   bool showMSTError = false; // Theo dõi xem có hiển thị lỗi hay không
+   std::string mstErrorMessage = ""; // Chuỗi để lưu thông báo lỗi
+   bool showGraph = true; 
+   std::vector<Edge> mstEdges;
+   std::vector<bool> mstEdgesDrawn;
+   std::vector<Edge> mstNodesDrawn;
+   int mstEdgeIndex = 0;
+   float mstDrawTimer = 0.0f;
+   bool mstDoneDrawing = false;
+   bool drawMSTOnMSTMenu = false;
+   int numNodesMST = 0;
 
     while (!WindowShouldClose()) {
     BeginDrawing();
@@ -365,7 +442,7 @@ int main() {
              if (numNodesStr == "" || numEdgesStr == "") {
                 canCreateGraph = false;
                 showError = true;
-                errorMessage = "Vui lòng nhập số node và edge.";
+                errorMessage = "Please enter nodes and edges.";
             } else {
                 int numNodes = std::stoi(numNodesStr);
                 int numEdges = std::stoi(numEdgesStr);
@@ -437,6 +514,164 @@ int main() {
         inputMode = false;
         isCreatingActive = false;
     }
+    if (showMSTMenu) {
+        DrawRectangleRec(mstMenuRect, LIGHTGRAY);
+        DrawText("Minimum Spanning Tree", mstMenuRect.x + 10, mstMenuRect.y + 10, 20, BLACK);
+    
+        // Vẽ các nút Prim, Kruskal, và Back
+        DrawRectangleRec(primButton, WHITE);
+        DrawText("Prim", primButton.x + 10, primButton.y + 10, 20, BLACK);
+    
+        DrawRectangleRec(kruskalButton, WHITE);
+        DrawText("Kruskal", kruskalButton.x + 10, kruskalButton.y + 10, 20, BLACK);
+    
+        DrawRectangleRec(backButton, WHITE);
+        DrawText("Back", backButton.x + 10, backButton.y + 10, 20, BLACK);
+    
+        // Xử lý sự kiện click chuột cho các nút
+        if (CheckCollisionPointRec(GetMousePosition(), primButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                usePrim = true;
+                useKruskal = false;
+                mstEdges = calculatePrimMST(edges, nodePositions.size()); // Tính toán MST bằng Prim
+                mstEdgesDrawn.resize(mstEdges.size(), false);
+                mstEdgeIndex = 0;
+                mstDrawTimer = 0.0f;
+                drawMSTOnMSTMenu = true;
+                mstDoneDrawing = false; // Reset flag MST drawing finish status
+            }
+    
+        if (CheckCollisionPointRec(GetMousePosition(), kruskalButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+          
+                usePrim = false;
+                useKruskal = true;
+            //    mstEdges = calculateKruskalMST(edges, nodePositions.size()); // Tính toán MST bằng Kruskal
+                mstEdgesDrawn.resize(mstEdges.size(), false);
+                mstEdgeIndex = 0;
+                mstDrawTimer = 0.0f;
+                drawMSTOnMSTMenu = true;
+                mstDoneDrawing = false; // Reset flag MST drawing finish status
+            }
+    
+        if (CheckCollisionPointRec(GetMousePosition(), backButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            showMSTMenu = false;
+            showGraph = true;   // Hiển thị lại đồ thị gốc
+            drawMSTOnMSTMenu = false;
+            mstEdges.clear();
+            mstEdgesDrawn.clear(); // Reset mstEdgesDrawn vector
+            mstEdgeIndex = 0; // Reset index to zero
+            mstDrawTimer = 0.0f; // Reset time to zero
+            usePrim = false;
+            useKruskal = false;
+            showMSTError = false; // Ẩn thông báo lỗi
+            mstDoneDrawing = false;
+        }
+        int numNodesMST = 0;
+        for (const auto& edge : mstEdges) {
+            numNodesMST = std::max({numNodesMST, edge.from, edge.to});
+        }
+    
+        std::vector<Vector2> mstNodePositions(numNodesMST);
+        std::vector<bool> mstNodesDrawn(numNodesMST, false);
+        float radius = std::min(mstMenuRect.width, mstMenuRect.height) / 3.0f; // Adjust for spacing
+    
+        // Calculate node positions within mstMenuRect
+        for (int i = 0; i < numNodesMST; ++i) {
+            float angle = 2.0f * PI * i / numNodesMST;
+            mstNodePositions[i] = {
+                mstMenuRect.x + mstMenuRect.width / 2.0f + radius * cosf(angle),
+                mstMenuRect.y + mstMenuRect.height / 2.0f + radius * sinf(angle)
+            };
+        }
+    
+        // Vẽ các cạnh MST (từ từ)
+        if (usePrim || useKruskal) {
+    
+            //Vẽ các cạnh MST đã vẽ
+            for (int i = 0; i < mstEdgesDrawn.size(); i++) {
+                if (mstEdgesDrawn[i]){
+                    //draw the edges
+                    int from = mstEdges[i].from - 1;
+                    int to = mstEdges[i].to - 1;
+                     Vector2 fromPos = mstNodePositions[from];
+                     Vector2 toPos = mstNodePositions[to];
+                        DrawLineEx(fromPos,toPos,3.0f,RED);
+    
+                   Vector2 weightPosition = {
+                         (fromPos.x + toPos.x) / 2,
+                        (fromPos.y + toPos.y) / 2
+                   };
+                  DrawText(TextFormat("%d", mstEdges[i].weight), weightPosition.x, weightPosition.y, 10, SKYBLUE); 
+                    }
+            }
+            
+        //Nếu MST vẽ chưa xong thì vẽ cạnh tiếp theo
+        if (mstEdgeIndex < mstEdges.size())
+         {
+            mstDrawTimer += GetFrameTime();
+             if (mstDrawTimer >= 0.5f) {
+               int from = mstEdges[mstEdgeIndex].from - 1;
+               int to = mstEdges[mstEdgeIndex].to - 1;
+                 Vector2 fromPos = mstNodePositions[from];
+                  Vector2 toPos = mstNodePositions[to];
+                  // Calculate edge length (or use time-based increment)
+                  float edgeLength = Vector2Distance(fromPos, toPos);
+                  float drawLength = std::min(mstDrawTimer / 0.5f, edgeLength);
+                  Vector2 drawToPos = { fromPos.x + (toPos.x - fromPos.x) * (drawLength / edgeLength), fromPos.y + (toPos.y - fromPos.y) * (drawLength / edgeLength) };
+                  DrawLineEx(fromPos, drawToPos, 3.0f, SKYBLUE);
+                    //  Draw weight
+                  Vector2 weightPosition = {
+                   (fromPos.x + toPos.x) / 2,
+                   (fromPos.y + toPos.y) / 2
+                   };
+                   DrawText(TextFormat("%d", mstEdges[mstEdgeIndex].weight), weightPosition.x, weightPosition.y, 10, BLUE);
+    
+                  mstEdgesDrawn[mstEdgeIndex] = true;
+                  mstEdgeIndex++;
+                  mstDrawTimer = 0.0f;
+                 }
+          }
+      // Vẽ các cạnh đồ thị gốc (không làm mờ)
+       else 
+        {
+                for (const auto& edge : edges) {
+                Color edgeColor = DARKBLUE;
+                bool isMSTEdge = false;
+                for (const auto& mstEdge : mstEdges) {
+                    if ((edge.from == mstEdge.from && edge.to == mstEdge.to) ||
+                        (edge.from == mstEdge.to && edge.to == mstEdge.from)) {
+                        isMSTEdge = true;
+                        break;
+                    }
+                }
+              if (usePrim && !isMSTEdge) {
+                    edgeColor = Fade(DARKBLUE, 0.3f); // Làm mờ cạnh không thuộc MST
+                }
+              int fromIndex = edge.from - 1;
+              int toIndex = edge.to - 1;
+                if (fromIndex >= 0 && fromIndex < mstNodePositions.size() && toIndex >= 0 && toIndex < mstNodePositions.size()){
+                  Vector2 fromPos = mstNodePositions[fromIndex]; //Tọa độ Node trên đồ thị gốc
+                  Vector2 toPos = mstNodePositions[toIndex];
+                   DrawLineV(fromPos,toPos,edgeColor);
+                 // draw the edge weights for the current graph
+                  Vector2 weightPosition = {
+                  (fromPos.x + toPos.x) / 2,
+                    (fromPos.y + toPos.y) / 2
+                   };
+                 DrawText(TextFormat("%d", edge.weight), weightPosition.x, weightPosition.y, 10, SKYBLUE);
+              }
+           }
+       }
+    // vẽ các node MST
+      for (int i = 0; i < numNodesMST; ++i) {
+            DrawCircleV(mstNodePositions[i], 10, ORANGE);
+             DrawText(TextFormat("%d", i + 1), mstNodePositions[i].x - 5, mstNodePositions[i].y - 5, 12, BLACK);
+        }
+    }
+}
+    // Vẽ thông báo lỗi (nếu có)
+    if (showMSTError) {
+    DrawText(mstErrorMessage.c_str(), mstButton.x + mstButton.width + 10, mstButton.y + 10, 20, RED);
+    }
     if (CheckCollisionPointRec(GetMousePosition(), createButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         showError = false; 
         errorMessage = ""; 
@@ -448,6 +683,8 @@ int main() {
         inputMode = false;
         canCreateGraph = true;
         showExampleButtons = false;
+        showMSTError = false;
+        showMSTMenu = false;
     }
     else if(CheckCollisionPointRec(GetMousePosition(),randomButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
         showError = false; // Ẩn lỗi.
@@ -461,6 +698,8 @@ int main() {
         isCreatingActive = false;
         isCreating = false;
         showExampleButtons = false;
+        showMSTError = false;
+        showMSTMenu = false;
     }
     else if(CheckCollisionPointRec(GetMousePosition(), exampleButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
         showError = false; // Ẩn lỗi.
@@ -472,6 +711,8 @@ int main() {
         isShowingExamplesActive = true;
         inputMode=false;
         isCreatingActive = false;
+        showMSTError = false;
+        showMSTMenu = false;
     }
     else if(CheckCollisionPointRec(GetMousePosition(),inputButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
         showError = false; // Ẩn lỗi.
@@ -485,6 +726,8 @@ int main() {
         isCreatingActive = false;
         isShowingExamplesActive = false;
         showExampleButtons = false;
+        showMSTError = false;
+        showMSTMenu = false;
     }
     else if(CheckCollisionPointRec(GetMousePosition(), fileButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
         showError = false; // Ẩn lỗi.
@@ -498,7 +741,33 @@ int main() {
         isShowingExamplesActive = false;
         isInputActive = false;
         showExampleButtons = false;
+        showMSTError = false;
+        showMSTMenu = false;
         //ẩn input field và bảng trắng.
+    }
+    else if (CheckCollisionPointRec(GetMousePosition(), mstButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        if (!graphDrawn)
+        {
+            showMSTMenu = false;
+            showMSTError = true;
+            mstErrorMessage = "Please Input or Create a graph first";
+        }
+        else
+        {
+            showMSTMenu = true;
+            mstButtonClicked = true;
+            showGraph = false;
+            drawMSTOnMSTMenu = false;
+            mstEdges.clear();
+            mstEdgesDrawn.clear();
+        }
+        showMatrixInput = false;
+        showExampleButtons = false;
+        isRandomizingActive = false;
+        isCreatingActive = false;
+        isFileActive = false;
+        isInputActive = false;
+        isShowingExamplesActive = false;
     }
         DrawRectangleRec(createButton, WHITE);
         DrawText("Create", createButton.x + (createButton.width - MeasureText("Create", 20)) / 2, createButton.y + 10, 20, BLACK);
@@ -514,7 +783,10 @@ int main() {
        
         DrawRectangleRec(fileButton, WHITE); 
         DrawText("File", fileButton.x + (fileButton.width - MeasureText("File", 20)) / 2, fileButton.y + 10, 20, BLACK);
- 
+       
+        DrawRectangleRec(mstButton, WHITE);
+        DrawText("MST", mstButton.x + (mstButton.width - MeasureText("MST", 20)) / 2, mstButton.y + 10, 20, BLACK);
+
         if (showExampleButtons) {
             DrawRectangleRec(k5Button, WHITE);
             DrawText("K5", k5Button.x + 5, k5Button.y + 5, 20, BLACK);
@@ -654,7 +926,7 @@ int main() {
                 if (numNodesStr == "" || numEdgesStr == "") {
                     canCreateGraph = false;
                     showError = true;
-                    errorMessage = "Vui lòng nhập số node và edge.";
+                    errorMessage = "Please enter Nodes and Edges.";
                 } else {
                     int numNodes = std::stoi(numNodesStr);
                     int numEdges = std::stoi(numEdgesStr);
@@ -662,7 +934,7 @@ int main() {
                     if (numNodes <= 0 || numEdges < 0 || numEdges > numNodes * (numNodes - 1) / 2 || numEdges < numNodes - 1) {
                         canCreateGraph = false;
                         showError = true;
-                        errorMessage = "Can't create a graph";
+                        errorMessage = "Can't create a graph.";
                     } else {
                         edges.clear();
                         srand(time(0));
@@ -823,9 +1095,8 @@ int main() {
             DrawText(errorMessage.c_str(), createButton.x + createButton.width + 30, createButton.y + 10, 20, RED);
         }
 }
-        if (graphDrawn) {
-            int numNodesToDraw=nodePositions.size();
-    
+        if (graphDrawn && showGraph) {
+        int numNodesToDraw=nodePositions.size();
         int nodeRadius = 20;
         for (const auto& edge : edges) {
             Vector2 fromPos = nodePositions[edge.from - 1];

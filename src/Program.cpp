@@ -4,11 +4,11 @@
 #include <random>
 #include "raygui.h"
 
-Program::Program() : hashTable(0) {
+Program::Program() : hashTable(1) {
     const int screenWidth = 1300;
     const int screenHeight = 786;
     InitWindow(screenWidth, screenHeight, "Data Structure Visualization");
-    GuiLoadStyle("../resources/styles/style_jungle.rgs");
+    // GuiLoadStyle("../resources/styles/style_jungle.rgs");
     SetTargetFPS(60);
 }
 

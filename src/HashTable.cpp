@@ -43,6 +43,13 @@ HashTable::~HashTable() {
 }
 
 void HashTable::saveCurrentTable() {
+    for (auto& slot: prevTable) {
+        while (slot) {
+            HashNode* temp = slot;
+            slot = slot->next;
+            delete temp;
+        }
+    }
     prevTable.clear();
     prevTable.resize(size, nullptr);
     for (int i = 0; i < size; i++) {
@@ -536,7 +543,7 @@ HashNode* HashTable::Search(int key) {
     });
     int idx = 0;
     while (current) {
-        searchDescriptions.push_back("Checking node NULL: " + std::to_string(current->key) + ". Not NULL.");
+        searchDescriptions.push_back("Checking node NULL: " + std::to_string(hashValue) + ". Not NULL.");
         searchCodeIndex.push_back(3);
         searchPaths1.push_back({
             std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW)
@@ -587,7 +594,7 @@ HashNode* HashTable::Search(int key) {
         });
         idx += 1;
     }
-    searchDescriptions.push_back("Checking node NULL: " + std::to_string(current->key) + ". NULL.");
+    searchDescriptions.push_back("Checking node NULL: " + std::to_string(hashValue) + ". NULL.");
     searchCodeIndex.push_back(3);
     searchPaths1.push_back({
         std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW)
@@ -595,7 +602,7 @@ HashNode* HashTable::Search(int key) {
     searchPaths2.push_back({
         std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, RED)
     });
-    searchDescriptions.push_back("Not found: " + std::to_string(current->key) + ". Return NULL.");
+    searchDescriptions.push_back("Not found: " + std::to_string(hashValue) + ". Return NULL.");
     searchCodeIndex.push_back(9);
     searchPaths1.push_back({
         std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
@@ -663,6 +670,7 @@ void HashTable::drawInsertOptions() {
     }
 
     if (GuiButton(Rectangle{ 230, 260, 20, 20 }, "OK")) {
+        pause = true;
         Insert(key, value);
         done = 0;
         delta = 0;
@@ -683,6 +691,7 @@ void HashTable::drawDeleteOptions() {
     }
 
     if (GuiButton(Rectangle{ 230, 260, 20, 20 }, "OK")) {
+        pause = true;
         Delete(key);
         done = 0;
         delta = 0;
@@ -703,6 +712,7 @@ void HashTable::drawSearchOptions() {
     }
 
     if (GuiButton(Rectangle{ 230, 290, 20, 20 }, "OK")) {
+        pause = true;
         Search(key);
         done = 0;
         delta = 0;

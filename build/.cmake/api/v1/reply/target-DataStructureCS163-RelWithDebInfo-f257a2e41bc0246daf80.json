@@ -2,10 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "Debug/DataStructureCS163.exe"
+			"path" : "RelWithDebInfo/DataStructureCS163.exe"
 		},
 		{
-			"path" : "Debug/DataStructureCS163.pdb"
+			"path" : "RelWithDebInfo/DataStructureCS163.pdb"
 		}
 	],
 	"backtrace" : 1,
@@ -62,7 +62,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -MDd"
+					"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /Zi /O2 /Ob1 /DNDEBUG -MD"
 				}
 			],
 			"defines" : 
@@ -108,11 +108,11 @@
 			"id" : "raylib::@7d429ebd5d102775094d"
 		},
 		{
-			"backtrace" : 2,
-			"id" : "glfw::@a896dd99b4a5c6eab3d9"
+			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
 		},
 		{
-			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
+			"backtrace" : 2,
+			"id" : "glfw::@a896dd99b4a5c6eab3d9"
 		}
 	],
 	"id" : "DataStructureCS163::@6890427a1f51a3e7e1df",
@@ -121,7 +121,7 @@
 		"commandFragments" : 
 		[
 			{
-				"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -MDd",
+				"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /Zi /O2 /Ob1 /DNDEBUG -MD",
 				"role" : "flags"
 			},
 			{
@@ -130,7 +130,7 @@
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "raylib\\raylib\\Debug\\raylib.lib",
+				"fragment" : "raylib\\raylib\\RelWithDebInfo\\raylib.lib",
 				"role" : "libraries"
 			},
 			{

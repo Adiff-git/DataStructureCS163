@@ -6,8 +6,9 @@
 LinkedList::LinkedList(int width, int height) 
     : head(nullptr), isPaused(false), skipStep(false), speed(1.0f), 
       activeFunction(0), activeLine(0), scrollOffset(0.0f), notification(""), 
-      screenWidth(width), screenHeight(height), foundNode(nullptr) {}
-
+      screenWidth(width), screenHeight(height), foundNode(nullptr) {
+    operationHistory = std::deque<ListState>();
+}
 void LinkedList::Clear() {
     while (head) {
         Node* temp = head;
@@ -16,7 +17,6 @@ void LinkedList::Clear() {
     }
     past.clear();
     future_continuous.clear();
-    future_non_continuous.clear();
 }
 
 std::string LinkedList::GetNotification() const {
@@ -52,9 +52,24 @@ void LinkedList::ProcessOperations() {
     opState.step = 1;
     opState.traversalIndex = 0;
 
-    // Xóa future_continuous và future_non_continuous khi bắt đầu một thao tác mới
+    // Lưu trạng thái trước khi thực hiện thao tác vào operationHistory
+    ListState preState;
+    Node* current = head;
+    while (current) {
+        preState.values.push_back(current->value);
+        preState.positions.push_back(current->position);
+        preState.isActive.push_back(current->isActive);
+        preState.alphas.push_back(current->alpha);
+        preState.targetPositions.push_back(current->targetPosition);
+        preState.animationProgresses.push_back(current->animationProgress);
+        preState.animationTypes.push_back(current->animationType);
+        current = current->next;
+    }
+    operationHistory.push_back(preState);
+
+    // Xóa past và future_continuous khi bắt đầu một thao tác mới
+    past.clear();
     future_continuous.clear();
-    future_non_continuous.clear();
 
     switch (op.type) {
         case 1: 
@@ -101,6 +116,9 @@ void LinkedList::UpdateOperations() {
 
     if (isAnimating || opState.delayTimer > 0) return;
 
+    // Lưu trạng thái trước khi thực hiện bước lớn
+    SaveState();
+
     switch (activeFunction) {
         case 1: UpdateInitialize(); break;
         case 2: UpdateAdd(); break;
@@ -109,13 +127,9 @@ void LinkedList::UpdateOperations() {
         case 5: UpdateUpdate(); break;
     }
 
-    // Lưu trạng thái hiện tại vào future_continuous sau mỗi bước
+    // Lưu trạng thái sau khi thực hiện bước lớn và thêm vào future_continuous
     SaveState();
-    if (!future_continuous.empty()) {
-        future_continuous.back() = past.back(); // Cập nhật trạng thái cuối cùng
-    } else {
-        future_continuous.push_back(past.back());
-    }
+    future_continuous.push_back(past.back());
 }
 
 void LinkedList::UpdateAnimation() {
@@ -127,8 +141,10 @@ void LinkedList::UpdateAnimation() {
     }
 
     Node* current = head;
+    bool hasAnimation = false;
     while (current) {
         if (current->animationType != 0) {
+            hasAnimation = true;
             current->animationProgress += speed / 60.0f;
             if (current->animationProgress >= 1.0f || skipStep) {
                 current->animationProgress = 1.0f;
@@ -171,9 +187,6 @@ void LinkedList::UpdateAnimation() {
         SkipToEnd();
         skipStep = false;
     }
-
-    // Lưu trạng thái hiện tại vào past sau mỗi khung hình
-    SaveState();
 }
 
 void LinkedList::Draw() {
@@ -261,43 +274,39 @@ void LinkedList::LoadFromFile(const char* filename) {
 }
 
 void LinkedList::PreviousStep() {
-    if (!isPaused) {
-        SetNotification("Please pause the animation to use Prev/Next.");
+    if (operationHistory.empty()) {
+        Clear(); // Nếu không có trạng thái trước đó, xóa danh sách
+        SetNotification("No previous state available. List cleared.");
         return;
     }
 
-    if (past.empty()) {
-        SetNotification("No previous steps available.");
-        return;
-    }
+    // Khôi phục trạng thái trước đó từ operationHistory
+    ListState preState = operationHistory.back();
+    operationHistory.pop_back();
+    LoadState(preState);
+    SetNotification("Reverted to previous state.");
 
-    // Lấy trạng thái từ past và chuyển sang future_continuous
-    ListState state = past.back();
-    past.pop_back();
-    future_continuous.push_front(state);
-
-    // Khôi phục trạng thái hiện tại
-    LoadState(state);
-    SetNotification("Reverted to previous step.");
+    // Xóa past và future_continuous, vì không còn thao tác hiện tại
+    past.clear();
+    future_continuous.clear();
+    activeFunction = 0;
+    activeLine = 0;
+    opState = OperationState();
 }
 
 void LinkedList::NextStep() {
-    if (!isPaused) {
-        SetNotification("Please pause the animation to use Prev/Next.");
-        return;
-    }
-
     if (future_continuous.empty()) {
         SetNotification("No next steps available.");
         return;
     }
 
-    // Lấy trạng thái từ future_continuous và chuyển sang past
+    // Lưu trạng thái hiện tại vào past
+    SaveState();
+
+    // Lấy trạng thái từ future_continuous và khôi phục
     ListState state = future_continuous.front();
     future_continuous.pop_front();
     past.push_back(state);
-
-    // Khôi phục trạng thái hiện tại
     LoadState(state);
     SetNotification("Advanced to next step.");
 }
@@ -790,6 +799,8 @@ void LinkedList::ResetOperation() {
     activeFunction = 0;
     activeLine = 0;
     opState = OperationState();
+    past.clear();
+    future_continuous.clear();
 }
 
 float LinkedList::Lerp(float start, float end, float t) {

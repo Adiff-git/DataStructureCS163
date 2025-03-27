@@ -1,7 +1,7 @@
 #include "raylib.h"
 #include "LinkedList.h"
 #include "Button.h"
-#include "Utils.h" // Thêm include để sử dụng các hàm tiện ích
+#include "Utils.h"
 #include <vector>
 #include <string>
 #include <fstream>

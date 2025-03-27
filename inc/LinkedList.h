@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include <queue>
-#include <deque> // Thêm để sử dụng deque
+#include <deque>
 
 class LinkedList {
 private:
@@ -37,10 +37,9 @@ private:
         int traversalIndex = 0;
     } opState;
 
-    // Thay thế history và operationSteps bằng 3 deque
-    std::deque<ListState> past; // Lưu các trạng thái đã qua
-    std::deque<ListState> future_continuous; // Lưu các trạng thái tiếp theo để chạy animation liên tục
-    std::deque<ListState> future_non_continuous; // Lưu các trạng thái để redo
+    std::deque<ListState> past; // Lưu các bước lớn trong thao tác hiện tại
+    std::deque<ListState> future_continuous; // Lưu các bước lớn tiếp theo
+    std::deque<ListState> operationHistory; // Lưu lịch sử trạng thái trước mỗi thao tác
 
     void Clear();
     void UpdateInitialize();

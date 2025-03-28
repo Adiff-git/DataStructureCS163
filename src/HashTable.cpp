@@ -209,31 +209,32 @@ void HashTable::Insert(int key, int value) {
             std::make_tuple(Rectangle{ 370.0f - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, BLUE),
             std::make_tuple(Rectangle{ 370.0f, 20.0f + 30 * hashValue, 50, 20 }, BLUE)
          });
-        // check the node
-        int idx = 0;
-        while (current->next != NULL && current->key != key) {
-            insertDescriptions.push_back("Checking condition: Key not found");
-            insertCodeIndex.push_back(7);
-            insertPaths1.push_back({
-                std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
-                // std::make_tuple(Rectangle{ 370.0f + 60 * idx - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, BLUE),
-            });
-            insertPaths2.push_back({ 
-                std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, RED)
-             });
-            current = current->next;
-            insertDescriptions.push_back("Move to the next node");
-            insertCodeIndex.push_back(8);
-            insertPaths1.push_back({
-                std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
-                // std::make_tuple(Rectangle{ 370.0f + 60 * idx - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, RED),
-                std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, BLUE)
-            });
-            insertPaths2.push_back({ 
-                std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1) - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, BLUE),
-                std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1), 20.0f + 30 * hashValue, 50, 20 }, BLUE)
-            });
-        }
+       // check the node
+int idx = 0;
+while (current->next != NULL && current->key != key) {
+    insertDescriptions.push_back("Checking condition: Key not found");
+    insertCodeIndex.push_back(7);
+    insertPaths1.push_back({
+        std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
+        // std::make_tuple(Rectangle{ 370.0f + 60 * idx - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, BLUE),
+    });
+    insertPaths2.push_back({ 
+        std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, RED) // Highlight current node as RED (key mismatch)
+    });
+    current = current->next;
+    idx++; // Increment idx to move to the next node position
+    insertDescriptions.push_back("Move to the next node");
+    insertCodeIndex.push_back(8);
+    insertPaths1.push_back({
+        std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
+        // std::make_tuple(Rectangle{ 370.0f + 60 * idx - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, RED),
+        std::make_tuple(Rectangle{ 370.0f + 60 * (idx - 1), 20.0f + 30 * hashValue, 50, 20 }, BLUE)
+    });
+    insertPaths2.push_back({ 
+        std::make_tuple(Rectangle{ 370.0f + 60 * idx - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, BLUE),
+        std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, BLUE) // Highlight next node as BLUE
+    });
+}
         if (current->key == key) {
             insertDescriptions.push_back("Checking condition: Found key" + std::to_string(key));
             insertCodeIndex.push_back(10);

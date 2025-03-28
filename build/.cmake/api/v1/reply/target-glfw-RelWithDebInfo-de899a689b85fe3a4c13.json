@@ -2,67 +2,67 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/context.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/RelWithDebInfo/context.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/init.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/RelWithDebInfo/init.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/input.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/RelWithDebInfo/input.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/monitor.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/RelWithDebInfo/monitor.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/platform.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/RelWithDebInfo/platform.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/vulkan.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/RelWithDebInfo/vulkan.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/window.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/RelWithDebInfo/window.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/egl_context.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/RelWithDebInfo/egl_context.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/osmesa_context.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/RelWithDebInfo/osmesa_context.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/null_init.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/RelWithDebInfo/null_init.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/null_monitor.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/RelWithDebInfo/null_monitor.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/null_window.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/RelWithDebInfo/null_window.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/null_joystick.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/RelWithDebInfo/null_joystick.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/win32_module.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/RelWithDebInfo/win32_module.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/win32_time.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/RelWithDebInfo/win32_time.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/win32_thread.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/RelWithDebInfo/win32_thread.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/win32_init.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/RelWithDebInfo/win32_init.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/win32_joystick.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/RelWithDebInfo/win32_joystick.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/win32_monitor.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/RelWithDebInfo/win32_monitor.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/win32_window.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/RelWithDebInfo/win32_window.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/wgl_context.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/RelWithDebInfo/wgl_context.obj"
 		}
 	],
 	"backtrace" : 1,
@@ -124,7 +124,7 @@
 			{
 				"command" : 3,
 				"file" : 1,
-				"line" : 14,
+				"line" : 15,
 				"parent" : 6
 			},
 			{
@@ -165,7 +165,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "/DWIN32 /D_WINDOWS /O2 /Ob2 /DNDEBUG -MD"
+					"fragment" : "/DWIN32 /D_WINDOWS /Zi /O2 /Ob1 /DNDEBUG -MD"
 				},
 				{
 					"backtrace" : 2,

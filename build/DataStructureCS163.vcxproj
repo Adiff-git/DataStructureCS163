@@ -86,7 +86,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raygui\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -105,10 +105,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;PLATFORM_DESKTOP;GRAPHICS_API_OPENGL_33;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raygui\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raygui\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -131,7 +131,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raygui\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -151,10 +151,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;PLATFORM_DESKTOP;GRAPHICS_API_OPENGL_33;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raygui\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raygui\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -177,7 +177,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raygui\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -197,10 +197,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;PLATFORM_DESKTOP;GRAPHICS_API_OPENGL_33;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raygui\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raygui\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -223,7 +223,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raygui\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -242,10 +242,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;PLATFORM_DESKTOP;GRAPHICS_API_OPENGL_33;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raygui\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\DataStructureCS163\inc;C:\Users\Huyen\Documents\DataStructureCS163\raygui\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src;C:\Users\Huyen\Documents\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -324,16 +324,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\src\AVLTree.cpp" />
-    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\src\Animation.cpp" />
-    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\src\Button.cpp" />
-    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\src\DataStructureLogic.cpp" />
-    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\src\GUI.cpp" />
-    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\src\Graph.cpp" />
     <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\src\HashTable.cpp" />
     <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\src\Program.cpp" />
-    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\src\SettingsManager.cpp" />
-    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\src\SinglyLinkedList.cpp" />
     <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\src\main.cpp" />
   </ItemGroup>
   <ItemGroup />

@@ -2,10 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "Debug/DataStructureCS163.exe"
+			"path" : "MinSizeRel/DataStructureCS163.exe"
 		},
 		{
-			"path" : "Debug/DataStructureCS163.pdb"
+			"path" : "MinSizeRel/DataStructureCS163.pdb"
 		}
 	],
 	"backtrace" : 1,
@@ -68,7 +68,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -MDd"
+					"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /O1 /Ob1 /DNDEBUG -MD"
 				}
 			],
 			"defines" : 
@@ -125,11 +125,11 @@
 		},
 		{
 			"backtrace" : 2,
-			"id" : "glfw::@a896dd99b4a5c6eab3d9"
+			"id" : "raylib::@7d429ebd5d102775094d"
 		},
 		{
 			"backtrace" : 2,
-			"id" : "raylib::@7d429ebd5d102775094d"
+			"id" : "glfw::@a896dd99b4a5c6eab3d9"
 		}
 	],
 	"id" : "DataStructureCS163::@6890427a1f51a3e7e1df",
@@ -138,11 +138,11 @@
 		"commandFragments" : 
 		[
 			{
-				"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -MDd",
+				"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /O1 /Ob1 /DNDEBUG -MD",
 				"role" : "flags"
 			},
 			{
-				"fragment" : "/machine:x64 /debug /INCREMENTAL",
+				"fragment" : "/machine:x64 /INCREMENTAL:NO",
 				"role" : "flags"
 			},
 			{
@@ -151,7 +151,7 @@
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "raylib\\raylib\\Debug\\raylib.lib",
+				"fragment" : "raylib\\raylib\\MinSizeRel\\raylib.lib",
 				"role" : "libraries"
 			},
 			{

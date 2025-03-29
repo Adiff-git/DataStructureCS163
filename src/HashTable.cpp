@@ -20,6 +20,9 @@ char* ftc(float v) {
 HashTable::HashTable(int size) : size(size), selectedNode(nullptr), selectedValue(0), selectedNodeArea({0, 0, 0, 0}) {
     table.resize(size, nullptr);
     saveCurrentTable();
+	pathfile[0] = '\0';      // Initialize empty file path
+    fileLoaded = false;      // No file loaded initially
+    showUploadPrompt = false;//
 }
 
 HashTable::~HashTable() {
@@ -723,10 +726,56 @@ void HashTable::drawInitializeOptions() {
     }
 
     if (GuiButton(Rectangle{ 130, 260, 60, 20 }, "Upload")) {
-    }
+		showUploadPrompt = true;
+        fileLoaded = false;
+        TraceLog(LOG_INFO, "Upload button clicked, waiting for file drop");
+	}
 
     if (GuiButton(Rectangle{ 205, 260, 20, 20 }, "OK")) {
-        Init(mValue, nValue);
+        if (fileLoaded) {
+            std::ifstream fin(pathfile);
+            if (fin.is_open()) {
+                int m, n;
+                fin >> m >> n;
+                m = std::min(m, 20);
+                n = std::min(n, 100);
+
+                table.clear();
+                table.resize(m, nullptr);
+                size = m;
+
+                for (int i = 0; i < n && !fin.eof(); i++) {
+                    int key, value;
+                    if (fin >> key >> value) {
+                        Insert(key, value);
+                        TraceLog(LOG_INFO, "Inserted: key=%d, value=%d", key, value); // Optional debug
+                    }
+                }
+                fin.close();
+                saveCurrentTable();
+                curStep = 0;
+                done = 0;
+                delta = 0;
+                doneStep = true;
+                doneAnimation = false;
+                totalStep = initCodeIndex.size();
+                operation_type = 4;
+            } else {
+                TraceLog(LOG_ERROR, "Failed to open file: %s", pathfile); // Optional debug
+                fileLoaded = false;
+                showUploadPrompt = true;
+            }
+        } else {
+            Init(mValue, nValue);
+        }
+        showUploadPrompt = false;
+    }
+
+    if (showUploadPrompt) {
+        const char* message = "Drag and drop an input file here";
+        Vector2 textSize = MeasureTextEx(GetFontDefault(), message, 20, 1);
+        Vector2 position = { (float)(GetScreenWidth() - textSize.x) / 2, (float)(GetScreenHeight() - textSize.y) / 2 };
+        DrawText(message, (int)position.x, (int)position.y, 20, BLACK);
     }
 }
 
@@ -1173,7 +1222,7 @@ void HashTable::DrawScreen() {
     drawAnimationMenu();
 
     // Only draw the table or previous table when the animation is complete
-    if (doneAnimation || curStep == totalStep - 1 && totalStep > 0 ) {
+    if (doneAnimation && operation_type == 4 || curStep == totalStep - 1 && totalStep > 0 ) {
         drawTable();
     } else {
         // Do not draw the entire previous table during initialization animation

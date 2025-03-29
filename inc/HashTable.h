@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 #include <tuple>
-
+#include <fstream> // Add this line
 struct HashNode {
     int key;
     int value;
@@ -36,7 +36,10 @@ private:
     HashNode* selectedNode;
     int selectedValue;
     Rectangle selectedNodeArea;
-    
+    char pathfile[1024];       // Buffer for dropped file path
+    bool fileLoaded;           // True when a file is successfully dropped
+    bool showUploadPrompt;
+
     // animation control menu
     void drawAnimationMenu();
     int curStep = 0;
@@ -147,6 +150,18 @@ public:
     void Delete(int key);
     HashNode* Search(int key);
     void DrawScreen();
+	void handleFileDrop() {
+        if (showUploadPrompt && IsFileDropped()) {
+            FilePathList droppedFiles = LoadDroppedFiles();
+            if (droppedFiles.count > 0) {
+                TextCopy(pathfile, droppedFiles.paths[0]);
+                fileLoaded = true;
+                showUploadPrompt = false;
+                TraceLog(LOG_INFO, "File dropped: %s", pathfile); // Optional debug
+            }
+            UnloadDroppedFiles(droppedFiles);
+        }
+    }
 };
 
 #endif

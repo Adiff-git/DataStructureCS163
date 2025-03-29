@@ -3,7 +3,6 @@
 #include <string>
 #include <random>
 #include "raygui.h"
-
 Program::Program() : hashTable(1) {
     const int screenWidth = 1300;
     const int screenHeight = 786;
@@ -18,6 +17,7 @@ Program::~Program() {
 
 void Program::Run() {
     while (!WindowShouldClose()) {
+		hashTable.handleFileDrop(); 
         BeginDrawing();
         ClearBackground(RAYWHITE);
         hashTable.DrawScreen();

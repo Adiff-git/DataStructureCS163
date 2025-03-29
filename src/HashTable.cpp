@@ -117,22 +117,47 @@ void HashTable::drawTable() {
 
 // Operation
 void HashTable::Init(int m, int n) {
-    for (auto& slot : table) {
-        while (slot) {
-            HashNode* temp = slot;
-            slot = slot->next;
-            delete temp;
-        }
-    }
-    if (m == 0) {
-        table.clear();
-    } else {
-        table.resize(m, nullptr);
-    }
-    size = m;
-    for (int i = 0; i < n; i++) Insert(rand() % 100, rand() % 100);
-}
+    saveCurrentTable();
+    initDescriptions.clear();
+    initCodeIndex.clear();
+    initPaths1.clear();
+    initPaths2.clear();
 
+    initDescriptions.push_back("Begin initialization");
+    initCodeIndex.push_back(0);
+    initPaths1.push_back({});
+    initPaths2.push_back({});
+
+    for (int i = 0; i < m; i++) {
+        initDescriptions.push_back("Initializing slot " + std::to_string(i));
+        initCodeIndex.push_back(1);
+        initPaths1.push_back({});
+        initPaths2.push_back({ std::make_tuple(Rectangle{ 300, 20.0f + 30 * i, 60, 20 }, YELLOW) });
+    }
+
+    table.clear();
+    table.resize(m, nullptr);
+    size = m;
+
+    for (int i = 0; i < n; i++) {
+        int key = rand() % 100;
+        int value = rand() % 100;
+        Insert(key, value);
+    }
+
+    initDescriptions.push_back("Initialization complete");
+    initCodeIndex.push_back(2);
+    initPaths1.push_back({});
+    initPaths2.push_back({});
+
+    // Reset animation state variables
+    curStep = 0;
+    done = 0;
+    delta = 0;
+    doneAnimation = false;
+    totalStep = initCodeIndex.size();
+    operation_type = 4; // New operation type for initialization
+}
 void HashTable::Insert(int key, int value) {
     saveCurrentTable();
     insertDescriptions.clear();
@@ -616,7 +641,64 @@ HashNode* HashTable::Search(int key) {
     operation_type = 3;
     return NULL;
 }
+void HashTable::drawInitializeAnimation() {
+    if (pause) {
+        delta = 0;
+        return;
+    }
 
+    // Ensure curStep does not exceed the size of the table
+    if (curStep >= size) {
+        doneAnimation = true;
+        return;
+    }
+
+    // Draw the table incrementally up to the current step
+    for (int i = 0; i <= curStep; i++) {
+        GuiButton(Rectangle{ 300, 20.0f + 30 * i, 60, 20 }, TextFormat("Key: %d", i));
+        HashNode* current = table[i];
+        int idx = 0;
+
+        // Draw nodes incrementally for the current slot
+        while (current && (i < curStep || idx <= done)) {
+            Rectangle nodeBounds = { 370.0f + 60 * idx, 20.0f + 30 * i, 50, 20 };
+
+            // Highlight the current node being initialized in green
+		        if (i == curStep && idx == done) {
+            GuiButton(nodeBounds, TextFormat("%d | %d", current->key, current->value));
+            GuiDrawRectangle(nodeBounds, 2, GREEN, GuiFade(GREEN, 0.5f));
+        } else {
+            GuiButton(nodeBounds, TextFormat("%d | %d", current->key, current->value));
+            GuiDrawRectangle(nodeBounds, 2, GRAY, GuiFade(GRAY, 0.2f));
+        }
+            current = current->next;
+            idx++;
+        }
+    }
+
+    // Progress to the next node or slot after a delay
+    delta += speed;
+    if (delta >= 100) { // Adjust this value to control the delay
+        HashNode* current = table[curStep];
+        int idx = 0;
+        while (current && idx < done) {
+            current = current->next;
+            idx++;
+        }
+
+        if (current && idx == done) {
+            done++;
+        } else {
+            curStep++;
+            done = 0;
+        }
+        delta = 0;
+    }
+
+    // Draw progress bar
+    float progress = (float)(curStep) / size;
+    GuiProgressBar(Rectangle{ 20, 480, 200, 20 }, NULL, NULL, &progress, 0.0f, 1.0f);
+}
 // Option Items
 void HashTable::drawInitializeOptions() {
     static int mValue = 0;
@@ -1014,6 +1096,47 @@ void HashTable::drawSearchDescription() {
     }
 }
 
+void HashTable::drawInitializeDescription() {
+    GuiLabel(Rectangle{ 980, 20, 150, 20 }, "Initializing");
+
+    // Display the current description
+    if (initDescriptions.size() > curStep) {
+        GuiLabel(Rectangle{ 980, 40, 300, 20 }, initDescriptions[curStep].c_str());
+    }
+
+    // Highlight the current code line
+    int stt = initCodeIndex.size() > curStep ? initCodeIndex[curStep] : 0;
+    for (int i = 0; i < insertCodes.size(); i++) {
+        Color c = stt == i ? RED : BLACK;
+        Rectangle bounds = { 1000, 60.0f + i * 20, 300, 20 };
+        GuiDrawText(insertCodes[i].c_str(), GetTextBounds(LABEL, bounds), GuiGetStyle(LABEL, TEXT_ALIGNMENT), c);
+        if (stt == i) {
+            GuiLabel(Rectangle{ 980, 60.0f + i * 20, 20, 20 }, ">>");
+        }
+    }
+
+    // Draw the paths for the current step
+    if (initPaths1.size() > curStep) {
+        for (auto& path : initPaths1[curStep]) {
+            if (std::get<0>(path).width > 0) {
+                GuiDrawRectangle(std::get<0>(path), 2, std::get<1>(path), GuiFade(std::get<1>(path), 0.2f));
+            }
+        }
+    }
+
+    // Highlight the paths for the current step if paused
+    if (pause && initPaths2.size() > curStep) {
+        for (auto& path : initPaths2[curStep]) {
+            if (std::get<0>(path).width > 0) {
+                GuiDrawRectangle(std::get<0>(path), 2, std::get<1>(path), GuiFade(std::get<1>(path), 0.2f));
+            }
+        }
+    }
+
+    // Display progress percentage
+    float progress = (float)(curStep + 1) / totalStep * 100;
+    GuiLabel(Rectangle{ 980, 460, 150, 20 }, TextFormat("Progress: %.0f%%", progress));
+}
 // Node detail Menu
 void HashTable::drawNodeDetailMenu() {
     if (selectedNode) {
@@ -1048,12 +1171,20 @@ void HashTable::DrawScreen() {
     ClearBackground(WHITE);
     drawOperationMenu();
     drawAnimationMenu();
-    if (curStep == totalStep - 1 && totalStep > 0) {
+
+    // Only draw the table or previous table when the animation is complete
+    if (doneAnimation || curStep == totalStep - 1 && totalStep > 0 ) {
         drawTable();
     } else {
-        drawPrevTable();
+        // Do not draw the entire previous table during initialization animation
+        if (operation_type != 4) {
+            drawPrevTable();
+        }
     }
+
     drawNodeDetailMenu();
+
+    // Handle animations based on the operation type
     if (operation_type == 1) {
         drawInsertDescription();
         drawInsertAnimation();
@@ -1065,5 +1196,9 @@ void HashTable::DrawScreen() {
     if (operation_type == 3) {
         drawSearchDescription();
         drawSearchAnimation();
+    }
+    if (operation_type == 4) { // Initialization animation
+        drawInitializeDescription();
+        drawInitializeAnimation();
     }
 }

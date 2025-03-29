@@ -131,6 +131,14 @@ private:
     void drawSearchDescription();
     void drawSearchAnimation();
 
+	// Initialization animation variables
+	std::vector<std::string> initDescriptions;
+	std::vector<int> initCodeIndex;
+	std::vector<std::vector<std::tuple<Rectangle, Color>>> initPaths1;
+	std::vector<std::vector<std::tuple<Rectangle, Color>>> initPaths2;
+	void drawInitializeAnimation();
+	void drawInitializeDescription();
+
 public:
     HashTable(int size);
     ~HashTable();

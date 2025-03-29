@@ -9,6 +9,10 @@
 #include <algorithm>
 #include <sstream>
 #include "raymath.h"
+#include <random>
+#include <iomanip>
+
+using namespace std;
 
 bool isCreatingActive = false;
 bool isRandomizingActive = false;
@@ -307,6 +311,46 @@ std::vector<Edge> calculatePrimMST(const std::vector<Edge>& edges, int numNodes)
     return mstEdges;
 }
 
+// Hàm tính toán vị trí node theo hình tròn với độ lệch ngẫu nhiên
+void positionNodesInCircle(std::vector<Vector2>& nodePositions, int numNodes, float centerX, float centerY,float radius) {
+    nodePositions.resize(numNodes);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> distRadius(0.9f, 1.1f); // Thay đổi bán kính
+    std::uniform_real_distribution<> distAngle(-0.1f, 0.1f);  // Thay đổi góc
+
+   for (int i = 0; i < numNodes; ++i) {
+       float angle = 2.0f * PI * i / numNodes + distAngle(gen);
+       float randomRadius = radius * distRadius(gen);
+       nodePositions[i] = {centerX + randomRadius * cosf(angle),centerY + randomRadius * sinf(angle)};
+    }
+}
+
+// Hàm vẽ node đẹp hơn
+void drawNode(Vector2 position, int id, Color color, float radius) {
+    DrawCircleV(position, radius, color);
+    DrawCircleV(position, radius - 2, WHITE);
+    DrawText(TextFormat("%d", id), position.x - MeasureText(TextFormat("%d", id), 20) / 2, position.y - 10, 20,
+             DARKGRAY);
+}
+
+// Hàm vẽ cạnh cong (Bezier)
+void drawBezierEdge(Vector2 start, Vector2 end, float thickness, Color color) {
+    DrawLineEx(start, end, thickness, color);
+}
+
+//Hàm vẽ trọng số cạnh ở giữa và đẹp hơn
+void drawEdgeWeight(Vector2 start, Vector2 end, int weight) {
+    Vector2 midPoint = { (start.x + end.x) / 2.0f, (start.y + end.y) / 2.0f };
+    std::string weightText = std::to_string(weight);
+    int fontSize = 14;
+    Vector2 textSize = { (float)MeasureText(weightText.c_str(), fontSize), (float)fontSize };
+    Vector2 textPosition = { midPoint.x - textSize.x / 2.0f, midPoint.y - textSize.y / 2.0f };
+
+    DrawRectangle(textPosition.x - 2, textPosition.y - 2, textSize.x + 4, textSize.y + 4, WHITE); // Background
+    DrawText(weightText.c_str(), (int)textPosition.x, (int)textPosition.y, fontSize, BLACK);
+}
+
 int main() {
     const int screenWidth = 1400;
     const int screenHeight = 1000;
@@ -535,7 +579,7 @@ int main() {
                 mstEdges = calculatePrimMST(edges, nodePositions.size()); // Tính toán MST bằng Prim
                 mstEdgesDrawn.resize(mstEdges.size(), false);
                 mstEdgeIndex = 0;
-                mstDrawTimer = 0.0f;
+                mstDrawTimer = 0.0f; 
                 drawMSTOnMSTMenu = true;
                 mstDoneDrawing = false; // Reset flag MST drawing finish status
             }
@@ -544,7 +588,7 @@ int main() {
           
                 usePrim = false;
                 useKruskal = true;
-            //    mstEdges = calculateKruskalMST(edges, nodePositions.size()); // Tính toán MST bằng Kruskal
+            //  mstEdges = calculateKruskalMST(edges, nodePositions.size()); // Tính toán MST bằng Kruskal
                 mstEdgesDrawn.resize(mstEdges.size(), false);
                 mstEdgeIndex = 0;
                 mstDrawTimer = 0.0f;
@@ -569,12 +613,11 @@ int main() {
         for (const auto& edge : mstEdges) {
             numNodesMST = std::max({numNodesMST, edge.from, edge.to});
         }
-    
+        
         std::vector<Vector2> mstNodePositions(numNodesMST);
         std::vector<bool> mstNodesDrawn(numNodesMST, false);
         float radius = std::min(mstMenuRect.width, mstMenuRect.height) / 3.0f; // Adjust for spacing
-    
-        // Calculate node positions within mstMenuRect
+        
         for (int i = 0; i < numNodesMST; ++i) {
             float angle = 2.0f * PI * i / numNodesMST;
             mstNodePositions[i] = {
@@ -582,58 +625,62 @@ int main() {
                 mstMenuRect.y + mstMenuRect.height / 2.0f + radius * sinf(angle)
             };
         }
-    
+        
         // Vẽ các cạnh MST (từ từ)
         if (usePrim || useKruskal) {
-    
-            //Vẽ các cạnh MST đã vẽ
-            for (int i = 0; i < mstEdgesDrawn.size(); i++) {
-                if (mstEdgesDrawn[i]){
-                    //draw the edges
-                    int from = mstEdges[i].from - 1;
-                    int to = mstEdges[i].to - 1;
-                     Vector2 fromPos = mstNodePositions[from];
-                     Vector2 toPos = mstNodePositions[to];
-                        DrawLineEx(fromPos,toPos,3.0f,RED);
-    
-                   Vector2 weightPosition = {
-                         (fromPos.x + toPos.x) / 2,
-                        (fromPos.y + toPos.y) / 2
-                   };
-                  DrawText(TextFormat("%d", mstEdges[i].weight), weightPosition.x, weightPosition.y, 10, SKYBLUE); 
-                    }
+              // Vẽ các cạnh MST (từ từ)
+        for (int i = 0; i < mstEdgesDrawn.size(); i++) {
+            if (mstEdgesDrawn[i]) {
+                int from = mstEdges[i].from - 1;
+                int to = mstEdges[i].to - 1;
+                Vector2 fromPos = mstNodePositions[from];
+                Vector2 toPos = mstNodePositions[to];
+                DrawLineEx(fromPos, toPos, 3.0f, RED);
+                drawEdgeWeight(fromPos, toPos, mstEdges[i].weight);
             }
-            
-        //Nếu MST vẽ chưa xong thì vẽ cạnh tiếp theo
-        if (mstEdgeIndex < mstEdges.size())
-         {
+        }
+
+        // Vẽ cạnh MST tiếp theo
+        if (mstEdgeIndex < mstEdges.size()) {
             mstDrawTimer += GetFrameTime();
-             if (mstDrawTimer >= 0.5f) {
-               int from = mstEdges[mstEdgeIndex].from - 1;
-               int to = mstEdges[mstEdgeIndex].to - 1;
-                 Vector2 fromPos = mstNodePositions[from];
-                  Vector2 toPos = mstNodePositions[to];
-                  // Calculate edge length (or use time-based increment)
-                  float edgeLength = Vector2Distance(fromPos, toPos);
-                  float drawLength = std::min(mstDrawTimer / 0.5f, edgeLength);
-                  Vector2 drawToPos = { fromPos.x + (toPos.x - fromPos.x) * (drawLength / edgeLength), fromPos.y + (toPos.y - fromPos.y) * (drawLength / edgeLength) };
-                  DrawLineEx(fromPos, drawToPos, 3.0f, SKYBLUE);
-                    //  Draw weight
-                  Vector2 weightPosition = {
-                   (fromPos.x + toPos.x) / 2,
-                   (fromPos.y + toPos.y) / 2
-                   };
-                   DrawText(TextFormat("%d", mstEdges[mstEdgeIndex].weight), weightPosition.x, weightPosition.y, 10, BLUE);
-    
-                  mstEdgesDrawn[mstEdgeIndex] = true;
-                  mstEdgeIndex++;
-                  mstDrawTimer = 0.0f;
-                 }
-          }
-      // Vẽ các cạnh đồ thị gốc (không làm mờ)
-       else 
-        {
-                for (const auto& edge : edges) {
+            if (mstDrawTimer >= 0.5f) {
+                int from = mstEdges[mstEdgeIndex].from - 1;
+                int to = mstEdges[mstEdgeIndex].to - 1;
+                Vector2 fromPos = mstNodePositions[from];
+                Vector2 toPos = mstNodePositions[to];
+                DrawLineEx(fromPos, toPos, 3.0f, SKYBLUE);
+                drawEdgeWeight(fromPos, toPos, mstEdges[mstEdgeIndex].weight);
+
+                mstEdgesDrawn[mstEdgeIndex] = true;
+                mstEdgeIndex++;
+                mstDrawTimer = 0.0f;
+            }
+        } else {
+            // Sau khi vẽ xong MST, vẽ các cạnh không thuộc MST
+            for (const auto& edge : edges) {
+                bool isMSTEdge = false;
+                for (const auto& mstEdge : mstEdges) {
+                    if ((edge.from == mstEdge.from && edge.to == mstEdge.to) ||
+                        (edge.from == mstEdge.to && edge.to == mstEdge.from)) {
+                        isMSTEdge = true;
+                        break;
+                    }
+                }
+                if (!isMSTEdge) {
+                    Color edgeColor = Fade(DARKBLUE, 0.3f); // Màu mờ cho cạnh không thuộc MST
+                    int fromIndex = edge.from - 1;
+                    int toIndex = edge.to - 1;
+                    if (fromIndex >= 0 && fromIndex < mstNodePositions.size() &&
+                        toIndex >= 0 && toIndex < mstNodePositions.size()) {
+                        DrawLineEx(mstNodePositions[fromIndex], mstNodePositions[toIndex], 2.0f, edgeColor);
+                        drawEdgeWeight(mstNodePositions[fromIndex], mstNodePositions[toIndex], edge.weight);
+                    }
+                }
+              }
+            }
+        } else if (!mstEdges.empty()) {
+            // draw edges
+            for (const auto& edge : edges) {
                 Color edgeColor = DARKBLUE;
                 bool isMSTEdge = false;
                 for (const auto& mstEdge : mstEdges) {
@@ -643,31 +690,24 @@ int main() {
                         break;
                     }
                 }
-              if (usePrim && !isMSTEdge) {
+                if (usePrim && !isMSTEdge) {
                     edgeColor = Fade(DARKBLUE, 0.3f); // Làm mờ cạnh không thuộc MST
                 }
-              int fromIndex = edge.from - 1;
-              int toIndex = edge.to - 1;
-                if (fromIndex >= 0 && fromIndex < mstNodePositions.size() && toIndex >= 0 && toIndex < mstNodePositions.size()){
-                  Vector2 fromPos = mstNodePositions[fromIndex]; //Tọa độ Node trên đồ thị gốc
-                  Vector2 toPos = mstNodePositions[toIndex];
-                   DrawLineV(fromPos,toPos,edgeColor);
-                 // draw the edge weights for the current graph
-                  Vector2 weightPosition = {
-                  (fromPos.x + toPos.x) / 2,
-                    (fromPos.y + toPos.y) / 2
-                   };
-                 DrawText(TextFormat("%d", edge.weight), weightPosition.x, weightPosition.y, 10, SKYBLUE);
-              }
-           }
-       }
-    // vẽ các node MST
-      for (int i = 0; i < numNodesMST; ++i) {
-            DrawCircleV(mstNodePositions[i], 10, ORANGE);
-             DrawText(TextFormat("%d", i + 1), mstNodePositions[i].x - 5, mstNodePositions[i].y - 5, 12, BLACK);
+        
+                int fromIndex = edge.from - 1;
+                int toIndex = edge.to - 1;
+                if (fromIndex >= 0 && fromIndex < mstNodePositions.size() &&
+                toIndex >= 0 && toIndex < mstNodePositions.size()) {
+                DrawLineEx(mstNodePositions[fromIndex], mstNodePositions[toIndex], 2.0f, edgeColor);
+                drawEdgeWeight(mstNodePositions[fromIndex], mstNodePositions[toIndex], edge.weight);
+                }
+            }
+        }
+        // draw node
+        for (int i = 0; i < mstNodePositions.size(); i++) {
+            drawNode(mstNodePositions[i], i + 1, ORANGE, 20); // Use styled node drawing
         }
     }
-}
     // Vẽ thông báo lỗi (nếu có)
     if (showMSTError) {
     DrawText(mstErrorMessage.c_str(), mstButton.x + mstButton.width + 10, mstButton.y + 10, 20, RED);
@@ -1096,20 +1136,22 @@ int main() {
         }
 }
         if (graphDrawn && showGraph) {
-        int numNodesToDraw=nodePositions.size();
-        int nodeRadius = 20;
+            if (nodePositions.empty() && !edges.empty()) {
+                positionNodesInCircle(nodePositions, std::max(static_cast<std::size_t>(edges.size()), edges.empty() ? static_cast<std::size_t>(0) : static_cast<std::size_t>(std::max_element(edges.begin(), edges.end(), [](const Edge &a, const Edge &b) {
+                    return std::max(static_cast<int>(a.from), static_cast<int>(a.to)) < std::max(static_cast<int>(a.from), static_cast<int>(a.to));
+                })->to)), screenWidth / 2.0f, screenHeight / 2.0f, 200.0f);
+            }
+        // Vẽ cạnh
         for (const auto& edge : edges) {
-            Vector2 fromPos = nodePositions[edge.from - 1];
-            Vector2 toPos = nodePositions[edge.to - 1];
-            DrawLineV(fromPos, toPos, DARKBLUE);
-            Vector2 weightPos = { fromPos.x + (toPos.x - fromPos.x) * 0.5f, fromPos.y + (toPos.y - fromPos.y) * 0.5f };
-            DrawText(TextFormat("%d", edge.weight), weightPos.x, weightPos.y, 20, SKYBLUE);
+            drawBezierEdge(nodePositions[edge.from - 1], nodePositions[edge.to - 1], 2.0f, DARKBLUE);
+            drawEdgeWeight(nodePositions[edge.from - 1], nodePositions[edge.to - 1], edge.weight);
+
         }
 
-        for (int i = 0; i < numNodesToDraw; ++i) {
-            DrawCircleV(nodePositions[i], nodeRadius, ORANGE);
-            DrawCircleV(nodePositions[i], nodeRadius - 2, WHITE);
-            DrawText(TextFormat("%d", i + 1), nodePositions[i].x - MeasureText(TextFormat("%d", i + 1), 20) / 2, nodePositions[i].y - 10, 20, DARKGRAY);
+        //Vẽ Node
+        for (int i = 0; i < nodePositions.size(); i++) {
+            drawNode(nodePositions[i], i + 1, ORANGE, 20);
+
         }
     }
     

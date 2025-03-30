@@ -709,12 +709,12 @@ void HashTable::drawInitializeOptions() {
     static bool mInputEnabled = false;
     static bool nInputEnabled = false;
 
-    GuiLabel(Rectangle{ 105, 200, 30, 20 }, "M: ");
-    if (GuiSpinner(Rectangle{ 120, 200, 80, 20 }, NULL, &mValue, 0, 20, mInputEnabled)) {
+    GuiLabel(Rectangle{ 20, 650, 25, 25 }, "M: ");
+    if (GuiSpinner(Rectangle{ 50, 650, 100, 25 }, NULL, &mValue, 1, 20, mInputEnabled)) {
         mInputEnabled = !mInputEnabled;
     }
-    if (GuiButton(Rectangle{ 205, 200, 20, 20 }, "#193#")) {
-        mValue = GetRandomValue(1, 10);
+    if (GuiButton(Rectangle{ 160, 650, 25, 25 }, "#193#")) {
+        mValue = GetRandomValue(1, 20);
     }
 
     GuiLabel(Rectangle{ 105, 230, 30, 20 }, "N: ");
@@ -855,7 +855,11 @@ void HashTable::drawSearchOptions() {
 // Operation Menu
 void HashTable::drawOperationMenu() {
     static bool showInitializeOption = false;
-    Rectangle initializeButtonPos = { 20, 120, 100, 50 };
+	static float opPosX = 20;
+	static float opPosY = 700;
+	static float opWidth = 80;
+	static float opHeight = 30;
+    Rectangle initializeButtonPos = { opPosX, opPosY, opWidth, opHeight };
     Rectangle initializeOptionPos = { 100, 200, 125, 90 };
     if (GuiButton(initializeButtonPos, "Init")) {
         showInitializeOption = !showInitializeOption;
@@ -864,7 +868,7 @@ void HashTable::drawOperationMenu() {
         drawInitializeOptions();
     }
     static bool showInsertOption = false;
-    Rectangle insertButtonPos = { 20, 230, 80, 20 };
+    Rectangle insertButtonPos = { opPosX + (opWidth + 20), opPosY, opWidth, opHeight };
     Rectangle insertOptionPos = { 100, 230, 150, 60 };
     if (GuiButton(insertButtonPos, "Insert")) {
         showInsertOption = !showInsertOption;
@@ -873,7 +877,7 @@ void HashTable::drawOperationMenu() {
         drawInsertOptions();
     }
     static bool showDeleteOption = false;
-    Rectangle deleteButtonPos = { 20, 260, 80, 20 };
+    Rectangle deleteButtonPos = { opPosX + 2 *(opWidth + 20), opPosY, opWidth, opHeight };
     Rectangle deleteOptionPos = { 100, 260, 150, 30 };
     if (GuiButton(deleteButtonPos, "Delete")) {
         showDeleteOption = !showDeleteOption;
@@ -882,7 +886,7 @@ void HashTable::drawOperationMenu() {
         drawDeleteOptions();
     }
     static bool showSearchOption = false;
-    Rectangle searchButtonPos = { 20, 290, 80, 20 };
+    Rectangle searchButtonPos = { opPosX + 3 * (opWidth + 20), opPosY, opWidth, opHeight };
     Rectangle searchOptionPos = { 100, 290, 150, 30 };
     if (GuiButton(searchButtonPos, "Search")) {
         showSearchOption = !showSearchOption;
@@ -1029,9 +1033,9 @@ void HashTable::drawAnimationMenu() {
     float buttonWidth = 40;  // Increased button width
     float buttonHeight = 30; // Increased button height
     float spacing = 20;      // Spacing between buttons
-    float sliderWidth = 220; // Increased slider width
+    float sliderWidth = 280; // Increased slider width
     float sliderHeight = 20; // Increased slider height
-	float posX = 450;
+	float posX = 700;
 	float buttonPosY = 700;
 
     // Draw the speed slider

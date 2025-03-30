@@ -15,9 +15,18 @@ struct HashNode {
 
 class HashTable {
 private:
+	void insert(int m, int n);
+
     // hash table
     int hash(int key) { return size > 0 ? key % size : 0; }
     int size;
+	float tablePosX = 300;
+	float tablePosY = 100;
+	float llPosX = 370;
+	float nodeWidth = 50;
+	float nodeHeight = 20;
+	float nodeSpaceX = 10;
+	float nodeSpaceY = 10;
     std::vector<HashNode*> table;
     std::vector<HashNode*> prevTable;
     void drawTable();
@@ -42,6 +51,7 @@ private:
 
     // animation control menu
     void drawAnimationMenu();
+	void resetAnimation();
     int curStep = 0;
     int totalStep = 0;
     float curX = 0;
@@ -63,24 +73,24 @@ private:
 		"Initialization complete"
 	};
     std::vector<std::string> insertCodes = {
-        "void HashTable::Insert(int key, int value) {",
-        "   int hashValue = hash(key);",
-        "   if (!table[hashValue]) {",
-        "       HashNode* newNode = new HashNode(key, value);",
-        "       table[hashValue] = newNode;",
-        "   } else {",
-        "       HashNode* current = table[hashValue];",
-        "       while (current->next != NULL && current -> key != key) {",
-        "           current = current->next;",
-        "       }",
-        "       if (current->key == key) {",
-        "           current->value = value;",
-        "       } else {",
-        "           HashNode* newNode = new HashNode(key, value);",
-        "           current->next = newNode;",
-        "       }",
-        "   }",
-        "}"
+        " 1. void HashTable::Insert(int key, int value) {",
+        " 2.    int hVal = hash(key);",
+        " 3.    if (!table[hVal]) {",
+        " 4.        HNode* newNode = new HNode(key, value);",
+        " 5.        table[hVal] = newNode;",
+        " 6.    } else {",
+        " 7.        HNode* curr = table[hVal];",
+        " 8.        while (curr->next != NULL && curr -> key != key) {",
+        " 9.            curr = curr->next;",
+        "10.        }",
+        "11.        if (curr->key == key) {",
+        "12.            curr->value = value;",
+        "13.        } else {",
+        "14.            HNode* newNode = new HNode(key, value);",
+        "15.            curr->next = newNode;",
+        "16.        }",
+        "17.    }",
+        "18. }"
     };
     std::vector<std::string> insertDescriptions;
     std::vector<int> insertCodeIndex;
@@ -93,24 +103,24 @@ private:
     int deleteIndex;
     std::vector<std::string> deleteCodes = {
         " 1. void HashTable::Delete(int key) {",
-        " 2.    int hashValue = hash(key);",
-        " 3.    HashNode* current = table[hashValue];",
-        " 4.    if (current == NULL) {",
+        " 2.    int hVal = hash(key);",
+        " 3.    HNode* curr = table[hVal];",
+        " 4.    if (curr == NULL) {",
         " 5.        return;",
         " 6.    }",
-        " 7.    if (current->key == key) {",
-        " 8.        table[hashValue] = current->next;",
-        " 9.        delete current;",
+        " 7.    if (curr->key == key) {",
+        " 8.        table[hVal] = curr->next;",
+        " 9.        delete curr;",
         "10.        return;",
         "11.    }",
-        "12.    while (current->next) {",
-        "13.        if (current->next->key == key) {",
-        "14.            HashNode* temp = current->next;",
-        "15.            current->next = temp->next;",
+        "12.    while (curr->next) {",
+        "13.        if (curr->next->key == key) {",
+        "14.            HNode* temp = curr->next;",
+        "15.            curr->next = temp->next;",
         "16.            delete temp;",
         "17.            return;",
         "18.        }",
-        "19.        current = current->next;",
+        "19.        curr = curr->next;",
         "20.    }",
         "21. }"
     };
@@ -122,14 +132,14 @@ private:
     void drawDeleteAnimation();
 
     std::vector<std::string> searchCodes = {
-        " 1. HashNode* HashTable::Search(int key) {",
-        " 2.    int hashValue = hash(key);",
-        " 3.    HashNode* current = table[hashValue];",
-        " 4.    while (current) {",
-        " 5.        if (current->key == key) {",
-        " 6.            return current;",
+        " 1. HNode* HashTable::Search(int key) {",
+        " 2.    int hVal = hash(key);",
+        " 3.    HNode* curr = table[hVal];",
+        " 4.    while (curr) {",
+        " 5.        if (curr->key == key) {",
+        " 6.            return curr;",
         " 7.        }",
-        " 8.        current = current->next;",
+        " 8.        curr = curr->next;",
         " 9.    }",
         "10.    return NULL;",
         "11. }"
@@ -148,6 +158,13 @@ private:
 	std::vector<std::vector<std::tuple<Rectangle, Color>>> initPaths2;
 	void drawInitializeAnimation();
 	void drawInitializeDescription();
+	
+	// code area
+	float codePosX = 950;
+	float codePosY = 60;
+	float codePosSpace = 25;
+	float codeWidth = 700;
+	float codeHeight = 20;
 
 public:
     HashTable(int size);

@@ -11,7 +11,7 @@
 char* ftc(float v) {
     std::ostringstream ss;
     ss << std::fixed << std::setprecision(2) << v / 2;
-    std::string str = ss.str();
+    std::string str = "x" + ss.str();
     char* cstr = new char[str.length() + 1];
     strcpy(cstr, str.c_str());
     return cstr;
@@ -72,21 +72,21 @@ void HashTable::saveCurrentTable() {
 // Data structure area
 void HashTable::drawPrevTable() {
     for (int i = 0; i < prevTable.size(); i++) {
-        GuiButton(Rectangle{ 300, 20.0f + 30 * i, 60, 20 }, TextFormat("Key: %d", i));
+        GuiButton(Rectangle{ tablePosX, tablePosY + 30 * i, 60, 20 }, TextFormat("Index: %d", i));
         HashNode* current = prevTable[i];
         if (!current) {
-            GuiDrawRectangle({ 360.0f, 20.0f + 30 * i + 10, 10, 2 }, 2, BLACK, BLACK);
-            if (GuiButton(Rectangle{ 370.0f, 20.0f + 30 * i, 50, 20 }, "NULL")) {
+            GuiDrawRectangle({ llPosX - 10, tablePosY + 30 * i + 10, 10, 2 }, 2, BLACK, BLACK);
+            if (GuiButton(Rectangle{ llPosX, tablePosY + 30 * i, 50, 20 }, "NULL")) {
                 selectedNode = nullptr;
             }
         }
         int idx = 0;
         while (current) {
-            GuiDrawRectangle({ 370.0f + 60 * idx - 10, 20.0f + 30 * i + 10, 10, 2 }, 2, BLACK, BLACK);
-            if (GuiButton(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * i, 50, 20 }, TextFormat("%d | %d", current->key, current->value))) {
+            GuiDrawRectangle({ llPosX + 60 * idx - 10, tablePosY + 30 * i + 10, 10, 2 }, 2, BLACK, BLACK);
+            if (GuiButton(Rectangle{ llPosX + 60 * idx, tablePosY + 30 * i, 50, 20 }, TextFormat("%d | %d", current->key, current->value))) {
                 selectedNode = current;
                 selectedValue = current->value;
-                selectedNodeArea = { 370.0f + 60 * idx, 20.0f + 30 * i, 50, 20 };
+                selectedNodeArea = { llPosX + 60 * idx, tablePosY + 30 * i, 50, 20 };
             }
             current = current->next;
             idx++;
@@ -96,21 +96,26 @@ void HashTable::drawPrevTable() {
 
 void HashTable::drawTable() {
     for (int i = 0; i < size; i++) {
-        GuiButton(Rectangle{ 300, 20.0f + 30 * i, 60, 20 }, TextFormat("Key: %d", i));
+		// Index node
+        GuiButton(Rectangle{ tablePosX, tablePosY + 30 * i, 60, 20 }, TextFormat("Index: %d", i));
         HashNode* current = table[i];
         if (!current) {
-            GuiDrawRectangle({ 360.0f, 20.0f + 30 * i + 10, 10, 2 }, 2, BLACK, BLACK);
-            if (GuiButton(Rectangle{ 370.0f, 20.0f + 30 * i, 50, 20 }, "NULL")) {
+			// edge[0]
+            GuiDrawRectangle({ llPosX - 10, tablePosY + 30 * i + 10, 10, 2 }, 2, BLACK, BLACK);
+            // node[0]
+			if (GuiButton(Rectangle{ llPosX, tablePosY + 30 * i, 50, 20 }, "NULL")) {
                 selectedNode = nullptr;
             }
         }
         int idx = 0;
         while (current) {
-            GuiDrawRectangle({ 370.0f + 60 * idx - 10, 20.0f + 30 * i + 10, 10, 2 }, 2, BLACK, BLACK);
-            if (GuiButton(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * i, 50, 20 }, TextFormat("%d | %d", current->key, current->value))) {
+			// edge[0]
+            GuiDrawRectangle({ llPosX + 60 * idx - 10, tablePosY + 30 * i + 10, 10, 2 }, 2, BLACK, BLACK);
+            // node[0]
+			if (GuiButton(Rectangle{ llPosX + 60 * idx, tablePosY + 30 * i, 50, 20 }, TextFormat("%d | %d", current->key, current->value))) {
                 selectedNode = current;
                 selectedValue = current->value;
-                selectedNodeArea = { 370.0f + 60 * idx, 20.0f + 30 * i, 50, 20 };
+                selectedNodeArea = { llPosX + 60 * idx, tablePosY + 30 * i, 50, 20 };
             }
             current = current->next;
             idx++;
@@ -121,23 +126,6 @@ void HashTable::drawTable() {
 // Operation
 void HashTable::Init(int m, int n) {
     saveCurrentTable();
-    initDescriptions.clear();
-    initCodeIndex.clear();
-    initPaths1.clear();
-    initPaths2.clear();
-
-    initDescriptions.push_back("Begin initialization");
-    initCodeIndex.push_back(0);
-    initPaths1.push_back({});
-    initPaths2.push_back({});
-
-    for (int i = 0; i < m; i++) {
-        initDescriptions.push_back("Initializing slot " + std::to_string(i));
-        initCodeIndex.push_back(1);
-        initPaths1.push_back({});
-        initPaths2.push_back({ std::make_tuple(Rectangle{ 300, 20.0f + 30 * i, 60, 20 }, YELLOW) });
-    }
-
     table.clear();
     table.resize(m, nullptr);
     size = m;
@@ -145,22 +133,29 @@ void HashTable::Init(int m, int n) {
     for (int i = 0; i < n; i++) {
         int key = rand() % 100;
         int value = rand() % 100;
-        Insert(key, value);
+        insert(key, value);
     }
-
-    initDescriptions.push_back("Initialization complete");
-    initCodeIndex.push_back(2);
-    initPaths1.push_back({});
-    initPaths2.push_back({});
-
-    // Reset animation state variables
-    curStep = 0;
-    done = 0;
-    delta = 0;
-    doneAnimation = false;
-    totalStep = initCodeIndex.size();
-    operation_type = 4; // New operation type for initialization
 }
+
+void HashTable::insert(int key, int value) {
+	int hVal = hash(key);
+	if (!table[hVal]) {
+	    HashNode* newNode = new HashNode(key, value);
+	    table[hVal] = newNode;
+	} else {
+	    HashNode* curr = table[hVal];
+	    while (curr->next != NULL && curr -> key != key) {
+	        curr = curr->next;
+	    }
+	    if (curr->key == key) {
+	        curr->value = value;
+	    } else {
+	        HashNode* newNode = new HashNode(key, value);
+	        curr->next = newNode;
+	    }
+	}
+}
+
 void HashTable::Insert(int key, int value) {
     saveCurrentTable();
     insertDescriptions.clear();
@@ -177,17 +172,17 @@ void HashTable::Insert(int key, int value) {
     insertDescriptions.push_back("Computing hash value: " + std::to_string(hashValue));
     insertCodeIndex.push_back(1);
     insertPaths1.push_back({});
-    insertPaths2.push_back({ std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW) });
+    insertPaths2.push_back({ std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW) });
 
     //
     if (!table[hashValue]) {
         // table index is null
         insertDescriptions.push_back("Checking collision condition: No collision.");
         insertCodeIndex.push_back(2);
-        insertPaths1.push_back({ std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW) });
+        insertPaths1.push_back({ std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW) });
         insertPaths2.push_back({ 
-            std::make_tuple(Rectangle{ 370.0f - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, GREEN),
-            std::make_tuple(Rectangle{ 370.0f, 20.0f + 30 * hashValue, 50, 20 }, GREEN)
+            std::make_tuple(Rectangle{ llPosX - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, GREEN),
+            std::make_tuple(Rectangle{ llPosX, tablePosY + 30 * hashValue, 50, 20 }, GREEN)
          });
 
         // create node
@@ -195,47 +190,47 @@ void HashTable::Insert(int key, int value) {
         insertDescriptions.push_back("Creating node: (key:" + std::to_string(key) + ", value: " + std::to_string(value) +")");
         insertCodeIndex.push_back(3);
         insertPaths1.push_back({
-            std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
-            std::make_tuple(Rectangle{ 370.0f - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, GREEN),
-            std::make_tuple(Rectangle{ 370.0f, 20.0f + 30 * hashValue, 50, 20 }, GREEN)
+            std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW),
+            std::make_tuple(Rectangle{ llPosX - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, GREEN),
+            std::make_tuple(Rectangle{ llPosX, tablePosY + 30 * hashValue, 50, 20 }, GREEN)
         });
         insertPaths2.push_back({
-            std::make_tuple(Rectangle{ 370.0f + 60, 20.0f + 30 * hashValue, 50, 20 }, GREEN)
+            std::make_tuple(Rectangle{ llPosX + 60, tablePosY + 30 * hashValue, 50, 20 }, GREEN)
         });
         // insert node
         table[hashValue] = newNode;
         insertDescriptions.push_back("Inserting node: (key:" + std::to_string(key) + ", value: " + std::to_string(value) +")");
         insertCodeIndex.push_back(4);
         insertPaths1.push_back({
-            std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
-            std::make_tuple(Rectangle{ 370.0f - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, WHITE),
-            std::make_tuple(Rectangle{ 370.0f, 20.0f + 30 * hashValue, 50, 20 }, GREEN),
-            std::make_tuple(Rectangle{ 370.0f + 60, 20.0f + 30 * hashValue, 50, 20 }, GREEN)
+            std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW),
+            std::make_tuple(Rectangle{ llPosX - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, WHITE),
+            std::make_tuple(Rectangle{ llPosX, tablePosY + 30 * hashValue, 50, 20 }, GREEN),
+            std::make_tuple(Rectangle{ llPosX + 60, tablePosY + 30 * hashValue, 50, 20 }, GREEN)
         });
         insertPaths2.push_back({
-            std::make_tuple(Rectangle{ 370.0f - 40, 20.0f + 30 * hashValue - 5, 2, 5 }, GREEN),
-            std::make_tuple(Rectangle{ 370.0f - 40, 20.0f + 30 * hashValue - 5, 130, 2 }, GREEN),
-            std::make_tuple(Rectangle{ 370.0f + 60 + 30, 20.0f + 30 * hashValue - 5, 2, 5 }, GREEN)
+            std::make_tuple(Rectangle{ llPosX - 40, tablePosY + 30 * hashValue - 5, 2, 5 }, GREEN),
+            std::make_tuple(Rectangle{ llPosX - 40, tablePosY + 30 * hashValue - 5, 130, 2 }, GREEN),
+            std::make_tuple(Rectangle{ llPosX + 60 + 30, tablePosY + 30 * hashValue - 5, 2, 5 }, GREEN)
         });
     } else {
         // table index is not null
         insertDescriptions.push_back("Checking collision condition: Collision detected.");
         insertCodeIndex.push_back(2);
-        insertPaths1.push_back({ std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW) });
+        insertPaths1.push_back({ std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW) });
         insertPaths2.push_back({ 
-            std::make_tuple(Rectangle{ 370.0f - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, RED),
-            std::make_tuple(Rectangle{ 370.0f, 20.0f + 30 * hashValue, 50, 20 }, RED)
+            std::make_tuple(Rectangle{ llPosX - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, RED),
+            std::make_tuple(Rectangle{ llPosX, tablePosY + 30 * hashValue, 50, 20 }, RED)
          });
         // begin traversal
         HashNode* current = table[hashValue];
         insertDescriptions.push_back("Begin traversal at slot " + std::to_string(hashValue));
         insertCodeIndex.push_back(6);
         insertPaths1.push_back({
-            std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
+            std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW),
         });
         insertPaths2.push_back({ 
-            std::make_tuple(Rectangle{ 370.0f - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, BLUE),
-            std::make_tuple(Rectangle{ 370.0f, 20.0f + 30 * hashValue, 50, 20 }, BLUE)
+            std::make_tuple(Rectangle{ llPosX - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, BLUE),
+            std::make_tuple(Rectangle{ llPosX, tablePosY + 30 * hashValue, 50, 20 }, BLUE)
          });
        // check the node
 int idx = 0;
@@ -243,66 +238,66 @@ while (current->next != NULL && current->key != key) {
     insertDescriptions.push_back("Checking condition: Key not found");
     insertCodeIndex.push_back(7);
     insertPaths1.push_back({
-        std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
-        // std::make_tuple(Rectangle{ 370.0f + 60 * idx - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, BLUE),
+        std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW),
+        // std::make_tuple(Rectangle{ llPosX + 60 * idx - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, BLUE),
     });
     insertPaths2.push_back({ 
-        std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, RED) // Highlight current node as RED (key mismatch)
+        std::make_tuple(Rectangle{ llPosX + 60 * idx, tablePosY + 30 * hashValue, 50, 20 }, RED) // Highlight current node as RED (key mismatch)
     });
     current = current->next;
     idx++; // Increment idx to move to the next node position
     insertDescriptions.push_back("Move to the next node");
     insertCodeIndex.push_back(8);
     insertPaths1.push_back({
-        std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
-        // std::make_tuple(Rectangle{ 370.0f + 60 * idx - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, RED),
-        std::make_tuple(Rectangle{ 370.0f + 60 * (idx - 1), 20.0f + 30 * hashValue, 50, 20 }, BLUE)
+        std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW),
+        // std::make_tuple(Rectangle{ llPosX + 60 * idx - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, RED),
+        std::make_tuple(Rectangle{ llPosX + 60 * (idx - 1), tablePosY + 30 * hashValue, 50, 20 }, BLUE)
     });
     insertPaths2.push_back({ 
-        std::make_tuple(Rectangle{ 370.0f + 60 * idx - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, BLUE),
-        std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, BLUE) // Highlight next node as BLUE
+        std::make_tuple(Rectangle{ llPosX + 60 * idx - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, BLUE),
+        std::make_tuple(Rectangle{ llPosX + 60 * idx, tablePosY + 30 * hashValue, 50, 20 }, BLUE) // Highlight next node as BLUE
     });
 }
         if (current->key == key) {
             insertDescriptions.push_back("Checking condition: Found key" + std::to_string(key));
             insertCodeIndex.push_back(10);
             insertPaths1.push_back({
-                std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
+                std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW),
             });
             insertPaths2.push_back({ 
-                std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, GREEN)
+                std::make_tuple(Rectangle{ llPosX + 60 * idx, tablePosY + 30 * hashValue, 50, 20 }, GREEN)
             });
             current->value = value;
             insertDescriptions.push_back("Updating value to " + std::to_string(value));
             insertCodeIndex.push_back(11);
             insertPaths1.push_back({
-                std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
+                std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW),
             });
             insertPaths2.push_back({ 
-                std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, GREEN)
+                std::make_tuple(Rectangle{ llPosX + 60 * idx, tablePosY + 30 * hashValue, 50, 20 }, GREEN)
             });
         } else {
             HashNode* newNode = new HashNode(key, value);
             insertDescriptions.push_back("Creating node: (key:" + std::to_string(key) + ", value: " + std::to_string(value) +")");
             insertCodeIndex.push_back(13);
             insertPaths1.push_back({
-                std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
-                std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, GREEN)
+                std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW),
+                std::make_tuple(Rectangle{ llPosX + 60 * idx, tablePosY + 30 * hashValue, 50, 20 }, GREEN)
             });
             insertPaths2.push_back({
-                std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1), 20.0f + 30 * hashValue, 50, 20 }, GREEN)
+                std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1), tablePosY + 30 * hashValue, 50, 20 }, GREEN)
             });
             //
             current->next = newNode;
             insertDescriptions.push_back("Inserting node: (key:" + std::to_string(key) + ", value: " + std::to_string(value) +")");
             insertCodeIndex.push_back(14);
             insertPaths1.push_back({
-                std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
-                std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, GREEN),
-                std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1), 20.0f + 30 * hashValue, 50, 20 }, GREEN)
+                std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW),
+                std::make_tuple(Rectangle{ llPosX + 60 * idx, tablePosY + 30 * hashValue, 50, 20 }, GREEN),
+                std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1), tablePosY + 30 * hashValue, 50, 20 }, GREEN)
             });
             insertPaths2.push_back({
-                std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1) - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, GREEN)
+                std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1) - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, GREEN)
             });
         }
     }
@@ -313,6 +308,7 @@ while (current->next != NULL && current->key != key) {
     
     curStep = 0;
     totalStep = insertCodeIndex.size();
+	doneAnimation = false;
     operation_type = 1;
 }
 
@@ -331,24 +327,24 @@ void HashTable::Delete(int key) {
     deleteDescriptions.push_back("Computing hash value: " + std::to_string(hashValue));
     deleteCodeIndex.push_back(1);
     deletePaths1.push_back({});
-    deletePaths2.push_back({ std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW) });
+    deletePaths2.push_back({ std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW) });
     //
     HashNode* current = table[hashValue];
     deleteDescriptions.push_back("Begin traversal at slot " + std::to_string(hashValue));
     deleteCodeIndex.push_back(2);
-    deletePaths1.push_back({ std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW) });
+    deletePaths1.push_back({ std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW) });
     deletePaths2.push_back({
-        std::make_tuple(Rectangle{ 370.0f - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, BLUE),
-        std::make_tuple(Rectangle{ 370.0f, 20.0f + 30 * hashValue, 50, 20 }, BLUE)
+        std::make_tuple(Rectangle{ llPosX - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, BLUE),
+        std::make_tuple(Rectangle{ llPosX, tablePosY + 30 * hashValue, 50, 20 }, BLUE)
     });
     //
     if (current == NULL) {
         deleteDescriptions.push_back("Slot NULL: " + std::to_string(hashValue));
         deleteCodeIndex.push_back(3);
-        deletePaths1.push_back({ std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW) });
+        deletePaths1.push_back({ std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW) });
         deletePaths2.push_back({
-            std::make_tuple(Rectangle{ 370.0f - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, BLUE),
-            std::make_tuple(Rectangle{ 370.0f, 20.0f + 30 * hashValue, 50, 20 }, RED)
+            std::make_tuple(Rectangle{ llPosX - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, BLUE),
+            std::make_tuple(Rectangle{ llPosX, tablePosY + 30 * hashValue, 50, 20 }, RED)
         });
         //
         deleteDescriptions.push_back("Done!");
@@ -359,48 +355,49 @@ void HashTable::Delete(int key) {
         curStep = 0;
         totalStep = deleteCodeIndex.size();
         operation_type = 2;
+		doneAnimation = false;
         return;
     }
     //
     if (current->key == key) {
         deleteDescriptions.push_back("Checking key: Found key " + std::to_string(key));
         deleteCodeIndex.push_back(6);
-        deletePaths1.push_back({ std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW) });
+        deletePaths1.push_back({ std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW) });
         deletePaths2.push_back({
-            std::make_tuple(Rectangle{ 370.0f - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, BLUE),
-            std::make_tuple(Rectangle{ 370.0f, 20.0f + 30 * hashValue, 50, 20 }, GREEN)
+            std::make_tuple(Rectangle{ llPosX - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, BLUE),
+            std::make_tuple(Rectangle{ llPosX, tablePosY + 30 * hashValue, 50, 20 }, GREEN)
         });
         //
         table[hashValue] = current->next;
         deleteDescriptions.push_back("Updating next pointer to next node");
         deleteCodeIndex.push_back(7);
         deletePaths1.push_back({
-            std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
-            std::make_tuple(Rectangle{ 370.0f - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, BLUE),
-            std::make_tuple(Rectangle{ 370.0f, 20.0f + 30 * hashValue, 50, 20 }, GREEN)
+            std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW),
+            std::make_tuple(Rectangle{ llPosX - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, BLUE),
+            std::make_tuple(Rectangle{ llPosX, tablePosY + 30 * hashValue, 50, 20 }, GREEN)
         });
         deletePaths2.push_back({
-            std::make_tuple(Rectangle{ 370.0f - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, WHITE),
-            std::make_tuple(Rectangle{ 370.0f - 40, 20.0f + 30 * hashValue - 5, 2, 5 }, GREEN),
-            std::make_tuple(Rectangle{ 370.0f - 40, 20.0f + 30 * hashValue - 5, 130, 2 }, GREEN),
-            std::make_tuple(Rectangle{ 370.0f + 60 + 30, 20.0f + 30 * hashValue - 5, 2, 5 }, GREEN),
+            std::make_tuple(Rectangle{ llPosX - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, WHITE),
+            std::make_tuple(Rectangle{ llPosX - 40, tablePosY + 30 * hashValue - 5, 2, 5 }, GREEN),
+            std::make_tuple(Rectangle{ llPosX - 40, tablePosY + 30 * hashValue - 5, 130, 2 }, GREEN),
+            std::make_tuple(Rectangle{ llPosX + 60 + 30, tablePosY + 30 * hashValue - 5, 2, 5 }, GREEN),
         });
         //
         delete current;
         deleteDescriptions.push_back("Deleted key: " + std::to_string(key));
         deleteCodeIndex.push_back(8);
         deletePaths1.push_back({
-            std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
-            std::make_tuple(Rectangle{ 370.0f - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, BLUE),
-            std::make_tuple(Rectangle{ 370.0f, 20.0f + 30 * hashValue, 50, 20 }, GREEN),
-            std::make_tuple(Rectangle{ 370.0f - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, WHITE),
-            std::make_tuple(Rectangle{ 370.0f - 40, 20.0f + 30 * hashValue - 5, 2, 5 }, GREEN),
-            std::make_tuple(Rectangle{ 370.0f - 40, 20.0f + 30 * hashValue - 5, 130, 2 }, GREEN),
-            std::make_tuple(Rectangle{ 370.0f + 60 + 30, 20.0f + 30 * hashValue - 5, 2, 5 }, GREEN),
+            std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW),
+            std::make_tuple(Rectangle{ llPosX - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, BLUE),
+            std::make_tuple(Rectangle{ llPosX, tablePosY + 30 * hashValue, 50, 20 }, GREEN),
+            std::make_tuple(Rectangle{ llPosX - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, WHITE),
+            std::make_tuple(Rectangle{ llPosX - 40, tablePosY + 30 * hashValue - 5, 2, 5 }, GREEN),
+            std::make_tuple(Rectangle{ llPosX - 40, tablePosY + 30 * hashValue - 5, 130, 2 }, GREEN),
+            std::make_tuple(Rectangle{ llPosX + 60 + 30, tablePosY + 30 * hashValue - 5, 2, 5 }, GREEN),
         });
         deletePaths2.push_back({
-            std::make_tuple(Rectangle{ 370.0f, 20.0f + 30 * hashValue, 50, 20 }, WHITE),
-            std::make_tuple(Rectangle{ 370.0f + 60 - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, WHITE),
+            std::make_tuple(Rectangle{ llPosX, tablePosY + 30 * hashValue, 50, 20 }, WHITE),
+            std::make_tuple(Rectangle{ llPosX + 60 - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, WHITE),
         });
         //
         deleteDescriptions.push_back("Done!");
@@ -411,16 +408,17 @@ void HashTable::Delete(int key) {
         curStep = 0;
         totalStep = deleteCodeIndex.size();
         operation_type = 2;
+		doneAnimation = false;
         return;
     }
     deleteDescriptions.push_back("Checking key: Key not found");
     deleteCodeIndex.push_back(6);
     deletePaths1.push_back({
-        std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW)
+        std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW)
     });
     deletePaths2.push_back({
-        std::make_tuple(Rectangle{ 370.0f - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, BLUE),
-        std::make_tuple(Rectangle{ 370.0f, 20.0f + 30 * hashValue, 50, 20 }, RED)
+        std::make_tuple(Rectangle{ llPosX - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, BLUE),
+        std::make_tuple(Rectangle{ llPosX, tablePosY + 30 * hashValue, 50, 20 }, RED)
     });
     //
     int idx = 0;
@@ -428,34 +426,34 @@ void HashTable::Delete(int key) {
         deleteDescriptions.push_back("Checking next node. Next node exists");
         deleteCodeIndex.push_back(11);
         deletePaths1.push_back({
-            std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
-            std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, BLUE)
+            std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW),
+            std::make_tuple(Rectangle{ llPosX + 60 * idx, tablePosY + 30 * hashValue, 50, 20 }, BLUE)
         });
         deletePaths2.push_back({
-            std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1) - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, GREEN),
-            std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1), 20.0f + 30 * hashValue, 50, 20 }, GREEN)
+            std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1) - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, GREEN),
+            std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1), tablePosY + 30 * hashValue, 50, 20 }, GREEN)
         });
         //
         if (current->next->key == key) {
             deleteDescriptions.push_back("Checking next node: Found key " + std::to_string(key));
             deleteCodeIndex.push_back(12);
             deletePaths1.push_back({
-                std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
-                std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, BLUE),
-                std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1) - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, BLUE),
+                std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW),
+                std::make_tuple(Rectangle{ llPosX + 60 * idx, tablePosY + 30 * hashValue, 50, 20 }, BLUE),
+                std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1) - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, BLUE),
             });
             deletePaths2.push_back({
-                std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1), 20.0f + 30 * hashValue, 50, 20 }, GREEN)
+                std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1), tablePosY + 30 * hashValue, 50, 20 }, GREEN)
             });
             //
             HashNode* temp = current->next;
             deleteDescriptions.push_back("Store next node to temp");
             deleteCodeIndex.push_back(13);
             deletePaths1.push_back({
-                std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
-                std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, BLUE),
-                std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1) - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, BLUE),
-                std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1), 20.0f + 30 * hashValue, 50, 20 }, GREEN)
+                std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW),
+                std::make_tuple(Rectangle{ llPosX + 60 * idx, tablePosY + 30 * hashValue, 50, 20 }, BLUE),
+                std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1) - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, BLUE),
+                std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1), tablePosY + 30 * hashValue, 50, 20 }, GREEN)
             });
             deletePaths2.push_back({});
             //
@@ -463,32 +461,32 @@ void HashTable::Delete(int key) {
             deleteDescriptions.push_back("Updating next pointer to next next node");
             deleteCodeIndex.push_back(14);
             deletePaths1.push_back({
-                std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
-                std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, BLUE),
-                std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1), 20.0f + 30 * hashValue, 50, 20 }, GREEN)
+                std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW),
+                std::make_tuple(Rectangle{ llPosX + 60 * idx, tablePosY + 30 * hashValue, 50, 20 }, BLUE),
+                std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1), tablePosY + 30 * hashValue, 50, 20 }, GREEN)
             });
             deletePaths2.push_back({
-                std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1) - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, WHITE),
-                std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1) - 40, 20.0f + 30 * hashValue - 5, 2, 5 }, GREEN),
-                std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1) - 40, 20.0f + 30 * hashValue - 5, 130, 2 }, GREEN),
-                std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 2) + 30, 20.0f + 30 * hashValue - 5, 2, 5 }, GREEN),
+                std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1) - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, WHITE),
+                std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1) - 40, tablePosY + 30 * hashValue - 5, 2, 5 }, GREEN),
+                std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1) - 40, tablePosY + 30 * hashValue - 5, 130, 2 }, GREEN),
+                std::make_tuple(Rectangle{ llPosX + 60 * (idx + 2) + 30, tablePosY + 30 * hashValue - 5, 2, 5 }, GREEN),
             });
             //
             delete temp;
             deleteDescriptions.push_back("Deleting key: " + std::to_string(key));
             deleteCodeIndex.push_back(15);
             deletePaths1.push_back({
-                std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
-                std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, BLUE),
-                std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1), 20.0f + 30 * hashValue, 50, 20 }, GREEN),
-                std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1) - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, WHITE),
-                std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1) - 40, 20.0f + 30 * hashValue - 5, 2, 5 }, GREEN),
-                std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1) - 40, 20.0f + 30 * hashValue - 5, 130, 2 }, GREEN),
-                std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 2) + 30, 20.0f + 30 * hashValue - 5, 2, 5 }, GREEN)
+                std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW),
+                std::make_tuple(Rectangle{ llPosX + 60 * idx, tablePosY + 30 * hashValue, 50, 20 }, BLUE),
+                std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1), tablePosY + 30 * hashValue, 50, 20 }, GREEN),
+                std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1) - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, WHITE),
+                std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1) - 40, tablePosY + 30 * hashValue - 5, 2, 5 }, GREEN),
+                std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1) - 40, tablePosY + 30 * hashValue - 5, 130, 2 }, GREEN),
+                std::make_tuple(Rectangle{ llPosX + 60 * (idx + 2) + 30, tablePosY + 30 * hashValue - 5, 2, 5 }, GREEN)
             });
             deletePaths2.push_back({
-                std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1), 20.0f + 30 * hashValue, 50, 20 }, WHITE),
-                std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 2) - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, WHITE)
+                std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1), tablePosY + 30 * hashValue, 50, 20 }, WHITE),
+                std::make_tuple(Rectangle{ llPosX + 60 * (idx + 2) - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, WHITE)
             });
             deleteDescriptions.push_back("Done!");
             deleteCodeIndex.push_back(16);
@@ -503,11 +501,11 @@ void HashTable::Delete(int key) {
         deleteDescriptions.push_back("Checking next node: Key not found!");
         deleteCodeIndex.push_back(12);
         deletePaths1.push_back({
-            std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
-            std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, BLUE)
+            std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW),
+            std::make_tuple(Rectangle{ llPosX + 60 * idx, tablePosY + 30 * hashValue, 50, 20 }, BLUE)
         });
         deletePaths2.push_back({
-            std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1), 20.0f + 30 * hashValue, 50, 20 }, RED)
+            std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1), tablePosY + 30 * hashValue, 50, 20 }, RED)
         });
 
         //
@@ -515,23 +513,23 @@ void HashTable::Delete(int key) {
         deleteDescriptions.push_back("Moving to next node.");
         deleteCodeIndex.push_back(18);
         deletePaths1.push_back({
-            std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
-            std::make_tuple(Rectangle{ 370.0f + 60 * (idx), 20.0f + 30 * hashValue, 50, 20 }, BLUE),
-            std::make_tuple(Rectangle{ 370.0f + 60 * (idx) - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, BLUE)
+            std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW),
+            std::make_tuple(Rectangle{ llPosX + 60 * (idx), tablePosY + 30 * hashValue, 50, 20 }, BLUE),
+            std::make_tuple(Rectangle{ llPosX + 60 * (idx) - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, BLUE)
         });
         deletePaths2.push_back({
-            std::make_tuple(Rectangle{ 370.0f + 60 * (++idx), 20.0f + 30 * hashValue, 50, 20 }, BLUE)
+            std::make_tuple(Rectangle{ llPosX + 60 * (++idx), tablePosY + 30 * hashValue, 50, 20 }, BLUE)
         });
     }
     deleteDescriptions.push_back("Checking next node. Next node does not exist");
     deleteCodeIndex.push_back(11);
     deletePaths1.push_back({
-        std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
-        std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, BLUE)
+        std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW),
+        std::make_tuple(Rectangle{ llPosX + 60 * idx, tablePosY + 30 * hashValue, 50, 20 }, BLUE)
     });
     deletePaths2.push_back({
-        std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1) - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, RED),
-        std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1), 20.0f + 30 * hashValue, 50, 20 }, RED)
+        std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1) - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, RED),
+        std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1), tablePosY + 30 * hashValue, 50, 20 }, RED)
     });
     //
     deleteDescriptions.push_back("Done!");
@@ -542,6 +540,7 @@ void HashTable::Delete(int key) {
     curStep = 0;
     totalStep = deleteCodeIndex.size();
     operation_type = 2;
+	doneAnimation = false;
     pause = false;
 }
 
@@ -560,41 +559,41 @@ HashNode* HashTable::Search(int key) {
     searchDescriptions.push_back("Computing hash value: " + std::to_string(hashValue));
     searchCodeIndex.push_back(1);
     searchPaths1.push_back({});
-    searchPaths2.push_back({ std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW) });
+    searchPaths2.push_back({ std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW) });
     //
     HashNode* current = table[hashValue];
     searchDescriptions.push_back("Begin traversal at slot " + std::to_string(hashValue));
     searchCodeIndex.push_back(2);
-    searchPaths1.push_back({ std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW) });
+    searchPaths1.push_back({ std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW) });
     searchPaths2.push_back({
-        std::make_tuple(Rectangle{ 370.0f - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, BLUE),
-        std::make_tuple(Rectangle{ 370.0f, 20.0f + 30 * hashValue, 50, 20 }, BLUE)
+        std::make_tuple(Rectangle{ llPosX - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, BLUE),
+        std::make_tuple(Rectangle{ llPosX, tablePosY + 30 * hashValue, 50, 20 }, BLUE)
     });
     int idx = 0;
     while (current) {
         searchDescriptions.push_back("Checking node NULL: " + std::to_string(hashValue) + ". Not NULL.");
         searchCodeIndex.push_back(3);
         searchPaths1.push_back({
-            std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW)
+            std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW)
         });
         searchPaths2.push_back({
-            std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, GREEN)
+            std::make_tuple(Rectangle{ llPosX + 60 * idx, tablePosY + 30 * hashValue, 50, 20 }, GREEN)
         });
         if (current->key == key) {
             searchDescriptions.push_back("Checking key: Found key " + std::to_string(key));
             searchCodeIndex.push_back(4);
             searchPaths1.push_back({
-                std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW)
+                std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW)
             });
             searchPaths2.push_back({
-                std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, GREEN)
+                std::make_tuple(Rectangle{ llPosX + 60 * idx, tablePosY + 30 * hashValue, 50, 20 }, GREEN)
             });
             //
             searchDescriptions.push_back("Done: Found key " + std::to_string(key));
             searchCodeIndex.push_back(5);
             searchPaths1.push_back({
-                std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
-                std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, GREEN)
+                std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW),
+                std::make_tuple(Rectangle{ llPosX + 60 * idx, tablePosY + 30 * hashValue, 50, 20 }, GREEN)
             });
             //
             curStep = 0;
@@ -605,37 +604,37 @@ HashNode* HashTable::Search(int key) {
         searchDescriptions.push_back("Checking key: Key not found!");
         searchCodeIndex.push_back(4);
         searchPaths1.push_back({
-            std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW)
+            std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW)
         });
         searchPaths2.push_back({
-            std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, RED)
+            std::make_tuple(Rectangle{ llPosX + 60 * idx, tablePosY + 30 * hashValue, 50, 20 }, RED)
         });
         current = current->next;
         searchDescriptions.push_back("Moving to next node.");
         searchCodeIndex.push_back(7);
         searchPaths1.push_back({
-            std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
-            std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, BLUE)
+            std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW),
+            std::make_tuple(Rectangle{ llPosX + 60 * idx, tablePosY + 30 * hashValue, 50, 20 }, BLUE)
         });
         searchPaths2.push_back({
-            std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1) - 10, 20.0f + 30 * hashValue + 10, 10, 2 }, BLUE),
-            std::make_tuple(Rectangle{ 370.0f + 60 * (idx + 1), 20.0f + 30 * hashValue, 50, 20 }, BLUE)
+            std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1) - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, BLUE),
+            std::make_tuple(Rectangle{ llPosX + 60 * (idx + 1), tablePosY + 30 * hashValue, 50, 20 }, BLUE)
         });
         idx += 1;
     }
     searchDescriptions.push_back("Checking node NULL: " + std::to_string(hashValue) + ". NULL.");
     searchCodeIndex.push_back(3);
     searchPaths1.push_back({
-        std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW)
+        std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW)
     });
     searchPaths2.push_back({
-        std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, RED)
+        std::make_tuple(Rectangle{ llPosX + 60 * idx, tablePosY + 30 * hashValue, 50, 20 }, RED)
     });
     searchDescriptions.push_back("Not found: " + std::to_string(hashValue) + ". Return NULL.");
     searchCodeIndex.push_back(9);
     searchPaths1.push_back({
-        std::make_tuple(Rectangle{ 300, 20.0f + 30 * hashValue, 60, 20 }, YELLOW),
-        std::make_tuple(Rectangle{ 370.0f + 60 * idx, 20.0f + 30 * hashValue, 50, 20 }, RED)
+        std::make_tuple(Rectangle{ tablePosX, tablePosY + 30 * hashValue, 60, 20 }, YELLOW),
+        std::make_tuple(Rectangle{ llPosX + 60 * idx, tablePosY + 30 * hashValue, 50, 20 }, RED)
     });
     searchPaths2.push_back({});
     //
@@ -644,6 +643,7 @@ HashNode* HashTable::Search(int key) {
     operation_type = 3;
     return NULL;
 }
+
 void HashTable::drawInitializeAnimation() {
     if (pause) {
         delta = 0;
@@ -658,13 +658,13 @@ void HashTable::drawInitializeAnimation() {
 
     // Draw the table incrementally up to the current step
     for (int i = 0; i <= curStep; i++) {
-        GuiButton(Rectangle{ 300, 20.0f + 30 * i, 60, 20 }, TextFormat("Key: %d", i));
+        GuiButton(Rectangle{ tablePosX, tablePosY + 30 * i, 60, 20 }, TextFormat("Key: %d", i));
         HashNode* current = table[i];
         int idx = 0;
 
         // Draw nodes incrementally for the current slot
         while (current && (i < curStep || idx <= done)) {
-            Rectangle nodeBounds = { 370.0f + 60 * idx, 20.0f + 30 * i, 50, 20 };
+            Rectangle nodeBounds = { llPosX + 60 * idx, tablePosY + 30 * i, 50, 20 };
 
             // Highlight the current node being initialized in green
 		        if (i == curStep && idx == done) {
@@ -855,9 +855,9 @@ void HashTable::drawSearchOptions() {
 // Operation Menu
 void HashTable::drawOperationMenu() {
     static bool showInitializeOption = false;
-    Rectangle initializeButtonPos = { 20, 200, 80, 20 };
+    Rectangle initializeButtonPos = { 20, 120, 100, 50 };
     Rectangle initializeOptionPos = { 100, 200, 125, 90 };
-    if (GuiButton(initializeButtonPos, "Initialize")) {
+    if (GuiButton(initializeButtonPos, "Init")) {
         showInitializeOption = !showInitializeOption;
     }
     if (showInitializeOption) {
@@ -1014,42 +1014,61 @@ void HashTable::drawDeleteAnimation() {
     }
 }
 
+void HashTable::resetAnimation() {
+	curStep = 0;
+	curX = 0;
+	delta = 0;
+	done = 0;
+	doneStep = false;
+	doneAnimation = false;
+}
+
 // Amination Menu
 void HashTable::drawAnimationMenu() {
     // Adjusted dimensions and positions for larger buttons and slider
-    int buttonWidth = 40;  // Increased button width
-    int buttonHeight = 40; // Increased button height
-    int spacing = 10;      // Spacing between buttons
-    int sliderWidth = 300; // Increased slider width
-    int sliderHeight = 20; // Increased slider height
+    float buttonWidth = 40;  // Increased button width
+    float buttonHeight = 30; // Increased button height
+    float spacing = 20;      // Spacing between buttons
+    float sliderWidth = 220; // Increased slider width
+    float sliderHeight = 20; // Increased slider height
+	float posX = 450;
+	float buttonPosY = 700;
 
     // Draw the speed slider
-    GuiSlider(Rectangle{40, 460, (float)sliderWidth, (float)sliderHeight}, "Speed", ftc(speed), &speed, 1, 30);
-
+    GuiSlider(Rectangle{posX, 670, sliderWidth, sliderHeight}, "Speed", ftc(speed), &speed, 1, 30);
+	
     // Draw the animation control buttons
-    if (GuiButton(Rectangle{20, 400, (float)buttonWidth, (float)buttonHeight}, "Play")) {
-        pause = false;
-    }
-    if (GuiButton(Rectangle{70, 400, (float)buttonWidth, (float)buttonHeight}, "Pause")) {
-        pause = true;
-    }
-    if (GuiButton(Rectangle{120, 400, (float)buttonWidth, (float)buttonHeight}, "<")) {
-        pause = true;
-        if (curStep > 0) {
-            curStep--;
-        }
-    }
-    if (GuiButton(Rectangle{170, 400, (float)buttonWidth, (float)buttonHeight}, ">")) {
-        pause = true;
-        if (curStep < totalStep - 1) {
-            curStep++;
-        }
-    }
-    if (GuiButton(Rectangle{220, 400, (float)buttonWidth, (float)buttonHeight}, "<<")) {
-        pause = true;
-        curStep = 0;
-    }
-    if (GuiButton(Rectangle{270, 400, (float)buttonWidth, (float)buttonHeight}, ">>")) {
+	// -- To first step
+	if (GuiButton(Rectangle{posX, buttonPosY, buttonWidth, buttonHeight}, "#129#")) {
+		resetAnimation();
+		pause = true;
+	}
+	// -- To previous step
+	if (GuiButton(Rectangle{posX + buttonWidth + spacing, buttonPosY, buttonWidth, buttonHeight}, "#72#")) {
+		pause = true;
+		if (curStep > 0) {
+			curStep--; done = 0; doneStep = true; doneAnimation = false; curX = 0; delta = 0;
+		}
+	}
+	// -- Play / Pause
+	if (pause) {
+		if (GuiButton(Rectangle{posX + 2*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight}, "#131#")) {
+			pause = false;
+		}
+	} else {
+		if (GuiButton(Rectangle{posX + 2*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight}, "#132#")) {
+			pause = true;
+		}
+	}
+	// -- To next step
+	if (GuiButton(Rectangle{posX + 3*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight}, "#73#")) {
+		pause = true;
+		if (curStep < totalStep - 1) {
+			curStep++;
+		}
+	}
+	// -- To last step
+    if (GuiButton(Rectangle{posX + 4*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight}, "#134#")) {
         pause = true;
         curStep = totalStep - 1;
     }
@@ -1067,10 +1086,10 @@ void HashTable::drawInsertDescription() {
     int stt = insertCodeIndex.size() > curStep ? insertCodeIndex[curStep] : 0;
     for (int i = 0; i < insertCodes.size(); i++) {
         Color c = stt == i ? RED : BLACK;
-        Rectangle bounds = { 1000, 60.0f + i * 20, 300, 20 };
+        Rectangle bounds = { codePosX, codePosY + i * codePosSpace, codeWidth, codeHeight };
         GuiDrawText(insertCodes[i].c_str(), GetTextBounds(LABEL, bounds), GuiGetStyle(LABEL, TEXT_ALIGNMENT), c);
         if (stt == i) {
-            GuiLabel(Rectangle{ 980, 60.0f + i * 20, 20, 20 }, ">>");
+            GuiLabel(Rectangle{ codePosX - 20, codePosY + i * codePosSpace, 20, 20 }, ">>");
         }
     }
     if (insertPaths1.size() > curStep) {
@@ -1099,10 +1118,10 @@ void HashTable::drawDeleteDescription() {
     int stt = deleteCodeIndex.size() > curStep ? deleteCodeIndex[curStep] : 0;
     for (int i = 0; i < deleteCodes.size(); i++) {
         Color c = stt == i ? RED : BLACK;
-        Rectangle bounds = { 1000, 60.0f + i * 20, 300, 20 };
+        Rectangle bounds = { codePosX, codePosY + i * codePosSpace, codeWidth, codeHeight };
         GuiDrawText(deleteCodes[i].c_str(), GetTextBounds(LABEL, bounds), GuiGetStyle(LABEL, TEXT_ALIGNMENT), c);
         if (stt == i) {
-            GuiLabel(Rectangle{ 980, 60.0f + i * 20, 20, 20 }, ">>");
+            GuiLabel(Rectangle{ codePosX - 20, codePosY + i * codePosSpace, 20, codeHeight }, ">>");
         }
     }
     if (deletePaths1.size() > curStep) {
@@ -1232,14 +1251,19 @@ void HashTable::DrawScreen() {
     drawAnimationMenu();
 
     // Only draw the table or previous table when the animation is complete
-    if (doneAnimation && operation_type == 4 || curStep == totalStep - 1 && totalStep > 0 ) {
-        drawTable();
-    } else {
-        // Do not draw the entire previous table during initialization animation
-        if (operation_type != 4) {
-            drawPrevTable();
-        }
-    }
+    //if (doneAnimation && operation_type == 4 || curStep == totalStep - 1 && totalStep > 0 ) {
+    //    drawTable();
+    //} else {
+    //    // Do not draw the entire previous table during initialization animation
+    //    if (operation_type != 4) {
+    //        drawPrevTable();
+    //    }
+    //}
+	if (curStep == totalStep - 1 && totalStep > 0) {
+		drawTable();
+	} else {
+		drawPrevTable();
+	}
 
     drawNodeDetailMenu();
 
@@ -1256,8 +1280,8 @@ void HashTable::DrawScreen() {
         drawSearchDescription();
         drawSearchAnimation();
     }
-    if (operation_type == 4) { // Initialization animation
-        drawInitializeDescription();
-        drawInitializeAnimation();
-    }
+    //if (operation_type == 4) { // Initialization animation
+    //    drawInitializeDescription();
+    //    drawInitializeAnimation();
+    //}
 }

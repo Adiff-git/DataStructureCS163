@@ -51,10 +51,17 @@ private:
     int done = 0;
     bool doneStep = true;
     bool doneAnimation = false;
-    
+    std::vector<std::pair<int, int>> pendingInsertions; // Store key-value pairs to insert
+	int insertionIndex = 0;
     int operation_type;
     // insert, operation type = 1
     int insertIndex;
+	std::vector<std::string> initCodes = {
+		"Init(m, n): Begin initialization",
+		"table.resize(m, nullptr); size = m",
+		"for (n insertions): Insert(key, value)",
+		"Initialization complete"
+	};
     std::vector<std::string> insertCodes = {
         "void HashTable::Insert(int key, int value) {",
         "   int hashValue = hash(key);",

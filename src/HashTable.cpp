@@ -698,9 +698,9 @@ void HashTable::drawInitializeAnimation() {
         delta = 0;
     }
 
-    // Draw progress bar
-    float progress = (float)(curStep) / size;
-    GuiProgressBar(Rectangle{ 20, 480, 200, 20 }, NULL, NULL, &progress, 0.0f, 1.0f);
+    //// Draw progress bar
+    //float progress = (float)(curStep) / size;
+    ////GuiProgressBar(Rectangle{ 20, 480, 200, 20 }, NULL, NULL, &progress, 0.0f, 1.0f);
 }
 // Option Items
 void HashTable::drawInitializeOptions() {
@@ -1016,32 +1016,42 @@ void HashTable::drawDeleteAnimation() {
 
 // Amination Menu
 void HashTable::drawAnimationMenu() {
-    GuiSlider(Rectangle{20, 460, 200, 5 }, "Speed", ftc(speed), &speed, 1, 20);
-    if (GuiButton(Rectangle{ 140, 400, 20, 20 }, ">>")) {
-        pause = true;
-        curStep = totalStep - 1;
-    }
-    if (GuiButton(Rectangle{ 170, 400, 20, 20 }, "<<")) {
-        pause = true;
-        curStep = 0;
-    }
-    if (GuiButton(Rectangle{ 20, 400, 20, 20 }, "Pl")) {
+    // Adjusted dimensions and positions for larger buttons and slider
+    int buttonWidth = 40;  // Increased button width
+    int buttonHeight = 40; // Increased button height
+    int spacing = 10;      // Spacing between buttons
+    int sliderWidth = 300; // Increased slider width
+    int sliderHeight = 20; // Increased slider height
+
+    // Draw the speed slider
+    GuiSlider(Rectangle{40, 460, (float)sliderWidth, (float)sliderHeight}, "Speed", ftc(speed), &speed, 1, 30);
+
+    // Draw the animation control buttons
+    if (GuiButton(Rectangle{20, 400, (float)buttonWidth, (float)buttonHeight}, "Play")) {
         pause = false;
     }
-    if (GuiButton(Rectangle{ 50, 400, 20, 20 }, "Pa")) {
+    if (GuiButton(Rectangle{70, 400, (float)buttonWidth, (float)buttonHeight}, "Pause")) {
         pause = true;
     }
-    if (GuiButton(Rectangle{ 80, 400, 20, 20 }, ">")) {
+    if (GuiButton(Rectangle{120, 400, (float)buttonWidth, (float)buttonHeight}, "<")) {
+        pause = true;
+        if (curStep > 0) {
+            curStep--;
+        }
+    }
+    if (GuiButton(Rectangle{170, 400, (float)buttonWidth, (float)buttonHeight}, ">")) {
         pause = true;
         if (curStep < totalStep - 1) {
             curStep++;
         }
     }
-    if (GuiButton(Rectangle{ 110, 400, 20, 20 }, "<")) {
+    if (GuiButton(Rectangle{220, 400, (float)buttonWidth, (float)buttonHeight}, "<<")) {
         pause = true;
-        if (curStep > 0) {
-            curStep--;
-        }
+        curStep = 0;
+    }
+    if (GuiButton(Rectangle{270, 400, (float)buttonWidth, (float)buttonHeight}, ">>")) {
+        pause = true;
+        curStep = totalStep - 1;
     }
 }
 

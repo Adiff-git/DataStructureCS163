@@ -30,6 +30,94 @@ struct Edge {
     }
 };
 
+class Slider {
+    public:
+        Rectangle rect;         // Vùng thanh trượt
+        Rectangle knob;         // Núm trượt
+        float value;            // Giá trị hiện tại (0.0 - 1.0)
+        float minValue;         // Giá trị nhỏ nhất
+        float maxValue;         // Giá trị lớn nhất
+        bool isDragging;       // Đang kéo
+        std::string label;       // Nhãn
+        bool editValue;       // Đang chỉnh sửa giá trị trực tiếp
+        std::string editBuffer; // Buffer cho chỉnh sửa
+    
+        Slider(Rectangle r, float minVal, float maxVal, std::string l)
+            : rect(r), minValue(minVal), maxValue(maxVal), value(0.5f),
+              isDragging(false), label(l), editValue(false), editBuffer("") {
+            knob = {rect.x, rect.y - 5, 15, rect.height + 10};
+        }
+    
+        void update() {
+            // Xử lý sự kiện kéo
+            if (CheckCollisionPointRec(GetMousePosition(),knob) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                isDragging = true;
+            }
+    
+            if (isDragging && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+                knob.x = GetMouseX() - knob.width / 2;
+                knob.x = std::clamp(knob.x, rect.x, rect.x + rect.width - knob.width);
+                value = (float)(knob.x - rect.x) / (rect.width - knob.width);
+            }
+    
+            if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+                isDragging = false;
+            }
+        }
+    
+        float getValue() const {
+            return minValue + (maxValue - minValue) * value;
+        }
+    
+        void draw() {
+            // Vẽ nhãn
+            DrawText(label.c_str(), rect.x, rect.y - 20, 16, RAYWHITE);
+    
+            // Vẽ thanh trượt
+            DrawRectangleRec(rect, LIGHTGRAY);
+            DrawRectangleRec(knob, RED);
+    
+            // Vẽ giá trị hiện tại
+            DrawText(TextFormat("%.2f", getValue()), rect.x + rect.width + 10, rect.y, 16, RAYWHITE);
+    
+            // Vẽ vùng chỉnh sửa giá trị (nếu được chọn)
+            if (editValue) {
+                DrawRectangle(rect.x, rect.y + rect.height + 5, 100, 20, LIGHTGRAY);
+                DrawText(editBuffer.c_str(), rect.x + 5, rect.y + rect.height + 8, 16, BLACK);
+            }
+        }
+    
+        bool isHovered() const {
+            return CheckCollisionPointRec(GetMousePosition(),rect);
+        }
+    
+        bool isEditing() const {
+            return editValue;
+        }
+    
+        void startEditing() {
+            editValue = true;
+            editBuffer = TextFormat("%.2f", getValue());
+        }
+    
+        void stopEditing() {
+            editValue = false;
+            try {
+                value = std::stof(editBuffer);
+                value = (value - minValue) / (maxValue - minValue);
+                value = std::clamp(value, 0.0f, 1.0f);
+                knob.x = rect.x + (rect.width - knob.width) * value;
+            } catch (...) {
+                // Xử lý lỗi nếu đầu vào không hợp lệ
+                editBuffer = TextFormat("%.2f", getValue()); // Khôi phục giá trị cũ
+            }
+        }
+    
+        std::string getLabel() const {
+            return label;
+        }
+};
+
 bool compareEdge(const std::pair<int, Edge>& a, const std::pair<int, Edge>& b) {
     return a.first > b.first; // So sánh theo trọng số (a.first, b.first)
 }
@@ -391,16 +479,19 @@ void drawEdgeWeight(Vector2 start, Vector2 end, int weight) {
     DrawText(weightText.c_str(), (int)textPosition.x, (int)textPosition.y, fontSize, BLACK);
 }
 
-void drawMSTInfo(int totalWeight, Rectangle menuRect) {
-    // Vị trí của chữ "Minimum Spanning Tree" (giả sử nó được vẽ ở vị trí này)
+void drawMSTInfo(int totalWeight, bool isMSTDrawingPaused,Rectangle pauseResumeButton,Rectangle menuRect) {
     float textX = menuRect.x + 10;
     float textY = menuRect.y + 10;
     int fontSize = 20;
     int textHeight = fontSize;
-    // Đặt ô ngay dưới chữ "Minimum Spanning Tree"
-    Rectangle weightBox = {menuRect.x + 10, textY + textHeight + 5, 150, 30}; // Thay đổi vị trí y
+    Rectangle weightBox = {menuRect.x + 10, textY + textHeight + 5, 150, 30};
     DrawRectangleRec(weightBox, WHITE);
     DrawText(TextFormat("Total Weight: %d", totalWeight), weightBox.x + 5, weightBox.y + 5, 20, BLACK);
+
+    // Vị trí nút Pause/Resume (đặt dưới Total Weight)
+    pauseResumeButton.y = weightBox.y + weightBox.height + 5;
+    DrawRectangleRec(pauseResumeButton, WHITE);
+    DrawText(isMSTDrawingPaused ? "Resume" : "Pause", pauseResumeButton.x + 10, pauseResumeButton.y + 10, 20, BLACK);
 }
 
 int main() {
@@ -468,7 +559,7 @@ int main() {
    Rectangle mstButton = {fileButton.x, fileButton.y + fileButton.height + 10, 100, 30};
    bool mstButtonClicked = false;
    bool showMSTMenu = false;
-   Rectangle mstMenuRect = {screenWidth / 4, screenHeight / 4, screenWidth / 2, screenHeight / 2}; 
+   Rectangle mstMenuRect = {screenWidth / 8, screenHeight / 8, screenWidth * 3 / 4, screenHeight * 3 / 4};
    const int buttonWidth = 80;
    const int buttonHeight = 30;
    const int buttonSpacing = 10;
@@ -476,6 +567,7 @@ int main() {
    Rectangle primButton = {mstMenuRect.x+10, buttonsY, buttonWidth, buttonHeight};
    Rectangle kruskalButton = {primButton.x+buttonWidth+buttonSpacing, buttonsY, buttonWidth, buttonHeight};
    Rectangle backButton = {kruskalButton.x+buttonWidth+buttonSpacing, buttonsY, buttonWidth, buttonHeight};
+   Rectangle pauseResumeButton = {mstMenuRect.x + 10, mstMenuRect.y + 75, 80, 30}; 
    bool usePrim = false;
    bool useKruskal = false;
    bool showMSTError = false; // Theo dõi xem có hiển thị lỗi hay không
@@ -491,6 +583,11 @@ int main() {
    bool drawMSTOnMSTMenu = false;
    int numNodesMST = 0;
    bool showWeightInfo = false;
+   bool isMSTDrawingPaused = false; // Trạng thái tạm dừng
+   Rectangle graphBoundingBox = {mstMenuRect.x + 200, mstMenuRect.y + 10, mstMenuRect.width - 210, mstMenuRect.height - 80};
+   float graphPadding = 20.0f;
+   Slider speedSlider = Slider({mstMenuRect.x + mstMenuRect.width - 160, mstMenuRect.y + (mstMenuRect.height - 70) / 2, 150, 20}, 0.1f, 2.0f, "Speed");
+   Vector2 graphOriginalSize = {0, 0};
 
     while (!WindowShouldClose()) {
     BeginDrawing();
@@ -625,9 +722,30 @@ int main() {
     
         DrawRectangleRec(backButton, WHITE);
         DrawText("Back", backButton.x + 10, backButton.y + 10, 20, BLACK);
-       
-       if (showWeightInfo)
-            drawMSTInfo(totalMSTWeight, mstMenuRect); // Vẽ thông tin trọng số MST
+
+        speedSlider.update();
+        speedSlider.draw();
+        // Hiển thị nút bắt đầu chỉnh sửa khi di chuột và nhấn chuột
+        if (speedSlider.isHovered() && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+             speedSlider.startEditing();
+        }
+        // dừng chỉnh sửa khi ấn chuột ngoài hoặc enter
+        if (speedSlider.isEditing() && (!IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsKeyPressed(KEY_ENTER))) {
+             speedSlider.stopEditing();
+        }
+
+        if (speedSlider.isEditing()) {
+        int key = GetCharPressed();
+        if ((key >= 48 && key <= 57) || key == 46)  // Số hoặc dấu chấm
+            speedSlider.editBuffer += (char)key;
+        if (IsKeyPressed(KEY_BACKSPACE) && speedSlider.editBuffer.length() > 0)
+            speedSlider.editBuffer.pop_back();
+        }
+        if (showWeightInfo)
+        {
+            drawMSTInfo(totalMSTWeight, isMSTDrawingPaused,pauseResumeButton,mstMenuRect); 
+            
+        }
         // Xử lý sự kiện click chuột cho các nút
         if (CheckCollisionPointRec(GetMousePosition(), primButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 mstEdgesDrawn.clear();
@@ -678,6 +796,10 @@ int main() {
             showWeightInfo = false; // Ẩn thông tin trọng số MST
             showMSTError = false; // Ẩn thông báo lỗi
             mstDoneDrawing = false;
+            isMSTDrawingPaused = false; // Reset trạng thái tạm dừng
+        }
+        if (CheckCollisionPointRec(GetMousePosition(), pauseResumeButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            isMSTDrawingPaused = !isMSTDrawingPaused; // Đảo trạng thái tạm dừng
         }
         int numNodesMST = 0;
         for (const auto& edge : mstEdges) {
@@ -688,13 +810,39 @@ int main() {
         std::vector<bool> mstNodesDrawn(numNodesMST, false);
         float radius = std::min(mstMenuRect.width, mstMenuRect.height) / 3.0f; // Adjust for spacing
         
-        for (int i = 0; i < numNodesMST; ++i) {
-            float angle = 2.0f * PI * i / numNodesMST;
-            mstNodePositions[i] = {
-                mstMenuRect.x + mstMenuRect.width / 2.0f + radius * cosf(angle),
-                mstMenuRect.y + mstMenuRect.height / 2.0f + radius * sinf(angle)
-            };
-        }
+        //Tính toán tỉ lệ scaling
+        float scaleX = graphBoundingBox.width / graphOriginalSize.x;
+        float scaleY = graphBoundingBox.height / graphOriginalSize.y;
+        float graphScale = std::min(scaleX, scaleY); // Chọn tỉ lệ nhỏ hơn để đồ thị vừa với chiều rộng và cao của khung
+
+        Vector2 graphOffset = {
+        graphBoundingBox.x + (graphBoundingBox.width - graphOriginalSize.x * graphScale) / 2, // Căn giữa theo chiều x
+        graphBoundingBox.y + (graphBoundingBox.height - graphOriginalSize.y * graphScale) / 2  // Căn giữa theo chiều y
+        };
+
+     for (int i = 0; i < numNodesMST; ++i) {
+         float originalX = mstNodePositions[i].x; // Lấy vị trí x ban đầu
+         float originalY = mstNodePositions[i].y; // Lấy vị trí y ban đầu
+
+         // Áp dụng phép scaling và translation
+         mstNodePositions[i] = {
+             graphOffset.x + (originalX - graphOriginalSize.x / 2) * graphScale, // Thay đổi vị trí theo kích thước đồ thị
+             graphOffset.y + (originalY - graphOriginalSize.y / 2) * graphScale  // Thay đổi vị trí theo kích thước đồ thị
+         };
+     }
+     mstNodePositions.resize(numNodesMST);
+     for (int i = 0; i < numNodesMST; ++i) {
+        // Sử dụng cách tính vị trí nút phù hợp với bạn
+        float angle = 2.0f * PI * i / numNodesMST;
+        float radius = std::min(mstMenuRect.width, mstMenuRect.height) / 3.0f;
+        mstNodePositions[i] = {
+            mstMenuRect.x + mstMenuRect.width / 2.0f + radius * cosf(angle),
+            mstMenuRect.y + mstMenuRect.height / 2.0f + radius * sinf(angle)
+        };
+    }
+
+    // Vẽ hình chữ nhật bao quanh
+    DrawRectangleLinesEx(graphBoundingBox, 3, WHITE);
         
         // Vẽ các cạnh MST (từ từ)
         if (usePrim || useKruskal) {
@@ -715,9 +863,9 @@ int main() {
             }
     
             // Vẽ cạnh MST tiếp theo
-            if (mstEdgeIndex < mstEdges.size()) {
+            if (!isMSTDrawingPaused &&mstEdgeIndex < mstEdges.size()) {
                 mstDrawTimer += GetFrameTime();
-                if (mstDrawTimer >= 0.5f) {
+                if (mstDrawTimer >= speedSlider.getValue()) {
                     int from = mstEdges[mstEdgeIndex].from - 1;
                     int to = mstEdges[mstEdgeIndex].to - 1;
                     Vector2 fromPos = mstNodePositions[from];
@@ -1229,6 +1377,11 @@ int main() {
                     return std::max(static_cast<int>(a.from), static_cast<int>(a.to)) < std::max(static_cast<int>(a.from), static_cast<int>(a.to));
                 })->to)), screenWidth / 2.0f, screenHeight / 2.0f, 200.0f);
             }
+            // Cập nhật kích thước ban đầu
+        for (const auto& pos : nodePositions) {
+        graphOriginalSize.x = std::max(graphOriginalSize.x, pos.x);
+        graphOriginalSize.y = std::max(graphOriginalSize.y, pos.y);
+        }
         // Vẽ cạnh
         for (const auto& edge : edges) {
             drawBezierEdge(nodePositions[edge.from - 1], nodePositions[edge.to - 1], 2.0f, DARKBLUE);

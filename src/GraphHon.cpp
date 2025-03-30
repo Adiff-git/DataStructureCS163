@@ -24,6 +24,10 @@ struct Edge {
     int from;
     int to;
     int weight;
+
+    bool operator<(const Edge& other) const {
+        return weight < other.weight;
+    }
 };
 
 bool compareEdge(const std::pair<int, Edge>& a, const std::pair<int, Edge>& b) {
@@ -311,6 +315,42 @@ std::vector<Edge> calculatePrimMST(const std::vector<Edge>& edges, int numNodes)
     return mstEdges;
 }
 
+// Hàm tìm tập hợp (find) với Union-Find
+int findSet(std::vector<int>& parent, int i) {
+    if (parent[i] == i)
+        return i;
+    return parent[i] = findSet(parent, parent[i]);
+}
+
+// Hàm hợp nhất hai tập hợp (union) với Union-Find
+void unionSets(std::vector<int>& parent, int a, int b) {
+    int rootA = findSet(parent, a);
+    int rootB = findSet(parent, b);
+    if (rootA != rootB)
+        parent[rootA] = rootB;
+}
+
+std::vector<Edge> calculateKruskalMST(const std::vector<Edge>& edges, int numNodes) {
+    std::vector<Edge> mstEdges;
+    std::vector<int> parent(numNodes);
+    for (int i = 0; i < numNodes; ++i)
+        parent[i] = i; // Khởi tạo mỗi nút là một tập hợp riêng
+
+    std::vector<Edge> sortedEdges = edges;
+    std::sort(sortedEdges.begin(), sortedEdges.end()); // Sắp xếp các cạnh theo trọng số tăng dần
+
+    for (const auto& edge : sortedEdges) {
+        int from = edge.from - 1;
+        int to = edge.to - 1;
+        if (findSet(parent, from) != findSet(parent, to)) {
+            mstEdges.push_back(edge);
+            unionSets(parent, from, to);
+        }
+    }
+
+    return mstEdges;
+}
+
 // Hàm tính toán vị trí node theo hình tròn với độ lệch ngẫu nhiên
 void positionNodesInCircle(std::vector<Vector2>& nodePositions, int numNodes, float centerX, float centerY,float radius) {
     nodePositions.resize(numNodes);
@@ -349,6 +389,18 @@ void drawEdgeWeight(Vector2 start, Vector2 end, int weight) {
 
     DrawRectangle(textPosition.x - 2, textPosition.y - 2, textSize.x + 4, textSize.y + 4, WHITE); // Background
     DrawText(weightText.c_str(), (int)textPosition.x, (int)textPosition.y, fontSize, BLACK);
+}
+
+void drawMSTInfo(int totalWeight, Rectangle menuRect) {
+    // Vị trí của chữ "Minimum Spanning Tree" (giả sử nó được vẽ ở vị trí này)
+    float textX = menuRect.x + 10;
+    float textY = menuRect.y + 10;
+    int fontSize = 20;
+    int textHeight = fontSize;
+    // Đặt ô ngay dưới chữ "Minimum Spanning Tree"
+    Rectangle weightBox = {menuRect.x + 10, textY + textHeight + 5, 150, 30}; // Thay đổi vị trí y
+    DrawRectangleRec(weightBox, WHITE);
+    DrawText(TextFormat("Total Weight: %d", totalWeight), weightBox.x + 5, weightBox.y + 5, 20, BLACK);
 }
 
 int main() {
@@ -433,10 +485,12 @@ int main() {
    std::vector<bool> mstEdgesDrawn;
    std::vector<Edge> mstNodesDrawn;
    int mstEdgeIndex = 0;
+   int totalMSTWeight = 0;
    float mstDrawTimer = 0.0f;
    bool mstDoneDrawing = false;
    bool drawMSTOnMSTMenu = false;
    int numNodesMST = 0;
+   bool showWeightInfo = false;
 
     while (!WindowShouldClose()) {
     BeginDrawing();
@@ -571,10 +625,19 @@ int main() {
     
         DrawRectangleRec(backButton, WHITE);
         DrawText("Back", backButton.x + 10, backButton.y + 10, 20, BLACK);
-    
+       
+       if (showWeightInfo)
+            drawMSTInfo(totalMSTWeight, mstMenuRect); // Vẽ thông tin trọng số MST
         // Xử lý sự kiện click chuột cho các nút
         if (CheckCollisionPointRec(GetMousePosition(), primButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                mstEdgesDrawn.clear();
+                mstEdgeIndex = 0;
+                mstDrawTimer = 0.0f;
+                mstDoneDrawing = false;
+                mstNodesDrawn.clear();
+                totalMSTWeight = 0;
                 usePrim = true;
+                showWeightInfo = true; // Hiển thị thông tin trọng số MST
                 useKruskal = false;
                 mstEdges = calculatePrimMST(edges, nodePositions.size()); // Tính toán MST bằng Prim
                 mstEdgesDrawn.resize(mstEdges.size(), false);
@@ -585,10 +648,16 @@ int main() {
             }
     
         if (CheckCollisionPointRec(GetMousePosition(), kruskalButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-          
+                mstEdgesDrawn.clear();
+                mstEdgeIndex = 0;
+                mstDrawTimer = 0.0f;
+                mstDoneDrawing = false;
+                mstNodesDrawn.clear();
+                totalMSTWeight = 0;
+                showWeightInfo = true; // Hiển thị thông tin trọng số MST
                 usePrim = false;
                 useKruskal = true;
-            //  mstEdges = calculateKruskalMST(edges, nodePositions.size()); // Tính toán MST bằng Kruskal
+                mstEdges = calculateKruskalMST(edges, nodePositions.size()); // Tính toán MST bằng Kruskal
                 mstEdgesDrawn.resize(mstEdges.size(), false);
                 mstEdgeIndex = 0;
                 mstDrawTimer = 0.0f;
@@ -606,6 +675,7 @@ int main() {
             mstDrawTimer = 0.0f; // Reset time to zero
             usePrim = false;
             useKruskal = false;
+            showWeightInfo = false; // Ẩn thông tin trọng số MST
             showMSTError = false; // Ẩn thông báo lỗi
             mstDoneDrawing = false;
         }
@@ -628,55 +698,65 @@ int main() {
         
         // Vẽ các cạnh MST (từ từ)
         if (usePrim || useKruskal) {
-              // Vẽ các cạnh MST (từ từ)
-        for (int i = 0; i < mstEdgesDrawn.size(); i++) {
-            if (mstEdgesDrawn[i]) {
-                int from = mstEdges[i].from - 1;
-                int to = mstEdges[i].to - 1;
-                Vector2 fromPos = mstNodePositions[from];
-                Vector2 toPos = mstNodePositions[to];
-                DrawLineEx(fromPos, toPos, 3.0f, RED);
-                drawEdgeWeight(fromPos, toPos, mstEdges[i].weight);
+            // Vẽ các cạnh MST (từ từ)
+            for (int i = 0; i < mstEdgesDrawn.size(); i++) {
+                if (mstEdgesDrawn[i]) {
+                    int from = mstEdges[i].from - 1;
+                    int to = mstEdges[i].to - 1;
+                    Vector2 fromPos = mstNodePositions[from];
+                    Vector2 toPos = mstNodePositions[to];
+                    DrawLineEx(fromPos, toPos, 3.0f, RED);
+                    drawEdgeWeight(fromPos, toPos, mstEdges[i].weight);
+    
+                    // Đánh dấu các nút đã được vẽ
+                    mstNodesDrawn[from] = true;
+                    mstNodesDrawn[to] = true;
+                }
             }
-        }
-
-        // Vẽ cạnh MST tiếp theo
-        if (mstEdgeIndex < mstEdges.size()) {
-            mstDrawTimer += GetFrameTime();
-            if (mstDrawTimer >= 0.5f) {
-                int from = mstEdges[mstEdgeIndex].from - 1;
-                int to = mstEdges[mstEdgeIndex].to - 1;
-                Vector2 fromPos = mstNodePositions[from];
-                Vector2 toPos = mstNodePositions[to];
-                DrawLineEx(fromPos, toPos, 3.0f, SKYBLUE);
-                drawEdgeWeight(fromPos, toPos, mstEdges[mstEdgeIndex].weight);
-
-                mstEdgesDrawn[mstEdgeIndex] = true;
-                mstEdgeIndex++;
-                mstDrawTimer = 0.0f;
-            }
-        } else {
-            // Sau khi vẽ xong MST, vẽ các cạnh không thuộc MST
-            for (const auto& edge : edges) {
-                bool isMSTEdge = false;
-                for (const auto& mstEdge : mstEdges) {
-                    if ((edge.from == mstEdge.from && edge.to == mstEdge.to) ||
-                        (edge.from == mstEdge.to && edge.to == mstEdge.from)) {
-                        isMSTEdge = true;
-                        break;
+    
+            // Vẽ cạnh MST tiếp theo
+            if (mstEdgeIndex < mstEdges.size()) {
+                mstDrawTimer += GetFrameTime();
+                if (mstDrawTimer >= 0.5f) {
+                    int from = mstEdges[mstEdgeIndex].from - 1;
+                    int to = mstEdges[mstEdgeIndex].to - 1;
+                    Vector2 fromPos = mstNodePositions[from];
+                    Vector2 toPos = mstNodePositions[to];
+                    DrawLineEx(fromPos, toPos, 3.0f, SKYBLUE);
+                    drawEdgeWeight(fromPos, toPos, mstEdges[mstEdgeIndex].weight);
+    
+                    mstEdgesDrawn[mstEdgeIndex] = true;
+    
+                    // Đánh dấu các nút đã được vẽ
+                    mstNodesDrawn[from] = true;
+                    mstNodesDrawn[to] = true;
+            
+                    mstEdgeIndex++;
+                    mstDrawTimer = 0.0f;
+                    totalMSTWeight += mstEdges[mstEdgeIndex-1].weight;
+                }
+            } else {
+                // Sau khi vẽ xong MST, vẽ các cạnh không thuộc MST
+                for (const auto& edge : edges) {
+                    bool isMSTEdge = false;
+                    for (const auto& mstEdge : mstEdges) {
+                        if ((edge.from == mstEdge.from && edge.to == mstEdge.to) ||
+                            (edge.from == mstEdge.to && edge.to == mstEdge.from)) {
+                            isMSTEdge = true;
+                            break;
+                        }
+                    }
+                    if (!isMSTEdge) {
+                        Color edgeColor = Fade(DARKBLUE, 0.3f);
+                        int fromIndex = edge.from - 1;
+                        int toIndex = edge.to - 1;
+                        if (fromIndex >= 0 && fromIndex < mstNodePositions.size() &&
+                            toIndex >= 0 && toIndex < mstNodePositions.size()) {
+                            DrawLineEx(mstNodePositions[fromIndex], mstNodePositions[toIndex], 2.0f, edgeColor);
+                            drawEdgeWeight(mstNodePositions[fromIndex], mstNodePositions[toIndex], edge.weight);
+                        }
                     }
                 }
-                if (!isMSTEdge) {
-                    Color edgeColor = Fade(DARKBLUE, 0.3f); // Màu mờ cho cạnh không thuộc MST
-                    int fromIndex = edge.from - 1;
-                    int toIndex = edge.to - 1;
-                    if (fromIndex >= 0 && fromIndex < mstNodePositions.size() &&
-                        toIndex >= 0 && toIndex < mstNodePositions.size()) {
-                        DrawLineEx(mstNodePositions[fromIndex], mstNodePositions[toIndex], 2.0f, edgeColor);
-                        drawEdgeWeight(mstNodePositions[fromIndex], mstNodePositions[toIndex], edge.weight);
-                    }
-                }
-              }
             }
         } else if (!mstEdges.empty()) {
             // draw edges
@@ -705,7 +785,14 @@ int main() {
         }
         // draw node
         for (int i = 0; i < mstNodePositions.size(); i++) {
-            drawNode(mstNodePositions[i], i + 1, ORANGE, 20); // Use styled node drawing
+            if (mstNodesDrawn[i])
+            {
+                drawNode(mstNodePositions[i], i + 1, ORANGE, 20); // Use styled node drawing
+            }
+            else
+            {
+                drawNode(mstNodePositions[i], i + 1, WHITE, 20); // Use styled node drawing
+            }
         }
     }
     // Vẽ thông báo lỗi (nếu có)
@@ -797,6 +884,7 @@ int main() {
             showMSTMenu = true;
             mstButtonClicked = true;
             showGraph = false;
+            mstNodesDrawn.clear();
             drawMSTOnMSTMenu = false;
             mstEdges.clear();
             mstEdgesDrawn.clear();

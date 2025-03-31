@@ -22,16 +22,22 @@ private:
     int size;
 	float tablePosX = 300;
 	float tablePosY = 100;
-	float llPosX = 370;
-	float nodeWidth = 50;
-	float nodeHeight = 20;
+    float indexWidth = 80;
+	float nodeWidth = 65;
+	float nodeHeight = 25;
 	float nodeSpaceX = 10;
 	float nodeSpaceY = 10;
+	float llPosX = tablePosX + nodeSpaceX + indexWidth;
+    float lineWidth = 2;
     std::vector<HashNode*> table;
     std::vector<HashNode*> prevTable;
     void drawTable();
     void drawPrevTable();
     void saveCurrentTable();
+    Rectangle calIndexArea(int hashValue);
+    Rectangle calNodeArea(int idx, int hashValue);
+    Rectangle calEdgeArea(int idx, int hashValue);
+    Rectangle calEdgeXArea(int idx, int hashValue, int i);
     
     // operation menu
     void drawOperationMenu();

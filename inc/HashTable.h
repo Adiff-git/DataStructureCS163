@@ -20,7 +20,7 @@ private:
     // hash table
     int hash(int key) { return size > 0 ? key % size : 0; }
     int size;
-	float tablePosX = 300;
+	float tablePosX = 550;
 	float tablePosY = 100;
     float indexWidth = 80;
 	float nodeWidth = 65;
@@ -166,7 +166,7 @@ private:
 	void drawInitializeDescription();
 	
 	// code area
-	float codePosX = 950;
+	float codePosX = 10;
 	float codePosY = 60;
 	float codePosSpace = 25;
 	float codeWidth = 700;

@@ -346,10 +346,11 @@ void HashTable::Insert(int key, int value) {
         insertCodeIndex.push_back(7);
         insertPaths1.push_back({
             std::make_tuple(calIndexArea(hashValue), YELLOW),
-            // std::make_tuple(Rectangle{ llPosX + 60 * idx - 10, tablePosY + 30 * hashValue + 10, 10, 2 }, BLUE),
+            std::make_tuple(calNodeArea(idx, hashValue), BLUE)
         });
         insertPaths2.push_back({ 
-            std::make_tuple(calEdgeArea(idx, hashValue), RED) // Highlight current node as RED (key mismatch)
+            std::make_tuple(calEdgeArea(idx + 1, hashValue), RED), // Highlight current node as RED (key mismatch)
+            std::make_tuple(calNodeArea(idx + 1, hashValue), RED)
         });
         current = current->next;
         idx++; // Increment idx to move to the next node position
@@ -364,9 +365,9 @@ void HashTable::Insert(int key, int value) {
             std::make_tuple(calEdgeArea(idx, hashValue), BLUE),
             std::make_tuple(calNodeArea(idx, hashValue), BLUE) // Highlight next node as BLUE
         });
-}
+    }
         if (current->key == key) {
-            insertDescriptions.push_back("Checking condition: Found key" + std::to_string(key));
+            insertDescriptions.push_back("Checking condition: Found key " + std::to_string(key));
             insertCodeIndex.push_back(10);
             insertPaths1.push_back({
                 std::make_tuple(calIndexArea(hashValue), YELLOW),
@@ -818,19 +819,19 @@ void HashTable::drawInitializeOptions() {
     static bool nInputEnabled = false;
 
     GuiLabel(Rectangle{ 20, 610, 25, 25 }, "M: ");
-    if (GuiSpinner(Rectangle{ 50, 610, 100, 25 }, NULL, &mValue, 1, 20, mInputEnabled)) {
+    if (GuiSpinner(Rectangle{ 50, 610, 100, 25 }, NULL, &mValue, 1, 14, mInputEnabled)) {
         mInputEnabled = !mInputEnabled;
     }
     if (GuiButton(Rectangle{ 160, 610, 25, 25 }, "#193#")) {
-        mValue = GetRandomValue(1, 20);
+        mValue = GetRandomValue(1, 14);
     }
 
     GuiLabel(Rectangle{ 200, 610, 25, 25 }, "N: ");
-    if (GuiSpinner(Rectangle{ 230, 610, 100, 25 }, NULL, &nValue, 0, 100, nInputEnabled)) {
+    if (GuiSpinner(Rectangle{ 230, 610, 100, 25 }, NULL, &nValue, 0, 99, nInputEnabled)) {
         nInputEnabled = !nInputEnabled;
     }
     if (GuiButton(Rectangle{ 340, 610, 25, 25 }, "#193#")) {
-        nValue = GetRandomValue(0, 100);
+        nValue = GetRandomValue(0, 99);
     }
 
     if (GuiButton(Rectangle{ 30, 650, 80, 30 }, "Upload")) {
@@ -884,7 +885,7 @@ void HashTable::drawInitializeOptions() {
         Vector2 textSize = MeasureTextEx(GetFontDefault(), message, 16, 1);
         Vector2 position = { (float)(GetScreenWidth() - textSize.x) / 2, (float)(GetScreenHeight() - textSize.y) / 2 };
         // DrawText(message, (int)position.x, (int)position.y, 20, BLACK);
-        DrawText(message, 120, 650, 20, BLACK);
+        DrawText(message, 120, 655, 20, GRAY);
     }
 }
 
@@ -963,8 +964,9 @@ void HashTable::drawSearchOptions() {
 
 // Operation Menu
 void HashTable::drawOperationMenu() {
+    // GuiDrawRectangle({ 10, 600, 450, 150 }, 2, GRAY, Color{ 0, 0, 0, 0 });
     static bool showInitializeOption = false;
-	static float opPosX = 20;
+	static float opPosX = 30;
 	static float opPosY = 700;
 	static float opWidth = 80;
 	static float opHeight = 30;
@@ -1185,16 +1187,18 @@ void HashTable::drawAnimationMenu() {
         pause = true;
         curStep = totalStep - 1;
     }
+
+    GuiLabel(Rectangle{ 500, 670, 130, 20 }, TextFormat("Step %d/%d", curStep + 1, totalStep));
 }
 
 // Code description Menu
 void HashTable::drawInsertDescription() {
-    GuiLabel(Rectangle{ 980, 20, 150, 20 }, "Inserting");
+    GuiLabel(Rectangle{ 500, 610, 150, 20 }, "Inserting:");
     // for (int i = 0; i < insertCodeIndex.size(); i++) {
     //     GuiLabel(Rectangle{ 10.0f + 20 * i, 470, 20, 20 }, std::to_string(insertCodeIndex[i]).c_str());
     // }
     if (insertDescriptions.size() > curStep) {
-        GuiLabel(Rectangle{ 980, 40, 300, 20 }, insertDescriptions[curStep].c_str());
+        GuiLabel(Rectangle{ 500, 640, 500, 20 }, insertDescriptions[curStep].c_str());
     }
     int stt = insertCodeIndex.size() > curStep ? insertCodeIndex[curStep] : 0;
     for (int i = 0; i < insertCodes.size(); i++) {
@@ -1224,9 +1228,9 @@ void HashTable::drawInsertDescription() {
 }
 
 void HashTable::drawDeleteDescription() {
-    GuiLabel(Rectangle{ 980, 20, 150, 20 }, "Deleting");
+    GuiLabel(Rectangle{ 500, 610, 150, 20 }, "Deleting");
     if (deleteDescriptions.size() > curStep) {
-        GuiLabel(Rectangle{ 980, 40, 300, 20 }, deleteDescriptions[curStep].c_str());
+        GuiLabel(Rectangle{ 500, 630, 500, 20 }, deleteDescriptions[curStep].c_str());
     }
     int stt = deleteCodeIndex.size() > curStep ? deleteCodeIndex[curStep] : 0;
     for (int i = 0; i < deleteCodes.size(); i++) {
@@ -1256,17 +1260,17 @@ void HashTable::drawDeleteDescription() {
 }
 
 void HashTable::drawSearchDescription() {
-    GuiLabel(Rectangle{ 980, 20, 150, 20 }, "Searching");
-    if (deleteDescriptions.size() > curStep) {
-        GuiLabel(Rectangle{ 980, 40, 300, 20 }, deleteDescriptions[curStep].c_str());
+    GuiLabel(Rectangle{ 500, 610, 150, 20 }, "Searching: ");
+    if (searchDescriptions.size() > curStep) {
+        GuiLabel(Rectangle{ 500, 640, 500, 20 }, searchDescriptions[curStep].c_str());
     }
     int stt = searchCodeIndex.size() > curStep ? searchCodeIndex[curStep] : 0;
     for (int i = 0; i < searchCodes.size(); i++) {
         Color c = stt == i ? RED : BLACK;
-        Rectangle bounds = { 1000, 60.0f + i * 20, 300, 20 };
+        Rectangle bounds = { codePosX, codePosY + i * codePosSpace, codeWidth, codeHeight };
         GuiDrawText(searchCodes[i].c_str(), GetTextBounds(LABEL, bounds), GuiGetStyle(LABEL, TEXT_ALIGNMENT), c);
         if (stt == i) {
-            GuiLabel(Rectangle{ 980, 60.0f + i * 20, 20, 20 }, ">>");
+            GuiLabel(Rectangle{ codePosX - 20, codePosY + i * codePosSpace, 20, 20 }, ">>");
         }
     }
     if (searchPaths1.size() > curStep) {
@@ -1335,20 +1339,22 @@ void HashTable::drawNodeDetailMenu() {
         
         bool vInputEnabled = false;
 
-        GuiLabel(Rectangle{ 20, 10, 150, 20 }, TextFormat("Node detail:"));
+        GuiLabel(Rectangle{ 1050, 610, 150, 25 }, TextFormat("Node detail:"));
 
-        GuiLabel(Rectangle{ 20, 30, 60, 20 }, TextFormat("Key: %d", selectedNode->key));
-        if (GuiSpinner(Rectangle{ 100, 30, 90, 20 }, "Value: ", &selectedValue, 0, 100, vInputEnabled)) {
+        GuiLabel(Rectangle{ 1070, 640, 100, 25 }, TextFormat("- Key: %d", selectedNode->key));
+        GuiLabel(Rectangle{ 1070, 670, 100, 25 }, "- Value: ");
+
+        if (GuiSpinner(Rectangle{ 1070 + 75, 670, 100, 25 }, NULL, &selectedValue, 0, 100, vInputEnabled)) {
             vInputEnabled = !vInputEnabled;
         };
         
-        if (GuiButton(Rectangle{ 20, 60, 60, 20 }, "Delete")) {
+        if (GuiButton(Rectangle{ 1100, 700, 80, 30 }, "Delete")) {
             Delete(selectedNode->key);
             done = 0;
             delta = 0;
             selectedNode = nullptr;
         };
-        if (GuiButton(Rectangle{ 90, 60, 60, 20 }, "Update")) {
+        if (GuiButton(Rectangle{ 1200, 700, 80, 30 }, "Update")) {
             Insert(selectedNode->key, selectedValue);
             done = 0;
             delta = 0;
@@ -1360,6 +1366,7 @@ void HashTable::drawNodeDetailMenu() {
 // Screen
 void HashTable::DrawScreen() {
     ClearBackground(WHITE);
+    DrawTextEx(GetFontDefault(), "Hash Table", Vector2{ 500, 20 }, 20, 2, BLACK);
     drawOperationMenu();
     drawAnimationMenu();
 

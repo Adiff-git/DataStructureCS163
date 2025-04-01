@@ -11,6 +11,8 @@
 #include "raymath.h"
 #include <random>
 #include <iomanip>
+#include "tinyfiledialogs.h"
+#include <fstream>
 
 using namespace std;
 
@@ -494,6 +496,140 @@ void drawMSTInfo(int totalWeight, bool isMSTDrawingPaused,Rectangle pauseResumeB
     DrawText(isMSTDrawingPaused ? "Resume" : "Pause", pauseResumeButton.x + 10, pauseResumeButton.y + 10, 20, BLACK);
 }
 
+std::string ReadTextFile(const char *filePath) {
+    std::ifstream fileStream(filePath);
+    if (!fileStream.is_open()) {
+        std::cerr << "Error: Could not open file: " << filePath << std::endl;
+        return ""; // Trả về chuỗi rỗng nếu lỗi
+    }
+    std::stringstream buffer;
+    buffer << fileStream.rdbuf();
+    fileStream.close();
+    return buffer.str();
+}
+
+bool LoadGraphFromFile(const char* filePath, std::vector<Edge>& outEdges, std::vector<Vector2>& outNodePositions, int screenWidth, int screenHeight, std::string& outErrorMessage) {
+    outEdges.clear();
+    outNodePositions.clear();
+    outErrorMessage = "";
+
+    std::string fileContent = ReadTextFile(filePath);
+    if (fileContent.empty()) {
+        outErrorMessage = "Error: File is empty or could not be read.";
+        return false;
+    }
+
+    std::vector<std::vector<int>> adjacencyMatrix;
+    int numNodes;
+    outErrorMessage = ValidateMatrixInput(fileContent, adjacencyMatrix, numNodes); // Tái sử dụng hàm validate
+
+    if (!outErrorMessage.empty()) {
+        // Thêm thông tin file vào thông báo lỗi
+        outErrorMessage = "Error in file '" + std::string(filePath) + "': " + outErrorMessage;
+        return false; // Ma trận không hợp lệ
+    }
+
+    // Ma trận hợp lệ, tạo danh sách cạnh
+    for (int i = 0; i < numNodes; ++i) {
+        for (int j = i + 1; j < numNodes; ++j) {
+            if (adjacencyMatrix[i][j] != 0) {
+                // Đảm bảo trọng số dương nếu cần, hoặc xử lý trọng số 0/âm tùy yêu cầu
+                int weight = adjacencyMatrix[i][j];
+                if (weight <= 0) weight = 1; // Ví dụ: đặt trọng số mặc định là 1 nếu <= 0
+                outEdges.push_back({ i + 1, j + 1, weight });
+            }
+        }
+    }
+
+    // Kiểm tra tính liên thông sau khi tạo cạnh từ file
+    if (numNodes > 0 && !isGraphConnected(outEdges, numNodes)) {
+         outErrorMessage = "Warning: Graph loaded from file is not connected.";
+         return false; // Nếu muốn coi đây là lỗi
+    }
+
+
+    // Tính toán vị trí nút (ví dụ: xếp vòng tròn)
+    positionNodesInCircle(outNodePositions, numNodes, screenWidth / 2.0f, screenHeight / 2.0f, std::min(screenWidth, screenHeight) / 3.0f); // Tăng bán kính một chút
+
+    return true; // Tải thành công
+}
+
+void UpdateGraphCamera(Camera2D &camera, const std::vector<Vector2>& nodes, float nodeRadius, int screenWidth, int screenHeight) {
+    if (nodes.empty()) {
+        // Reset camera về mặc định nếu không có nút nào
+        camera.target = { (float)screenWidth / 2.0f, (float)screenHeight / 2.0f };
+        camera.offset = { (float)screenWidth / 2.0f, (float)screenHeight / 2.0f };
+        camera.zoom = 1.0f;
+        return;
+    }
+
+    // 1. Xác định Viewport (vùng vẽ đồ thị)
+    float uiWidth = 120.0f; // Chiều rộng ước tính của UI bên trái
+    float padding = 30.0f;  // Khoảng đệm xung quanh đồ thị
+    Rectangle viewport = {
+        uiWidth + padding,
+        padding,
+        screenWidth - uiWidth - 2 * padding,
+        screenHeight - 2 * padding
+    };
+
+    // Đảm bảo viewport có kích thước hợp lệ
+    if (viewport.width <= 0) viewport.width = 1.0f;
+    if (viewport.height <= 0) viewport.height = 1.0f;
+
+
+    // 2. Tính Bounding Box của đồ thị (bao gồm cả bán kính nút)
+    Vector2 minBounds = nodes[0];
+    Vector2 maxBounds = nodes[0];
+
+    for (const auto& nodePos : nodes) {
+        minBounds.x = std::min(minBounds.x, nodePos.x);
+        minBounds.y = std::min(minBounds.y, nodePos.y);
+        maxBounds.x = std::max(maxBounds.x, nodePos.x);
+        maxBounds.y = std::max(maxBounds.y, nodePos.y);
+    }
+
+    // Thêm bán kính nút vào bounding box
+    minBounds.x -= nodeRadius;
+    minBounds.y -= nodeRadius;
+    maxBounds.x += nodeRadius;
+    maxBounds.y += nodeRadius;
+
+    float graphWidth = maxBounds.x - minBounds.x;
+    float graphHeight = maxBounds.y - minBounds.y;
+
+    // Xử lý trường hợp đồ thị chỉ có 1 điểm hoặc các điểm trùng nhau
+    if (graphWidth <= 0) graphWidth = 1.0f;
+    if (graphHeight <= 0) graphHeight = 1.0f;
+
+    // 3. Tính Scale và Offset
+    float scaleX = viewport.width / graphWidth;
+    float scaleY = viewport.height / graphHeight;
+    float scale = std::min(scaleX, scaleY);
+
+    // Giới hạn scale tối thiểu để tránh quá nhỏ hoặc lỗi chia cho 0 tiềm ẩn
+    const float minZoom = 0.1f;
+    if (scale < minZoom) scale = minZoom;
+
+     // Tính tâm của đồ thị gốc
+    Vector2 graphCenter = {
+        minBounds.x + graphWidth / 2.0f,
+        minBounds.y + graphHeight / 2.0f
+    };
+
+    // Tính tâm của viewport
+    Vector2 viewportCenter = {
+         viewport.x + viewport.width / 2.0f,
+         viewport.y + viewport.height / 2.0f
+    };
+
+
+    // 4. Cập nhật Camera
+    camera.target = graphCenter; // Camera nhìn vào tâm đồ thị gốc
+    camera.offset = viewportCenter; // Tâm đồ thị gốc sẽ được chiếu vào tâm viewport
+    camera.zoom = scale;         // Áp dụng tỷ lệ thu phóng
+}
+
 int main() {
     const int screenWidth = 1400;
     const int screenHeight = 1000;
@@ -589,10 +725,72 @@ int main() {
    Slider speedSlider = Slider({mstMenuRect.x + mstMenuRect.width - 160, mstMenuRect.y + (mstMenuRect.height - 70) / 2, 150, 20}, 0.1f, 2.0f, "Speed");
    Vector2 graphOriginalSize = {0, 0};
 
+   // File
+   std::string fileErrorMessage = ""; // Biến lưu lỗi khi đọc file
+   bool showFileError = false;      // Cờ hiển thị lỗi file
+  
+   Camera2D graphCamera = { 0 };
+   graphCamera.rotation = 0.0f;
+   graphCamera.zoom = 1.0f; // Zoom mặc định
     while (!WindowShouldClose()) {
     BeginDrawing();
     ClearBackground(GRAY);
+    if (graphDrawn && showGraph && !showMSTMenu && !showMatrixInput) {
+        BeginMode2D(graphCamera);
+        if (nodePositions.empty() && !edges.empty()) {
+            positionNodesInCircle(nodePositions, std::max(static_cast<std::size_t>(edges.size()), edges.empty() ? static_cast<std::size_t>(0) : static_cast<std::size_t>(std::max_element(edges.begin(), edges.end(), [](const Edge &a, const Edge &b) {
+                return std::max(static_cast<int>(a.from), static_cast<int>(a.to)) < std::max(static_cast<int>(a.from), static_cast<int>(a.to));
+            })->to)), screenWidth / 2.0f, screenHeight / 2.0f, 200.0f);
+        }
+        // Cập nhật kích thước ban đầu
+        for (const auto& pos : nodePositions) {
+            graphOriginalSize.x = std::max(graphOriginalSize.x, pos.x);
+            graphOriginalSize.y = std::max(graphOriginalSize.y, pos.y);
+        }
+    // Vẽ cạnh
+    for (const auto& edge : edges) {
+        // Kiểm tra chỉ số hợp lệ trước khi truy cập nodePositions
+         if (edge.from > 0 && edge.from <= nodePositions.size() &&
+            edge.to > 0 && edge.to <= nodePositions.size())
+        {
+            // Sử dụng nodePositions gốc, camera sẽ tự động biến đổi tọa độ
+            Vector2 startPos = nodePositions[edge.from - 1];
+            Vector2 endPos = nodePositions[edge.to - 1];
+            drawBezierEdge(startPos, endPos, 2.0f / graphCamera.zoom, DARKBLUE); // Làm dày đường kẻ khi zoom out
+            // Vị trí trọng số cũng cần tính từ tọa độ gốc
+            drawEdgeWeight(startPos, endPos, edge.weight); // Hàm drawEdgeWeight nên độc lập với zoom
+        } else {
+             // Có thể log lỗi nếu chỉ số không hợp lệ
+             std::cerr << "Warning: Invalid edge indices (" << edge.from << ", " << edge.to << ") for node count " << nodePositions.size() << std::endl;
+        }
+    }
+    //Vẽ Node
+    for (int i = 0; i < nodePositions.size(); i++) {
+        drawNode(nodePositions[i], i + 1, ORANGE, 20.0f);
 
+    }
+    EndMode2D();
+}
+    if (graphDrawn && numNodesStr != "" && numEdgesStr != "") {
+        int numNodes = std::stoi(numNodesStr);
+        int nodeRadius = 20;
+        for (const auto& edge : edges) {
+            Vector2 fromPos = nodePositions[edge.from - 1];
+            Vector2 toPos = nodePositions[edge.to - 1];
+            DrawLineV(fromPos, toPos, DARKBLUE);
+            Vector2 weightPos = {
+                fromPos.x + (toPos.x - fromPos.x) * 0.5f,
+                fromPos.y + (toPos.y - fromPos.y) * 0.5f
+            };
+            DrawText(TextFormat("%d", edge.weight), weightPos.x, weightPos.y, 20, SKYBLUE);
+        }
+
+        for (int i = 0; i < numNodes; ++i) {
+            DrawCircleV(nodePositions[i], nodeRadius, ORANGE);
+            DrawCircleV(nodePositions[i], nodeRadius - 2, WHITE);
+            DrawText(TextFormat("%d", i + 1), nodePositions[i].x - MeasureText(TextFormat("%d", i + 1), 20) / 2, nodePositions[i].y - 10, 20, DARKGRAY);
+        }
+    }
     if (isCreating && canCreateGraph) {
         // Logic cho chức năng Create
         if (canCreateGraph) {
@@ -670,6 +868,7 @@ int main() {
                             float angle = 2.0f * PI * i / numNodes;
                             nodePositions[i] = { screenWidth / 2.0f + layoutRadius * cosf(angle), screenHeight / 2.0f + layoutRadius * sinf(angle) };
                         }
+                        UpdateGraphCamera(graphCamera, nodePositions, 20.0f, screenWidth, screenHeight); // <<--- GỌI Ở ĐÂY
                         graphDrawn = true;
                         isCreating = false;
                         numNodesStr = "";
@@ -702,6 +901,7 @@ int main() {
             float layoutRadius = std::min(screenWidth, screenHeight) / 8.0f;
             nodePositions[i] = { screenWidth / 2.0f + layoutRadius * cosf(angle), screenHeight / 2.0f + layoutRadius * sinf(angle) };
         }
+        UpdateGraphCamera(graphCamera, nodePositions, 20.0f, screenWidth, screenHeight); // <<--- GỌI Ở ĐÂY
         graphDrawn = true;
         isRandomizing = false;
         numNodesStr = "";
@@ -725,21 +925,8 @@ int main() {
 
         speedSlider.update();
         speedSlider.draw();
-        // Hiển thị nút bắt đầu chỉnh sửa khi di chuột và nhấn chuột
-        if (speedSlider.isHovered() && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-             speedSlider.startEditing();
-        }
-        // dừng chỉnh sửa khi ấn chuột ngoài hoặc enter
         if (speedSlider.isEditing() && (!IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsKeyPressed(KEY_ENTER))) {
              speedSlider.stopEditing();
-        }
-
-        if (speedSlider.isEditing()) {
-        int key = GetCharPressed();
-        if ((key >= 48 && key <= 57) || key == 46)  // Số hoặc dấu chấm
-            speedSlider.editBuffer += (char)key;
-        if (IsKeyPressed(KEY_BACKSPACE) && speedSlider.editBuffer.length() > 0)
-            speedSlider.editBuffer.pop_back();
         }
         if (showWeightInfo)
         {
@@ -841,9 +1028,6 @@ int main() {
         };
     }
 
-    // Vẽ hình chữ nhật bao quanh
-    DrawRectangleLinesEx(graphBoundingBox, 3, WHITE);
-        
         // Vẽ các cạnh MST (từ từ)
         if (usePrim || useKruskal) {
             // Vẽ các cạnh MST (từ từ)
@@ -947,9 +1131,16 @@ int main() {
     if (showMSTError) {
     DrawText(mstErrorMessage.c_str(), mstButton.x + mstButton.width + 10, mstButton.y + 10, 20, RED);
     }
+    if (showFileError) {
+        // Vẽ gần nút File hoặc ở một vị trí thông báo chung
+        DrawText(fileErrorMessage.c_str(), fileButton.x + fileButton.width + 10, fileButton.y + 5, 18, RED);
+    }
     if (CheckCollisionPointRec(GetMousePosition(), createButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         showError = false; 
         errorMessage = ""; 
+        showFileError = false;
+        std::vector<Vector2> emptyNodes;
+        UpdateGraphCamera(graphCamera, emptyNodes, 20.0f, screenWidth, screenHeight);
         ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused);
         edges.clear(); 
         nodePositions.clear(); 
@@ -964,6 +1155,9 @@ int main() {
     else if(CheckCollisionPointRec(GetMousePosition(),randomButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
         showError = false; // Ẩn lỗi.
         errorMessage = ""; //Reset message lỗi.
+        showFileError = false;
+        std::vector<Vector2> emptyNodes;
+        UpdateGraphCamera(graphCamera, emptyNodes, 20.0f, screenWidth, screenHeight);
         ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused);
         isRandomizing = true;
         isRandomizingActive = true;
@@ -979,6 +1173,9 @@ int main() {
     else if(CheckCollisionPointRec(GetMousePosition(), exampleButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
         showError = false; // Ẩn lỗi.
         errorMessage = ""; //Reset message lỗi.
+        showFileError = false;
+        std::vector<Vector2> emptyNodes;
+        UpdateGraphCamera(graphCamera, emptyNodes, 20.0f, screenWidth, screenHeight);
         ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused);
         edges.clear(); 
         nodePositions.clear(); 
@@ -992,6 +1189,9 @@ int main() {
     else if(CheckCollisionPointRec(GetMousePosition(),inputButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
         showError = false; // Ẩn lỗi.
         errorMessage = ""; //Reset message lỗi.
+        showFileError = false;
+        std::vector<Vector2> emptyNodes;
+        UpdateGraphCamera(graphCamera, emptyNodes, 20.0f, screenWidth, screenHeight);
         ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused);
         edges.clear(); 
         nodePositions.clear(); 
@@ -1006,10 +1206,14 @@ int main() {
     }
     else if(CheckCollisionPointRec(GetMousePosition(), fileButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
         showError = false; // Ẩn lỗi.
+        showFileError = false;
+        fileErrorMessage = "";
         errorMessage = ""; //Reset message lỗi.
+        std::vector<Vector2> emptyNodes;
+        UpdateGraphCamera(graphCamera, emptyNodes, 20.0f, screenWidth, screenHeight);
         ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused);
-        edges.clear(); // Xóa danh sách cạnh (xóa đồ thị)
-        nodePositions.clear(); // Xóa vị trí node (xóa đồ thị)
+        edges.clear(); 
+        nodePositions.clear(); 
         isFileActive = true;
         isCreatingActive = false;
         isRandomizingActive = false;
@@ -1018,7 +1222,40 @@ int main() {
         showExampleButtons = false;
         showMSTError = false;
         showMSTMenu = false;
-        //ẩn input field và bảng trắng.
+        // Mở hộp thoại chọn file
+        const char * filterPatterns[1] = { "*.txt" }; // Chỉ cho phép chọn file .txt (có thể thêm *.csv, ...)
+        const char * selectedFilePath = tinyfd_openFileDialog(
+             "Select Graph File (Adjacency Matrix)", // Tiêu đề hộp thoại
+             "", // Đường dẫn mặc định (để trống)
+             1, // Số lượng filter
+             filterPatterns, // Mảng các filter
+             "Text Files (*.txt)", // Mô tả filter
+             0 // Không cho phép chọn nhiều file
+         );
+        if (selectedFilePath != NULL) {
+            // Người dùng đã chọn một file
+            std::string loadErrorMessage;
+            bool success = LoadGraphFromFile(selectedFilePath, edges, nodePositions, screenWidth, screenHeight, loadErrorMessage);
+
+            if (success) {
+                UpdateGraphCamera(graphCamera, nodePositions, 20.0f, screenWidth, screenHeight); // <<--- GỌI Ở ĐÂY
+                graphDrawn = true;
+                inputMode = false;
+                matrixInputFocused = false;
+                // isFileActive = false; // Có thể tắt cờ này nếu không dùng nữa
+            } else {
+                // Xảy ra lỗi khi tải file
+                graphDrawn = false; // Không có đồ thị để vẽ
+                edges.clear();      // Xóa cạnh cũ (nếu có)
+                nodePositions.clear(); // Xóa vị trí nút cũ
+                fileErrorMessage = loadErrorMessage;
+                showFileError = true; // Hiển thị thông báo lỗi file
+                isFileActive = false; 
+            }
+        } else {
+            isFileActive = false; // Tắt cờ
+            // Không làm gì cả hoặc hiển thị thông báo "Cancelled"
+        }
     }
     else if (CheckCollisionPointRec(GetMousePosition(), mstButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         if (!graphDrawn)
@@ -1037,6 +1274,8 @@ int main() {
             mstEdges.clear();
             mstEdgesDrawn.clear();
         }
+        std::vector<Vector2> emptyNodes;
+        UpdateGraphCamera(graphCamera, emptyNodes, 20.0f, screenWidth, screenHeight);
         showMatrixInput = false;
         showExampleButtons = false;
         isRandomizingActive = false;
@@ -1084,6 +1323,7 @@ int main() {
                     float layoutRadius = std::min(screenWidth, screenHeight) / 8.0f;
                     nodePositions[i] = { screenWidth / 2.0f + layoutRadius * cosf(angle), screenHeight / 2.0f + layoutRadius * sinf(angle) };
                 }
+                UpdateGraphCamera(graphCamera, nodePositions, 20.0f, screenWidth, screenHeight); // <<--- GỌI Ở ĐÂY
                 graphDrawn = true;
                 showExampleButtons = false;
                 inputMode = false;
@@ -1101,6 +1341,7 @@ int main() {
                     float layoutRadius = std::min(screenWidth, screenHeight) / 8.0f;
                     nodePositions[i] = { screenWidth / 2.0f + layoutRadius * cosf(angle), screenHeight / 2.0f + layoutRadius * sinf(angle) };
                 }
+                UpdateGraphCamera(graphCamera, nodePositions, 20.0f, screenWidth, screenHeight); // <<--- GỌI Ở ĐÂY
                 graphDrawn = true;
                 showExampleButtons = false;
                 inputMode = false;
@@ -1112,6 +1353,13 @@ int main() {
     
             if (CheckCollisionPointRec(GetMousePosition(), p4Button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 generatePathGraph(edges, 4, nodePositions, screenWidth, screenHeight);
+                nodePositions.resize(4);
+                for (int i = 0; i < 4; ++i) {
+                    float angle = 2.0f * PI * i / 4;
+                    float layoutRadius = std::min(screenWidth, screenHeight) / 8.0f;
+                    nodePositions[i] = { screenWidth / 2.0f + layoutRadius * cosf(angle), screenHeight / 2.0f + layoutRadius * sinf(angle) };
+                }
+                UpdateGraphCamera(graphCamera, nodePositions, 20.0f, screenWidth, screenHeight); // <<--- GỌI Ở ĐÂY
                 graphDrawn = true;
                 showExampleButtons = false;
                 inputMode = false;
@@ -1341,17 +1589,16 @@ int main() {
                         }
                     }
                 }
-
-        graphDrawn = true;
-        showMatrixInput = false; // Ẩn màn hình nhập ma trận
-        matrixInputFocused = false;
-
         // Tính toán vị trí nút
         float layoutRadius = std::min(screenWidth, screenHeight) / 8.0f;
         for (int i = 0; i < numNodes; ++i) {
            float angle = 2.0f * PI * i / numNodes;
            nodePositions[i] = { screenWidth / 2.0f + layoutRadius * cosf(angle), screenHeight / 2.0f + layoutRadius * sinf(angle) };
         }
+        UpdateGraphCamera(graphCamera, nodePositions, 20.0f, screenWidth, screenHeight); // <<--- GỌI Ở ĐÂY
+        graphDrawn = true;
+        showMatrixInput = false;
+        matrixInputFocused = false;
     }
 }
             // Nút Close
@@ -1370,52 +1617,7 @@ int main() {
         if (showError && inputMode) {
             DrawText(errorMessage.c_str(), createButton.x + createButton.width + 30, createButton.y + 10, 20, RED);
         }
-}
-        if (graphDrawn && showGraph) {
-            if (nodePositions.empty() && !edges.empty()) {
-                positionNodesInCircle(nodePositions, std::max(static_cast<std::size_t>(edges.size()), edges.empty() ? static_cast<std::size_t>(0) : static_cast<std::size_t>(std::max_element(edges.begin(), edges.end(), [](const Edge &a, const Edge &b) {
-                    return std::max(static_cast<int>(a.from), static_cast<int>(a.to)) < std::max(static_cast<int>(a.from), static_cast<int>(a.to));
-                })->to)), screenWidth / 2.0f, screenHeight / 2.0f, 200.0f);
-            }
-            // Cập nhật kích thước ban đầu
-        for (const auto& pos : nodePositions) {
-        graphOriginalSize.x = std::max(graphOriginalSize.x, pos.x);
-        graphOriginalSize.y = std::max(graphOriginalSize.y, pos.y);
-        }
-        // Vẽ cạnh
-        for (const auto& edge : edges) {
-            drawBezierEdge(nodePositions[edge.from - 1], nodePositions[edge.to - 1], 2.0f, DARKBLUE);
-            drawEdgeWeight(nodePositions[edge.from - 1], nodePositions[edge.to - 1], edge.weight);
-
-        }
-
-        //Vẽ Node
-        for (int i = 0; i < nodePositions.size(); i++) {
-            drawNode(nodePositions[i], i + 1, ORANGE, 20);
-
-        }
     }
-    
-        if (graphDrawn && numNodesStr != "" && numEdgesStr != "") {
-            int numNodes = std::stoi(numNodesStr);
-            int nodeRadius = 20;
-            for (const auto& edge : edges) {
-                Vector2 fromPos = nodePositions[edge.from - 1];
-                Vector2 toPos = nodePositions[edge.to - 1];
-                DrawLineV(fromPos, toPos, DARKBLUE);
-                Vector2 weightPos = {
-                    fromPos.x + (toPos.x - fromPos.x) * 0.5f,
-                    fromPos.y + (toPos.y - fromPos.y) * 0.5f
-                };
-                DrawText(TextFormat("%d", edge.weight), weightPos.x, weightPos.y, 20, SKYBLUE);
-            }
-    
-            for (int i = 0; i < numNodes; ++i) {
-                DrawCircleV(nodePositions[i], nodeRadius, ORANGE);
-                DrawCircleV(nodePositions[i], nodeRadius - 2, WHITE);
-                DrawText(TextFormat("%d", i + 1), nodePositions[i].x - MeasureText(TextFormat("%d", i + 1), 20) / 2, nodePositions[i].y - 10, 20, DARKGRAY);
-            }
-        }
     EndDrawing();
 }
 

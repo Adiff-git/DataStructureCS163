@@ -1,0 +1,11 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/cmake_install.cmake",
+		"C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/raylib/cmake_install.cmake",
+		"C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/raylib/raylib/cmake_install.cmake",
+		"C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/raylib/raylib/external/glfw/cmake_install.cmake",
+		"C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/raylib/raylib/external/glfw/src/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

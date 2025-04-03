@@ -1,52 +1,37 @@
 # ninja log v6
-6437	9100	7653769034959159	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/wgl_context.c.obj	2b2237f614a03631
-26	8430	7653768970844400	raylib/raylib/CMakeFiles/raylib.dir/rcore.c.obj	110813b4ffecfe81
-4946	8296	7653769020261538	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_joystick.c.obj	60de4cee46400cbb
-68	9832	7653768971260471	raylib/raylib/CMakeFiles/raylib.dir/rtextures.c.obj	f82d188a720bb56a
-129	4131	7653768971890724	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/monitor.c.obj	17e7bdfe5defdccb
-5173	7875	7653769022622729	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_monitor.c.obj	7c452ac923b3c4ea
-26	730	7653773425061504	C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/raylib/CTestTestfile.cmake	8cd19c5ed37be10d
-4172	7870	7653769012347734	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_init.c.obj	5c2cab979b83ea9f
-16	158	7653773042344626	CMakeFiles/DataStructureCS163.dir/src/main.cpp.obj	60b7e0b8abee26d
-36	7244	7653768970949597	raylib/raylib/CMakeFiles/raylib.dir/rmodels.c.obj	3c9513ec52c9aa15
-4100	7715	7653769011582252	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_time.c.obj	1fcf394e3ec6198a
-58	2576	7653768971160445	raylib/raylib/CMakeFiles/raylib.dir/rtext.c.obj	60798e47b3533177
-625	3761	7653768977037444	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/egl_context.c.obj	34859d42006a64b0
-26	730	7653773425291948	C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/raylib/raylib/external/glfw/src/cmake_install.cmake	8cd19c5ed37be10d
-3417	7656	7653769004833800	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/null_window.c.obj	d97f8507182012ba
-48	1412	7653768971070413	raylib/raylib/CMakeFiles/raylib.dir/rshapes.c.obj	fa1dbd36528d963a
-26	730	7653773425419438	build.ninja	8cd19c5ed37be10d
-26	730	7653773424978251	C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/cmake_install.cmake	8cd19c5ed37be10d
-6724	9416	7653769038740901	CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.obj	489f0b647ced9a4a
-99	4069	7653768971580544	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/init.c.obj	7c43b5fc335a62a9
-26	730	7653773425143971	C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/raylib/raylib/cmake_install.cmake	8cd19c5ed37be10d
-26	730	7653773425165289	C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/raylib/raylib/CTestTestfile.cmake	8cd19c5ed37be10d
-3273	7226	7653769003598134	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/null_monitor.c.obj	b992446fc263c058
-26	730	7653773425197547	C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/raylib/raylib/external/glfw/cmake_install.cmake	8cd19c5ed37be10d
-79	397	7653769996272402	raylib/raylib/libraylib.a	550b59637bda7285
-5525	9017	7653769026194641	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_window.c.obj	f6c1ed9a91d1de83
-3769	7522	7653769008395742	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_module.c.obj	af7d0369cffae389
-1467	5149	7653768985541371	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/osmesa_context.c.obj	e32cc9ca9a863eda
-397	701	7653769999445763	DataStructureCS163.exe	3a28002df5234660
-87	3408	7653768971470505	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/context.c.obj	98d1401ef53bec6
-77	598	7653768971360536	raylib/raylib/CMakeFiles/raylib.dir/utils.c.obj	8bb60a0bf3062356
-110	4915	7653768971720567	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/input.c.obj	ac5065ece15c4bf7
-152	4171	7653768972105984	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/vulkan.c.obj	1ee15de6761adcbc
-169	3593	7653768972296003	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/window.c.obj	e1b5c65e6490965
-140	3259	7653768971985952	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/platform.c.obj	33049257028ec88e
-2590	5483	7653768996609417	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/null_init.c.obj	1e04f358b4c0d37b
-26	730	7653773425020591	C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/raylib/cmake_install.cmake	8cd19c5ed37be10d
-3604	6420	7653769006644753	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/null_joystick.c.obj	f819568265dde6c0
-16	15041	7653768970757387	raylib/raylib/CMakeFiles/raylib.dir/raudio.c.obj	d9e408e961f307d7
-4150	6699	7653769012177705	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_thread.c.obj	8bfebc9548e3ccb
-43	730	7653773425419438	build.ninja	8cd19c5ed37be10d
-43	730	7653773425419438	C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/cmake_install.cmake	8cd19c5ed37be10d
-43	730	7653773425419438	C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/raylib/cmake_install.cmake	8cd19c5ed37be10d
-43	730	7653773425419438	C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/raylib/raylib/cmake_install.cmake	8cd19c5ed37be10d
-43	730	7653773425419438	C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/raylib/raylib/external/glfw/cmake_install.cmake	8cd19c5ed37be10d
-43	730	7653773425419438	C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/raylib/raylib/external/glfw/src/cmake_install.cmake	8cd19c5ed37be10d
-43	730	7653773425419438	C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/raylib/CTestTestfile.cmake	8cd19c5ed37be10d
-43	730	7653773425419438	C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/raylib/raylib/CTestTestfile.cmake	8cd19c5ed37be10d
-57	2266	7653773428139441	CMakeFiles/DataStructureCS163.dir/src/animation.cpp.obj	e38062050abfc4da
-62	1141	7653774342631071	CMakeFiles/DataStructureCS163.dir/src/init.cpp.obj	5d2ab7383ed21099
-1142	1540	7653774353443464	DataStructureCS163.exe	b21cec1b1f6daf7b
+6903	8392	7653780148736456	CMakeFiles/DataStructureCS163.dir/src/init.cpp.obj	5d2ab7383ed21099
+6699	9520	7653780146699843	CMakeFiles/DataStructureCS163.dir/src/animation.cpp.obj	e38062050abfc4da
+5139	8113	7653780132470380	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_monitor.c.obj	7c452ac923b3c4ea
+6479	8800	7653780144566466	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/wgl_context.c.obj	2b2237f614a03631
+6649	7951	7653780146556318	CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.obj	489f0b647ced9a4a
+51	2473	7653780080220092	raylib/raylib/CMakeFiles/raylib.dir/rtext.c.obj	60798e47b3533177
+1054	4569	7653780091739274	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/egl_context.c.obj	34859d42006a64b0
+42	1378	7653780080131093	raylib/raylib/CMakeFiles/raylib.dir/rshapes.c.obj	fa1dbd36528d963a
+3561	6698	7653780115325172	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/null_window.c.obj	d97f8507182012ba
+111	3553	7653780080824819	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/monitor.c.obj	17e7bdfe5defdccb
+61	9120	7653780080326474	raylib/raylib/CMakeFiles/raylib.dir/rtextures.c.obj	f82d188a720bb56a
+137	4049	7653780081126798	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/vulkan.c.obj	1ee15de6761adcbc
+5955	8965	7653780139899475	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_window.c.obj	f6c1ed9a91d1de83
+3989	7116	7653780119603280	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_module.c.obj	af7d0369cffae389
+1439	5094	7653780094098158	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/osmesa_context.c.obj	e32cc9ca9a863eda
+13511	13824	7653780214827539	raylib/raylib/libraylib.a	550b59637bda7285
+150	3815	7653780081245496	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/window.c.obj	e1b5c65e6490965
+2510	5914	7653780105251103	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/null_init.c.obj	1e04f358b4c0d37b
+121	3478	7653780080921679	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/platform.c.obj	33049257028ec88e
+13824	14205	7653780217945564	DataStructureCS163.exe	b21cec1b1f6daf7b
+81	3999	7653780080519478	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/context.c.obj	98d1401ef53bec6
+72	909	7653780080417588	raylib/raylib/CMakeFiles/raylib.dir/utils.c.obj	8bb60a0bf3062356
+103	4289	7653780080741870	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/input.c.obj	ac5065ece15c4bf7
+92	3953	7653780080641081	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/init.c.obj	7c43b5fc335a62a9
+33	6430	7653780080047109	raylib/raylib/CMakeFiles/raylib.dir/rmodels.c.obj	3c9513ec52c9aa15
+3483	6607	7653780114545419	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/null_monitor.c.obj	b992446fc263c058
+3999	7020	7653780119701285	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_time.c.obj	1fcf394e3ec6198a
+12	13510	7653780079832510	raylib/raylib/CMakeFiles/raylib.dir/raudio.c.obj	d9e408e961f307d7
+4053	6888	7653780120238432	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_thread.c.obj	8bfebc9548e3ccb
+3827	6935	7653780118297268	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/null_joystick.c.obj	f819568265dde6c0
+6950	7285	7653780149215038	CMakeFiles/DataStructureCS163.dir/src/main.cpp.obj	60b7e0b8abee26d
+4350	7359	7653780123356779	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_init.c.obj	5c2cab979b83ea9f
+4697	7597	7653780127453944	raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_joystick.c.obj	60de4cee46400cbb
+22	7835	7653780079885711	raylib/raylib/CMakeFiles/raylib.dir/rcore.c.obj	110813b4ffecfe81
+60	390	7653785378097131	raylib/raylib/libraylib.a	71706938be376617
+391	788	7653785381428535	DataStructureCS163.exe	b21cec1b1f6daf7b

@@ -94,7 +94,7 @@ build DataStructureCS163.exe: CXX_EXECUTABLE_LINKER__DataStructureCS163_ CMakeFi
 # Utility command for package
 
 build CMakeFiles/package.util: CUSTOM_COMMAND all
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && C:\msys64\mingw64\bin\cpack.exe --config ./CPackConfig.cmake"
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && "C:\Program Files\CMake\bin\cpack.exe" --config ./CPackConfig.cmake"
   DESC = Run CPack packaging tool...
   pool = console
   restat = 1
@@ -106,7 +106,7 @@ build package: phony CMakeFiles/package.util
 # Utility command for package_source
 
 build CMakeFiles/package_source.util: CUSTOM_COMMAND
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && C:\msys64\mingw64\bin\cpack.exe --config ./CPackSourceConfig.cmake "C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/CPackSourceConfig.cmake""
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && "C:\Program Files\CMake\bin\cpack.exe" --config ./CPackSourceConfig.cmake "C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/CPackSourceConfig.cmake""
   DESC = Run CPack packaging tool for source...
   pool = console
   restat = 1
@@ -118,8 +118,9 @@ build package_source: phony CMakeFiles/package_source.util
 # Utility command for edit_cache
 
 build CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && C:\msys64\mingw64\bin\cmake.exe -E echo "No interactive CMake dialog available.""
-  DESC = No interactive CMake dialog available...
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && "C:\Program Files\CMake\bin\cmake-gui.exe" -S"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163" -B"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build""
+  DESC = Running CMake cache editor...
+  pool = console
   restat = 1
 
 build edit_cache: phony CMakeFiles/edit_cache.util
@@ -129,7 +130,7 @@ build edit_cache: phony CMakeFiles/edit_cache.util
 # Utility command for rebuild_cache
 
 build CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && C:\msys64\mingw64\bin\cmake.exe --regenerate-during-build -S"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163" -B"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build""
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && "C:\Program Files\CMake\bin\cmake.exe" --regenerate-during-build -S"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163" -B"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build""
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -147,7 +148,7 @@ build list_install_components: phony
 # Utility command for install
 
 build CMakeFiles/install.util: CUSTOM_COMMAND all
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && C:\msys64\mingw64\bin\cmake.exe -P cmake_install.cmake"
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && "C:\Program Files\CMake\bin\cmake.exe" -P cmake_install.cmake"
   DESC = Install the project...
   pool = console
   restat = 1
@@ -159,7 +160,7 @@ build install: phony CMakeFiles/install.util
 # Utility command for install/local
 
 build CMakeFiles/install/local.util: CUSTOM_COMMAND all
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && C:\msys64\mingw64\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && "C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
   DESC = Installing only the local directory...
   pool = console
   restat = 1
@@ -171,7 +172,7 @@ build install/local: phony CMakeFiles/install/local.util
 # Utility command for install/strip
 
 build CMakeFiles/install/strip.util: CUSTOM_COMMAND all
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && C:\msys64\mingw64\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && "C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
   DESC = Installing the project stripped...
   pool = console
   restat = 1
@@ -194,7 +195,7 @@ build raylib/uninstall: phony raylib/CMakeFiles/uninstall
 # Utility command for package
 
 build raylib/CMakeFiles/package.util: CUSTOM_COMMAND raylib/all
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && C:\msys64\mingw64\bin\cpack.exe --config ./CPackConfig.cmake"
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && "C:\Program Files\CMake\bin\cpack.exe" --config ./CPackConfig.cmake"
   DESC = Run CPack packaging tool...
   pool = console
   restat = 1
@@ -206,7 +207,7 @@ build raylib/package: phony raylib/CMakeFiles/package.util
 # Utility command for package_source
 
 build raylib/CMakeFiles/package_source.util: CUSTOM_COMMAND
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && C:\msys64\mingw64\bin\cpack.exe --config ./CPackSourceConfig.cmake "C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/CPackSourceConfig.cmake""
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && "C:\Program Files\CMake\bin\cpack.exe" --config ./CPackSourceConfig.cmake "C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/CPackSourceConfig.cmake""
   DESC = Run CPack packaging tool for source...
   pool = console
   restat = 1
@@ -218,8 +219,9 @@ build raylib/package_source: phony raylib/CMakeFiles/package_source.util
 # Utility command for edit_cache
 
 build raylib/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib" && C:\msys64\mingw64\bin\cmake.exe -E echo "No interactive CMake dialog available.""
-  DESC = No interactive CMake dialog available...
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib" && "C:\Program Files\CMake\bin\cmake-gui.exe" -S"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163" -B"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build""
+  DESC = Running CMake cache editor...
+  pool = console
   restat = 1
 
 build raylib/edit_cache: phony raylib/CMakeFiles/edit_cache.util
@@ -229,7 +231,7 @@ build raylib/edit_cache: phony raylib/CMakeFiles/edit_cache.util
 # Utility command for rebuild_cache
 
 build raylib/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib" && C:\msys64\mingw64\bin\cmake.exe --regenerate-during-build -S"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163" -B"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build""
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib" && "C:\Program Files\CMake\bin\cmake.exe" --regenerate-during-build -S"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163" -B"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build""
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -247,7 +249,7 @@ build raylib/list_install_components: phony
 # Utility command for install
 
 build raylib/CMakeFiles/install.util: CUSTOM_COMMAND raylib/all
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib" && C:\msys64\mingw64\bin\cmake.exe -P cmake_install.cmake"
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib" && "C:\Program Files\CMake\bin\cmake.exe" -P cmake_install.cmake"
   DESC = Install the project...
   pool = console
   restat = 1
@@ -259,7 +261,7 @@ build raylib/install: phony raylib/CMakeFiles/install.util
 # Utility command for install/local
 
 build raylib/CMakeFiles/install/local.util: CUSTOM_COMMAND raylib/all
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib" && C:\msys64\mingw64\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib" && "C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
   DESC = Installing only the local directory...
   pool = console
   restat = 1
@@ -271,7 +273,7 @@ build raylib/install/local: phony raylib/CMakeFiles/install/local.util
 # Utility command for install/strip
 
 build raylib/CMakeFiles/install/strip.util: CUSTOM_COMMAND raylib/all
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib" && C:\msys64\mingw64\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib" && "C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
   DESC = Installing the project stripped...
   pool = console
   restat = 1
@@ -283,7 +285,7 @@ build raylib/install/strip: phony raylib/CMakeFiles/install/strip.util
 # Custom command for raylib\CMakeFiles\uninstall
 
 build raylib/CMakeFiles/uninstall | ${cmake_ninja_workdir}raylib/CMakeFiles/uninstall: CUSTOM_COMMAND
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib" && C:\msys64\mingw64\bin\cmake.exe -P "C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/raylib/cmake_uninstall.cmake""
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib" && "C:\Program Files\CMake\bin\cmake.exe" -P "C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/raylib/cmake_uninstall.cmake""
 
 # =============================================================================
 # Write statements declared in CMakeLists.txt:
@@ -376,7 +378,7 @@ build raylib/raylib/libraylib.a: C_STATIC_LIBRARY_LINKER__raylib_ raylib/raylib/
 # Utility command for package
 
 build raylib/raylib/CMakeFiles/package.util: CUSTOM_COMMAND raylib/raylib/all
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && C:\msys64\mingw64\bin\cpack.exe --config ./CPackConfig.cmake"
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && "C:\Program Files\CMake\bin\cpack.exe" --config ./CPackConfig.cmake"
   DESC = Run CPack packaging tool...
   pool = console
   restat = 1
@@ -388,7 +390,7 @@ build raylib/raylib/package: phony raylib/raylib/CMakeFiles/package.util
 # Utility command for package_source
 
 build raylib/raylib/CMakeFiles/package_source.util: CUSTOM_COMMAND
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && C:\msys64\mingw64\bin\cpack.exe --config ./CPackSourceConfig.cmake "C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/CPackSourceConfig.cmake""
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && "C:\Program Files\CMake\bin\cpack.exe" --config ./CPackSourceConfig.cmake "C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/CPackSourceConfig.cmake""
   DESC = Run CPack packaging tool for source...
   pool = console
   restat = 1
@@ -400,8 +402,9 @@ build raylib/raylib/package_source: phony raylib/raylib/CMakeFiles/package_sourc
 # Utility command for edit_cache
 
 build raylib/raylib/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib" && C:\msys64\mingw64\bin\cmake.exe -E echo "No interactive CMake dialog available.""
-  DESC = No interactive CMake dialog available...
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib" && "C:\Program Files\CMake\bin\cmake-gui.exe" -S"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163" -B"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build""
+  DESC = Running CMake cache editor...
+  pool = console
   restat = 1
 
 build raylib/raylib/edit_cache: phony raylib/raylib/CMakeFiles/edit_cache.util
@@ -411,7 +414,7 @@ build raylib/raylib/edit_cache: phony raylib/raylib/CMakeFiles/edit_cache.util
 # Utility command for rebuild_cache
 
 build raylib/raylib/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib" && C:\msys64\mingw64\bin\cmake.exe --regenerate-during-build -S"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163" -B"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build""
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib" && "C:\Program Files\CMake\bin\cmake.exe" --regenerate-during-build -S"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163" -B"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build""
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -429,7 +432,7 @@ build raylib/raylib/list_install_components: phony
 # Utility command for install
 
 build raylib/raylib/CMakeFiles/install.util: CUSTOM_COMMAND raylib/raylib/all
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib" && C:\msys64\mingw64\bin\cmake.exe -P cmake_install.cmake"
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib" && "C:\Program Files\CMake\bin\cmake.exe" -P cmake_install.cmake"
   DESC = Install the project...
   pool = console
   restat = 1
@@ -441,7 +444,7 @@ build raylib/raylib/install: phony raylib/raylib/CMakeFiles/install.util
 # Utility command for install/local
 
 build raylib/raylib/CMakeFiles/install/local.util: CUSTOM_COMMAND raylib/raylib/all
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib" && C:\msys64\mingw64\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib" && "C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
   DESC = Installing only the local directory...
   pool = console
   restat = 1
@@ -453,7 +456,7 @@ build raylib/raylib/install/local: phony raylib/raylib/CMakeFiles/install/local.
 # Utility command for install/strip
 
 build raylib/raylib/CMakeFiles/install/strip.util: CUSTOM_COMMAND raylib/raylib/all
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib" && C:\msys64\mingw64\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib" && "C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
   DESC = Installing the project stripped...
   pool = console
   restat = 1
@@ -470,7 +473,7 @@ build raylib/raylib/install/strip: phony raylib/raylib/CMakeFiles/install/strip.
 # Utility command for package
 
 build raylib/raylib/external/glfw/CMakeFiles/package.util: CUSTOM_COMMAND raylib/raylib/external/glfw/all
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && C:\msys64\mingw64\bin\cpack.exe --config ./CPackConfig.cmake"
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && "C:\Program Files\CMake\bin\cpack.exe" --config ./CPackConfig.cmake"
   DESC = Run CPack packaging tool...
   pool = console
   restat = 1
@@ -482,7 +485,7 @@ build raylib/raylib/external/glfw/package: phony raylib/raylib/external/glfw/CMa
 # Utility command for package_source
 
 build raylib/raylib/external/glfw/CMakeFiles/package_source.util: CUSTOM_COMMAND
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && C:\msys64\mingw64\bin\cpack.exe --config ./CPackSourceConfig.cmake "C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/CPackSourceConfig.cmake""
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && "C:\Program Files\CMake\bin\cpack.exe" --config ./CPackSourceConfig.cmake "C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/CPackSourceConfig.cmake""
   DESC = Run CPack packaging tool for source...
   pool = console
   restat = 1
@@ -494,8 +497,9 @@ build raylib/raylib/external/glfw/package_source: phony raylib/raylib/external/g
 # Utility command for edit_cache
 
 build raylib/raylib/external/glfw/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib\external\glfw" && C:\msys64\mingw64\bin\cmake.exe -E echo "No interactive CMake dialog available.""
-  DESC = No interactive CMake dialog available...
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib\external\glfw" && "C:\Program Files\CMake\bin\cmake-gui.exe" -S"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163" -B"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build""
+  DESC = Running CMake cache editor...
+  pool = console
   restat = 1
 
 build raylib/raylib/external/glfw/edit_cache: phony raylib/raylib/external/glfw/CMakeFiles/edit_cache.util
@@ -505,7 +509,7 @@ build raylib/raylib/external/glfw/edit_cache: phony raylib/raylib/external/glfw/
 # Utility command for rebuild_cache
 
 build raylib/raylib/external/glfw/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib\external\glfw" && C:\msys64\mingw64\bin\cmake.exe --regenerate-during-build -S"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163" -B"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build""
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib\external\glfw" && "C:\Program Files\CMake\bin\cmake.exe" --regenerate-during-build -S"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163" -B"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build""
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -523,7 +527,7 @@ build raylib/raylib/external/glfw/list_install_components: phony
 # Utility command for install
 
 build raylib/raylib/external/glfw/CMakeFiles/install.util: CUSTOM_COMMAND raylib/raylib/external/glfw/all
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib\external\glfw" && C:\msys64\mingw64\bin\cmake.exe -P cmake_install.cmake"
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib\external\glfw" && "C:\Program Files\CMake\bin\cmake.exe" -P cmake_install.cmake"
   DESC = Install the project...
   pool = console
   restat = 1
@@ -535,7 +539,7 @@ build raylib/raylib/external/glfw/install: phony raylib/raylib/external/glfw/CMa
 # Utility command for install/local
 
 build raylib/raylib/external/glfw/CMakeFiles/install/local.util: CUSTOM_COMMAND raylib/raylib/external/glfw/all
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib\external\glfw" && C:\msys64\mingw64\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib\external\glfw" && "C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
   DESC = Installing only the local directory...
   pool = console
   restat = 1
@@ -547,7 +551,7 @@ build raylib/raylib/external/glfw/install/local: phony raylib/raylib/external/gl
 # Utility command for install/strip
 
 build raylib/raylib/external/glfw/CMakeFiles/install/strip.util: CUSTOM_COMMAND raylib/raylib/external/glfw/all
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib\external\glfw" && C:\msys64\mingw64\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib\external\glfw" && "C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
   DESC = Installing the project stripped...
   pool = console
   restat = 1
@@ -754,7 +758,7 @@ build raylib/raylib/external/glfw/src/update_mappings: phony raylib/raylib/exter
 # Utility command for package
 
 build raylib/raylib/external/glfw/src/CMakeFiles/package.util: CUSTOM_COMMAND raylib/raylib/external/glfw/src/all
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && C:\msys64\mingw64\bin\cpack.exe --config ./CPackConfig.cmake"
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && "C:\Program Files\CMake\bin\cpack.exe" --config ./CPackConfig.cmake"
   DESC = Run CPack packaging tool...
   pool = console
   restat = 1
@@ -766,7 +770,7 @@ build raylib/raylib/external/glfw/src/package: phony raylib/raylib/external/glfw
 # Utility command for package_source
 
 build raylib/raylib/external/glfw/src/CMakeFiles/package_source.util: CUSTOM_COMMAND
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && C:\msys64\mingw64\bin\cpack.exe --config ./CPackSourceConfig.cmake "C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/CPackSourceConfig.cmake""
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build" && "C:\Program Files\CMake\bin\cpack.exe" --config ./CPackSourceConfig.cmake "C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build/CPackSourceConfig.cmake""
   DESC = Run CPack packaging tool for source...
   pool = console
   restat = 1
@@ -778,8 +782,9 @@ build raylib/raylib/external/glfw/src/package_source: phony raylib/raylib/extern
 # Utility command for edit_cache
 
 build raylib/raylib/external/glfw/src/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib\external\glfw\src" && C:\msys64\mingw64\bin\cmake.exe -E echo "No interactive CMake dialog available.""
-  DESC = No interactive CMake dialog available...
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib\external\glfw\src" && "C:\Program Files\CMake\bin\cmake-gui.exe" -S"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163" -B"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build""
+  DESC = Running CMake cache editor...
+  pool = console
   restat = 1
 
 build raylib/raylib/external/glfw/src/edit_cache: phony raylib/raylib/external/glfw/src/CMakeFiles/edit_cache.util
@@ -789,7 +794,7 @@ build raylib/raylib/external/glfw/src/edit_cache: phony raylib/raylib/external/g
 # Utility command for rebuild_cache
 
 build raylib/raylib/external/glfw/src/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib\external\glfw\src" && C:\msys64\mingw64\bin\cmake.exe --regenerate-during-build -S"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163" -B"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build""
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib\external\glfw\src" && "C:\Program Files\CMake\bin\cmake.exe" --regenerate-during-build -S"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163" -B"C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build""
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -807,7 +812,7 @@ build raylib/raylib/external/glfw/src/list_install_components: phony
 # Utility command for install
 
 build raylib/raylib/external/glfw/src/CMakeFiles/install.util: CUSTOM_COMMAND raylib/raylib/external/glfw/src/all
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib\external\glfw\src" && C:\msys64\mingw64\bin\cmake.exe -P cmake_install.cmake"
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib\external\glfw\src" && "C:\Program Files\CMake\bin\cmake.exe" -P cmake_install.cmake"
   DESC = Install the project...
   pool = console
   restat = 1
@@ -819,7 +824,7 @@ build raylib/raylib/external/glfw/src/install: phony raylib/raylib/external/glfw
 # Utility command for install/local
 
 build raylib/raylib/external/glfw/src/CMakeFiles/install/local.util: CUSTOM_COMMAND raylib/raylib/external/glfw/src/all
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib\external\glfw\src" && C:\msys64\mingw64\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib\external\glfw\src" && "C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
   DESC = Installing only the local directory...
   pool = console
   restat = 1
@@ -831,7 +836,7 @@ build raylib/raylib/external/glfw/src/install/local: phony raylib/raylib/externa
 # Utility command for install/strip
 
 build raylib/raylib/external/glfw/src/CMakeFiles/install/strip.util: CUSTOM_COMMAND raylib/raylib/external/glfw/src/all
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib\external\glfw\src" && C:\msys64\mingw64\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\raylib\raylib\external\glfw\src" && "C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
   DESC = Installing the project stripped...
   pool = console
   restat = 1
@@ -843,7 +848,7 @@ build raylib/raylib/external/glfw/src/install/strip: phony raylib/raylib/externa
 # Custom command for raylib\raylib\external\glfw\src\CMakeFiles\update_mappings
 
 build raylib/raylib/external/glfw/src/CMakeFiles/update_mappings | ${cmake_ninja_workdir}raylib/raylib/external/glfw/src/CMakeFiles/update_mappings: CUSTOM_COMMAND
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\external\glfw\src" && C:\msys64\mingw64\bin\cmake.exe -P "C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/raylib/src/external/glfw/CMake/GenerateMappings.cmake" mappings.h.in mappings.h"
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\external\glfw\src" && "C:\Program Files\CMake\bin\cmake.exe" -P "C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/raylib/src/external/glfw/CMake/GenerateMappings.cmake" mappings.h.in mappings.h"
   DESC = Updating gamepad mappings from upstream repository
 
 # =============================================================================
@@ -906,14 +911,14 @@ build raylib/raylib/external/glfw/src/all: phony raylib/raylib/external/glfw/src
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/build/cmake_install.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/build/raylib/cmake_install.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/build/raylib/raylib/cmake_install.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/build/raylib/raylib/external/glfw/cmake_install.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/build/raylib/raylib/external/glfw/src/cmake_install.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/build/raylib/CTestTestfile.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/build/raylib/raylib/CTestTestfile.cmake: RERUN_CMAKE | C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/CMakeLists.txt C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/CMakeLists.txt C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/CMakeOptions.txt C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/AddIfFlagCompiles.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/CompileDefinitions.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/CompilerFlags.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/EnumOption.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/GlfwImport.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/InstallConfigurations.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/JoinPaths.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/LibraryConfigurations.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/LibraryPathToLinkerFlags.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/PackConfigurations.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/ParseConfigHeader.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/PopulateConfigVariablesLocally.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/Uninstall.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/raylib-config-version.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/raylib.pc.in C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/src/CMakeLists.txt C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/src/external/glfw/CMakeLists.txt C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/src/external/glfw/CMake/glfw3.pc.in C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/src/external/glfw/CMake/glfw3Config.cmake.in C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/src/external/glfw/src/CMakeLists.txt C$:/msys64/mingw64/share/cmake/Modules/BasicConfigVersion-SameMajorVersion.cmake.in C$:/msys64/mingw64/share/cmake/Modules/CMakeCInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeCXXInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeCommonLanguageInclude.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeDependentOption.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeGenericSystem.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeInitializeConfigs.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeLanguageInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakePackageConfigHelpers.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeRCInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeSystemSpecificInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeSystemSpecificInitialize.cmake C$:/msys64/mingw64/share/cmake/Modules/CPack.cmake C$:/msys64/mingw64/share/cmake/Modules/CPackComponent.cmake C$:/msys64/mingw64/share/cmake/Modules/CheckCCompilerFlag.cmake C$:/msys64/mingw64/share/cmake/Modules/CheckCSourceCompiles.cmake C$:/msys64/mingw64/share/cmake/Modules/CheckIncludeFile.cmake C$:/msys64/mingw64/share/cmake/Modules/CheckLibraryExists.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/CMakeCommonCompilerMacros.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GNU-C.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/FindOpenGL.cmake C$:/msys64/mingw64/share/cmake/Modules/FindPackageHandleStandardArgs.cmake C$:/msys64/mingw64/share/cmake/Modules/FindPackageMessage.cmake C$:/msys64/mingw64/share/cmake/Modules/FindThreads.cmake C$:/msys64/mingw64/share/cmake/Modules/GNUInstallDirs.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CMakeCLinkerInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CMakeCXXLinkerInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CMakeCommonLinkerInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CheckCompilerFlag.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CheckFlagCommonConfig.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CheckSourceCompiles.cmake C$:/msys64/mingw64/share/cmake/Modules/Linker/GNU-C.cmake C$:/msys64/mingw64/share/cmake/Modules/Linker/GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Linker/GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Linker/GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Linker/Windows-GNU-C.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Linker/Windows-GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Linker/Windows-GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU-C-ABI.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU-C.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU-CXX-ABI.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-Initialize.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-windres.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/WindowsPaths.cmake C$:/msys64/mingw64/share/cmake/Modules/WriteBasicConfigVersionFile.cmake C$:/msys64/mingw64/share/cmake/Templates/CPackConfig.cmake.in CMakeCache.txt CMakeFiles/4.0.0/CMakeCCompiler.cmake CMakeFiles/4.0.0/CMakeCXXCompiler.cmake CMakeFiles/4.0.0/CMakeRCCompiler.cmake CMakeFiles/4.0.0/CMakeSystem.cmake
+build build.ninja C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/build/cmake_install.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/build/raylib/cmake_install.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/build/raylib/raylib/cmake_install.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/build/raylib/raylib/external/glfw/cmake_install.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/build/raylib/raylib/external/glfw/src/cmake_install.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/build/raylib/CTestTestfile.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/build/raylib/raylib/CTestTestfile.cmake: RERUN_CMAKE | C$:/Program$ Files/CMake/share/cmake-4.0/Modules/BasicConfigVersion-SameMajorVersion.cmake.in C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakeCInformation.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakeCXXInformation.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakeCommonLanguageInclude.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakeDependentOption.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakeGenericSystem.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakeInitializeConfigs.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakeLanguageInformation.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakePackageConfigHelpers.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakeRCInformation.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakeSystemSpecificInformation.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakeSystemSpecificInitialize.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CPack.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CPackComponent.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CheckCCompilerFlag.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CheckCSourceCompiles.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CheckIncludeFile.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CheckLibraryExists.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Compiler/CMakeCommonCompilerMacros.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Compiler/GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Compiler/GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Compiler/GNU.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/FindOpenGL.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/FindPackageHandleStandardArgs.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/FindPackageMessage.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/FindThreads.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/GNUInstallDirs.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Internal/CMakeCLinkerInformation.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Internal/CMakeCXXLinkerInformation.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Internal/CMakeCommonLinkerInformation.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Internal/CheckCompilerFlag.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Internal/CheckFlagCommonConfig.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Internal/CheckSourceCompiles.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Linker/GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Linker/GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Linker/GNU.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Linker/GNU.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Linker/Windows-GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Linker/Windows-GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Linker/Windows-GNU.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Windows-GNU-C-ABI.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Windows-GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Windows-GNU-CXX-ABI.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Windows-GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Windows-GNU.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Windows-Initialize.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Windows-windres.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Windows.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/WindowsPaths.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/WriteBasicConfigVersionFile.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Templates/CPackConfig.cmake.in C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/CMakeLists.txt C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/CMakeLists.txt C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/CMakeOptions.txt C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/AddIfFlagCompiles.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/CompileDefinitions.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/CompilerFlags.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/EnumOption.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/GlfwImport.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/InstallConfigurations.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/JoinPaths.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/LibraryConfigurations.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/LibraryPathToLinkerFlags.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/PackConfigurations.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/ParseConfigHeader.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/PopulateConfigVariablesLocally.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/Uninstall.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/raylib-config-version.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/raylib.pc.in C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/src/CMakeLists.txt C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/src/external/glfw/CMakeLists.txt C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/src/external/glfw/CMake/glfw3.pc.in C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/src/external/glfw/CMake/glfw3Config.cmake.in C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/src/external/glfw/src/CMakeLists.txt CMakeCache.txt CMakeFiles/4.0.0/CMakeCCompiler.cmake CMakeFiles/4.0.0/CMakeCXXCompiler.cmake CMakeFiles/4.0.0/CMakeRCCompiler.cmake CMakeFiles/4.0.0/CMakeSystem.cmake
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/CMakeLists.txt C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/CMakeLists.txt C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/CMakeOptions.txt C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/AddIfFlagCompiles.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/CompileDefinitions.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/CompilerFlags.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/EnumOption.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/GlfwImport.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/InstallConfigurations.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/JoinPaths.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/LibraryConfigurations.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/LibraryPathToLinkerFlags.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/PackConfigurations.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/ParseConfigHeader.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/PopulateConfigVariablesLocally.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/Uninstall.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/raylib-config-version.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/raylib.pc.in C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/src/CMakeLists.txt C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/src/external/glfw/CMakeLists.txt C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/src/external/glfw/CMake/glfw3.pc.in C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/src/external/glfw/CMake/glfw3Config.cmake.in C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/src/external/glfw/src/CMakeLists.txt C$:/msys64/mingw64/share/cmake/Modules/BasicConfigVersion-SameMajorVersion.cmake.in C$:/msys64/mingw64/share/cmake/Modules/CMakeCInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeCXXInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeCommonLanguageInclude.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeDependentOption.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeGenericSystem.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeInitializeConfigs.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeLanguageInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakePackageConfigHelpers.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeRCInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeSystemSpecificInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeSystemSpecificInitialize.cmake C$:/msys64/mingw64/share/cmake/Modules/CPack.cmake C$:/msys64/mingw64/share/cmake/Modules/CPackComponent.cmake C$:/msys64/mingw64/share/cmake/Modules/CheckCCompilerFlag.cmake C$:/msys64/mingw64/share/cmake/Modules/CheckCSourceCompiles.cmake C$:/msys64/mingw64/share/cmake/Modules/CheckIncludeFile.cmake C$:/msys64/mingw64/share/cmake/Modules/CheckLibraryExists.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/CMakeCommonCompilerMacros.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GNU-C.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/FindOpenGL.cmake C$:/msys64/mingw64/share/cmake/Modules/FindPackageHandleStandardArgs.cmake C$:/msys64/mingw64/share/cmake/Modules/FindPackageMessage.cmake C$:/msys64/mingw64/share/cmake/Modules/FindThreads.cmake C$:/msys64/mingw64/share/cmake/Modules/GNUInstallDirs.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CMakeCLinkerInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CMakeCXXLinkerInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CMakeCommonLinkerInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CheckCompilerFlag.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CheckFlagCommonConfig.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CheckSourceCompiles.cmake C$:/msys64/mingw64/share/cmake/Modules/Linker/GNU-C.cmake C$:/msys64/mingw64/share/cmake/Modules/Linker/GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Linker/GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Linker/GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Linker/Windows-GNU-C.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Linker/Windows-GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Linker/Windows-GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU-C-ABI.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU-C.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU-CXX-ABI.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-Initialize.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-windres.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/WindowsPaths.cmake C$:/msys64/mingw64/share/cmake/Modules/WriteBasicConfigVersionFile.cmake C$:/msys64/mingw64/share/cmake/Templates/CPackConfig.cmake.in CMakeCache.txt CMakeFiles/4.0.0/CMakeCCompiler.cmake CMakeFiles/4.0.0/CMakeCXXCompiler.cmake CMakeFiles/4.0.0/CMakeRCCompiler.cmake CMakeFiles/4.0.0/CMakeSystem.cmake: phony
+build C$:/Program$ Files/CMake/share/cmake-4.0/Modules/BasicConfigVersion-SameMajorVersion.cmake.in C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakeCInformation.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakeCXXInformation.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakeCommonLanguageInclude.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakeDependentOption.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakeGenericSystem.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakeInitializeConfigs.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakeLanguageInformation.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakePackageConfigHelpers.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakeRCInformation.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakeSystemSpecificInformation.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CMakeSystemSpecificInitialize.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CPack.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CPackComponent.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CheckCCompilerFlag.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CheckCSourceCompiles.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CheckIncludeFile.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/CheckLibraryExists.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Compiler/CMakeCommonCompilerMacros.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Compiler/GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Compiler/GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Compiler/GNU.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/FindOpenGL.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/FindPackageHandleStandardArgs.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/FindPackageMessage.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/FindThreads.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/GNUInstallDirs.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Internal/CMakeCLinkerInformation.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Internal/CMakeCXXLinkerInformation.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Internal/CMakeCommonLinkerInformation.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Internal/CheckCompilerFlag.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Internal/CheckFlagCommonConfig.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Internal/CheckSourceCompiles.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Linker/GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Linker/GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Linker/GNU.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Linker/GNU.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Linker/Windows-GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Linker/Windows-GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Linker/Windows-GNU.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Windows-GNU-C-ABI.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Windows-GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Windows-GNU-CXX-ABI.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Windows-GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Windows-GNU.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Windows-Initialize.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Windows-windres.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/Windows.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/Platform/WindowsPaths.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Modules/WriteBasicConfigVersionFile.cmake C$:/Program$ Files/CMake/share/cmake-4.0/Templates/CPackConfig.cmake.in C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/CMakeLists.txt C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/CMakeLists.txt C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/CMakeOptions.txt C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/AddIfFlagCompiles.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/CompileDefinitions.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/CompilerFlags.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/EnumOption.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/GlfwImport.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/InstallConfigurations.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/JoinPaths.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/LibraryConfigurations.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/LibraryPathToLinkerFlags.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/PackConfigurations.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/ParseConfigHeader.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/PopulateConfigVariablesLocally.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/Uninstall.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/cmake/raylib-config-version.cmake C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/raylib.pc.in C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/src/CMakeLists.txt C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/src/external/glfw/CMakeLists.txt C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/src/external/glfw/CMake/glfw3.pc.in C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/src/external/glfw/CMake/glfw3Config.cmake.in C$:/Users/LAPTOP$ ACER/Downloads/Project/DataStructureCS163/raylib/src/external/glfw/src/CMakeLists.txt CMakeCache.txt CMakeFiles/4.0.0/CMakeCCompiler.cmake CMakeFiles/4.0.0/CMakeCXXCompiler.cmake CMakeFiles/4.0.0/CMakeRCCompiler.cmake CMakeFiles/4.0.0/CMakeSystem.cmake: phony
 
 
 #############################################

@@ -36,6 +36,9 @@ public:
     int operationValue;
     int pendingInsertValue;
 
+    // Add the new method to get pseudocode
+    std::string getPseudocode(); // New method declaration
+
     void drawTree(Node* node, float x, float y, float offset, const std::set<Node*>& highlight);
 
     AVLTreeVisualizer();

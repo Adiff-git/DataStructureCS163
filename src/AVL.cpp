@@ -1,4 +1,4 @@
-#include "AVL.h"
+#include "../inc/AVL.h"
 
 
 // Node constructor

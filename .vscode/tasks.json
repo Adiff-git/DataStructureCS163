@@ -2,46 +2,17 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "create build folder",
+            "label": "Run/Debug project",
             "type": "shell",
-            "command": "if (!(Test-Path -Path '${workspaceFolder}/build')) { mkdir '${workspaceFolder}/build' }",
+            "command": "ninja",
+            "options": {
+                "cwd": "${workspaceFolder}/build/",
+            },
             "problemMatcher": [],
             "group": {
                 "kind": "build",
-                "isDefault": false
-            },
-            "options": {
-                "shell": {
-                    "executable": "powershell.exe"
-                }
-            }
-        },
-        {
-            "label": "build debug",
-            "type": "shell",
-            "command": "C:/raylib/w64devkit/bin/g++.exe",
-            "args": [
-                "${workspaceFolder}/src/main.cpp",
-                "${workspaceFolder}/src/Screen.cpp",
-                "-I${workspaceFolder}/header",
-                "-I${workspaceFolder}/src",
-                "-I${workspaceFolder}/raylib/src",
-                "-L${workspaceFolder}/../raylib/w64devkit/x86_64-w64-mingw32/lib",
-                "-lraylib",
-                "-lopengl32",
-                "-lgdi32",
-                "-lwinmm", 
-                "-std=c++14",
-                "-g",
-                "-o",
-                "${workspaceFolder}/build/ds_visualization.exe"
-            ],
-            "dependsOn": "create build folder",
-            "problemMatcher": ["$gcc"],
-            "group": {
-                "kind": "build",
                 "isDefault": true
-            }
+            },
         }
     ]
 }

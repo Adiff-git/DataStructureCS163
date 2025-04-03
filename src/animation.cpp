@@ -191,6 +191,7 @@ void AVLTreeVisualizer::drawTree(Node* node, float x, float y, float offset, con
 void AVLTreeVisualizer::draw() {
     std::set<Node*> highlightNodes(currentPath.begin(), currentPath.begin() + pathIndex);
 
+    // Existing UI Elements (input box, buttons, tree, etc.)
     DrawRectangleRec(handleSpace, HandleInputSpaceBG);
     DrawRectangleRec(inputBox, LIGHTGRAY);
     DrawRectangleLinesEx(inputBox, 2, inputActive ? BLUE : GRAY);
@@ -223,7 +224,28 @@ void AVLTreeVisualizer::draw() {
         int messageSize = MeasureText(messageNotFound.c_str(), 20);
         DrawText(messageNotFound.c_str(), (GetScreenWidth() - messageSize) / 2, GetScreenHeight() - 30, 20, RED);
     }
+
+    // Draw pseudocode at the bottom-right corner
+    float boxWidth = 300.0f; // Width of the pseudocode box
+    float boxHeight = 150.0f; // Height of the pseudocode box
+    Rectangle pseudocodeBox = { GetScreenWidth() - boxWidth - 10, GetScreenHeight() - boxHeight - 10, boxWidth, boxHeight };
+
+    DrawRectangleRec(pseudocodeBox, LIGHTGRAY); // Background of the box
+    DrawRectangleLinesEx(pseudocodeBox, 2, BLACK); // Border of the box
+
+    std::string pseudocodeText = getPseudocode(); // Get the pseudocode for current operation
+    int lineHeight = 20; // Height of each line of text
+    int startY = pseudocodeBox.y + 10; // Starting Y position for the first line
+
+    // Split the pseudocode into lines and draw them inside the box
+    std::istringstream stream(pseudocodeText);
+    std::string line;
+    while (std::getline(stream, line)) {
+        DrawText(line.c_str(), pseudocodeBox.x + 10, startY, 20, BLACK);
+        startY += lineHeight;
+    }
 }
+
 
 void AVLTreeVisualizer::animateInsert(int value) {
     currentOperation = "insert";
@@ -379,4 +401,37 @@ void AVLTreeVisualizer::animateNext() {
         stateTimer = 0.0f;
         resultTimer = 0.0f;
     }
+}
+std::string AVLTreeVisualizer::getPseudocode() {
+    std::stringstream pseudocode;
+
+    if (currentOperation == "insert") {
+        pseudocode << "Pseudocode for Insert Operation:\n"
+                   << "1. Start at the root.\n"
+                   << "2. Compare the value with the current node.\n"
+                   << "3. If the value is smaller, move left; if larger, move right.\n"
+                   << "4. Insert the value when a leaf node is found.\n"
+                   << "5. Rebalance the tree if needed.\n";
+    } 
+    else if (currentOperation == "delete") {
+        pseudocode << "Pseudocode for Delete Operation:\n"
+                   << "1. Find the node to delete.\n"
+                   << "2. If it has one or no child, replace it with its child or null.\n"
+                   << "3. If it has two children, find the inorder successor.\n"
+                   << "4. Replace the node with its inorder successor.\n"
+                   << "5. Rebalance the tree if needed.\n";
+    } 
+    else if (currentOperation == "search") {
+        pseudocode << "Pseudocode for Search Operation:\n"
+                   << "1. Start at the root.\n"
+                   << "2. Compare the value with the current node.\n"
+                   << "3. If the value is smaller, move left; if larger, move right.\n"
+                   << "4. Return the node if the value is found.\n"
+                   << "5. If not found, return null.\n";
+    } 
+    else {
+        pseudocode << "No operation selected.\n";
+    }
+
+    return pseudocode.str();
 }

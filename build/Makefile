@@ -245,6 +245,78 @@ update_mappings/fast:
 	$(MAKE) $(MAKESILENT) -f raylib\raylib\external\glfw\src\CMakeFiles\update_mappings.dir\build.make raylib/raylib/external/glfw/src/CMakeFiles/update_mappings.dir/build
 .PHONY : update_mappings/fast
 
+src/AVL.obj: src/AVL.cpp.obj
+.PHONY : src/AVL.obj
+
+# target to build an object file
+src/AVL.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.obj
+.PHONY : src/AVL.cpp.obj
+
+src/AVL.i: src/AVL.cpp.i
+.PHONY : src/AVL.i
+
+# target to preprocess a source file
+src/AVL.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.i
+.PHONY : src/AVL.cpp.i
+
+src/AVL.s: src/AVL.cpp.s
+.PHONY : src/AVL.s
+
+# target to generate assembly for a file
+src/AVL.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.s
+.PHONY : src/AVL.cpp.s
+
+src/animation.obj: src/animation.cpp.obj
+.PHONY : src/animation.obj
+
+# target to build an object file
+src/animation.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/animation.cpp.obj
+.PHONY : src/animation.cpp.obj
+
+src/animation.i: src/animation.cpp.i
+.PHONY : src/animation.i
+
+# target to preprocess a source file
+src/animation.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/animation.cpp.i
+.PHONY : src/animation.cpp.i
+
+src/animation.s: src/animation.cpp.s
+.PHONY : src/animation.s
+
+# target to generate assembly for a file
+src/animation.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/animation.cpp.s
+.PHONY : src/animation.cpp.s
+
+src/init.obj: src/init.cpp.obj
+.PHONY : src/init.obj
+
+# target to build an object file
+src/init.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/init.cpp.obj
+.PHONY : src/init.cpp.obj
+
+src/init.i: src/init.cpp.i
+.PHONY : src/init.i
+
+# target to preprocess a source file
+src/init.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/init.cpp.i
+.PHONY : src/init.cpp.i
+
+src/init.s: src/init.cpp.s
+.PHONY : src/init.s
+
+# target to generate assembly for a file
+src/init.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/init.cpp.s
+.PHONY : src/init.cpp.s
+
 src/main.obj: src/main.cpp.obj
 .PHONY : src/main.obj
 
@@ -288,6 +360,15 @@ help:
 	@echo ... DataStructureCS163
 	@echo ... glfw
 	@echo ... raylib
+	@echo ... src/AVL.obj
+	@echo ... src/AVL.i
+	@echo ... src/AVL.s
+	@echo ... src/animation.obj
+	@echo ... src/animation.i
+	@echo ... src/animation.s
+	@echo ... src/init.obj
+	@echo ... src/init.i
+	@echo ... src/init.s
 	@echo ... src/main.obj
 	@echo ... src/main.i
 	@echo ... src/main.s

@@ -71,11 +71,56 @@ include CMakeFiles/DataStructureCS163.dir/flags.make
 CMakeFiles/DataStructureCS163.dir/codegen:
 .PHONY : CMakeFiles/DataStructureCS163.dir/codegen
 
+CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.obj: CMakeFiles/DataStructureCS163.dir/flags.make
+CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.obj: CMakeFiles/DataStructureCS163.dir/includes_CXX.rsp
+CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.obj: C:/Users/LAPTOP\ ACER/Downloads/Project/DataStructureCS163/src/AVL.cpp
+CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.obj: CMakeFiles/DataStructureCS163.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.obj"
+	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.obj -MF CMakeFiles\DataStructureCS163.dir\src\AVL.cpp.obj.d -o CMakeFiles\DataStructureCS163.dir\src\AVL.cpp.obj -c "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\src\AVL.cpp"
+
+CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.i"
+	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\src\AVL.cpp" > CMakeFiles\DataStructureCS163.dir\src\AVL.cpp.i
+
+CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.s"
+	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\src\AVL.cpp" -o CMakeFiles\DataStructureCS163.dir\src\AVL.cpp.s
+
+CMakeFiles/DataStructureCS163.dir/src/animation.cpp.obj: CMakeFiles/DataStructureCS163.dir/flags.make
+CMakeFiles/DataStructureCS163.dir/src/animation.cpp.obj: CMakeFiles/DataStructureCS163.dir/includes_CXX.rsp
+CMakeFiles/DataStructureCS163.dir/src/animation.cpp.obj: C:/Users/LAPTOP\ ACER/Downloads/Project/DataStructureCS163/src/animation.cpp
+CMakeFiles/DataStructureCS163.dir/src/animation.cpp.obj: CMakeFiles/DataStructureCS163.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/DataStructureCS163.dir/src/animation.cpp.obj"
+	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DataStructureCS163.dir/src/animation.cpp.obj -MF CMakeFiles\DataStructureCS163.dir\src\animation.cpp.obj.d -o CMakeFiles\DataStructureCS163.dir\src\animation.cpp.obj -c "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\src\animation.cpp"
+
+CMakeFiles/DataStructureCS163.dir/src/animation.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/DataStructureCS163.dir/src/animation.cpp.i"
+	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\src\animation.cpp" > CMakeFiles\DataStructureCS163.dir\src\animation.cpp.i
+
+CMakeFiles/DataStructureCS163.dir/src/animation.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/DataStructureCS163.dir/src/animation.cpp.s"
+	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\src\animation.cpp" -o CMakeFiles\DataStructureCS163.dir\src\animation.cpp.s
+
+CMakeFiles/DataStructureCS163.dir/src/init.cpp.obj: CMakeFiles/DataStructureCS163.dir/flags.make
+CMakeFiles/DataStructureCS163.dir/src/init.cpp.obj: CMakeFiles/DataStructureCS163.dir/includes_CXX.rsp
+CMakeFiles/DataStructureCS163.dir/src/init.cpp.obj: C:/Users/LAPTOP\ ACER/Downloads/Project/DataStructureCS163/src/init.cpp
+CMakeFiles/DataStructureCS163.dir/src/init.cpp.obj: CMakeFiles/DataStructureCS163.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/DataStructureCS163.dir/src/init.cpp.obj"
+	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DataStructureCS163.dir/src/init.cpp.obj -MF CMakeFiles\DataStructureCS163.dir\src\init.cpp.obj.d -o CMakeFiles\DataStructureCS163.dir\src\init.cpp.obj -c "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\src\init.cpp"
+
+CMakeFiles/DataStructureCS163.dir/src/init.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/DataStructureCS163.dir/src/init.cpp.i"
+	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\src\init.cpp" > CMakeFiles\DataStructureCS163.dir\src\init.cpp.i
+
+CMakeFiles/DataStructureCS163.dir/src/init.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/DataStructureCS163.dir/src/init.cpp.s"
+	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\src\init.cpp" -o CMakeFiles\DataStructureCS163.dir\src\init.cpp.s
+
 CMakeFiles/DataStructureCS163.dir/src/main.cpp.obj: CMakeFiles/DataStructureCS163.dir/flags.make
 CMakeFiles/DataStructureCS163.dir/src/main.cpp.obj: CMakeFiles/DataStructureCS163.dir/includes_CXX.rsp
 CMakeFiles/DataStructureCS163.dir/src/main.cpp.obj: C:/Users/LAPTOP\ ACER/Downloads/Project/DataStructureCS163/src/main.cpp
 CMakeFiles/DataStructureCS163.dir/src/main.cpp.obj: CMakeFiles/DataStructureCS163.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/DataStructureCS163.dir/src/main.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/DataStructureCS163.dir/src/main.cpp.obj"
 	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DataStructureCS163.dir/src/main.cpp.obj -MF CMakeFiles\DataStructureCS163.dir\src\main.cpp.obj.d -o CMakeFiles\DataStructureCS163.dir\src\main.cpp.obj -c "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\src\main.cpp"
 
 CMakeFiles/DataStructureCS163.dir/src/main.cpp.i: cmake_force
@@ -88,18 +133,24 @@ CMakeFiles/DataStructureCS163.dir/src/main.cpp.s: cmake_force
 
 # Object files for target DataStructureCS163
 DataStructureCS163_OBJECTS = \
+"CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.obj" \
+"CMakeFiles/DataStructureCS163.dir/src/animation.cpp.obj" \
+"CMakeFiles/DataStructureCS163.dir/src/init.cpp.obj" \
 "CMakeFiles/DataStructureCS163.dir/src/main.cpp.obj"
 
 # External object files for target DataStructureCS163
 DataStructureCS163_EXTERNAL_OBJECTS =
 
+DataStructureCS163.exe: CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.obj
+DataStructureCS163.exe: CMakeFiles/DataStructureCS163.dir/src/animation.cpp.obj
+DataStructureCS163.exe: CMakeFiles/DataStructureCS163.dir/src/init.cpp.obj
 DataStructureCS163.exe: CMakeFiles/DataStructureCS163.dir/src/main.cpp.obj
 DataStructureCS163.exe: CMakeFiles/DataStructureCS163.dir/build.make
 DataStructureCS163.exe: raylib/raylib/libraylib.a
 DataStructureCS163.exe: CMakeFiles/DataStructureCS163.dir/linkLibs.rsp
 DataStructureCS163.exe: CMakeFiles/DataStructureCS163.dir/objects1.rsp
 DataStructureCS163.exe: CMakeFiles/DataStructureCS163.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir="C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable DataStructureCS163.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir="C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable DataStructureCS163.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\DataStructureCS163.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

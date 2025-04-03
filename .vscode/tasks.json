@@ -25,7 +25,7 @@
                 "${workspaceFolder}/src/Screen.cpp",
                 "-I${workspaceFolder}/header",
                 "-I${workspaceFolder}/src",
-                "-I${workspaceFolder}/../raylib/src",
+                "-I${workspaceFolder}/raylib/src",
                 "-L${workspaceFolder}/../raylib/w64devkit/x86_64-w64-mingw32/lib",
                 "-lraylib",
                 "-lopengl32",

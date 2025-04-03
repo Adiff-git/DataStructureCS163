@@ -4,9 +4,6 @@ cmake_minimum_required(VERSION 3.16)
 # Đặt tên cho project
 project(DataStructureCS163)
 
-
-
-
 # Thêm tất cả file .cpp trong thư mục src/
 file(GLOB_RECURSE SOURCES src/*.cpp)
 

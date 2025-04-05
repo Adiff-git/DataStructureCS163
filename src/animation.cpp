@@ -6,6 +6,7 @@
 #include <stack>
 #include <iostream>
 #include <cmath>
+#include <fstream>
 
 std::stack<AVLTree> treeUndoState;
 std::stack<AVLTree> treeRedoState;
@@ -14,16 +15,16 @@ std::stack<AVLTree> treeRedoState;
 AVLTreeVisualizer::AVLTreeVisualizer() {
     inputText = "";
     inputActive = false;
-    handleSpace = { 0, 0, 1600, 75 };
-    inputBox     = { 20, 20, 200, 30 };
-    insertButton = { 230, 20, 80, 30 };
-    deleteButton = { 320, 20, 80, 30 };
-    searchButton = { 410, 20, 90, 30 };
-    randomButton = { 510, 20, 90, 30 };
-    clearButton  = { 610, 20, 70, 30 };
-    loadFileButton = {690, 20, 110, 30};
-    previousButton = { 1000, 20, 105, 30 };
-    nextButton = { 1120, 20, 65, 30 }; 
+    handleSpace = { 0.0f, 0.0f, 1600.0f, 75.0f };
+    inputBox     = { 20.0f, 20.0f, 200.0f, 30.0f };
+    insertButton = { 230.0f, 20.0f, 80.0f, 30.0f };
+    deleteButton = { 320.0f, 20.0f, 80.0f, 30.0f };
+    searchButton = { 410.0f, 20.0f, 90.0f, 30.0f };
+    randomButton = { 510.0f, 20.0f, 90.0f, 30.0f };
+    clearButton  = { 610.0f, 20.0f, 70.0f, 30.0f };
+    loadFileButton = { 690.0f, 20.0f, 110.0f, 30.0f };
+    previousButton = { 1000.0f, 20.0f, 105.0f, 30.0f };
+    nextButton = { 1120.0f, 20.0f, 65.0f, 30.0f }; 
 
     currentState = IDLE;
     pathIndex = 0;
@@ -33,9 +34,28 @@ AVLTreeVisualizer::AVLTreeVisualizer() {
     resultTimer = 0.0f;
     operationValue = 0;
     pendingInsertValue = 0;
+
+    animationSpeed = 0.5f;
+    // Move speed bar to top-right corner, below the operation buttons
+    speedBar = { 1000.0f, 60.0f, 200.0f, 20.0f };
+    sliderHandle = { speedBar.x + (animationSpeed * (speedBar.width - 10.0f)), speedBar.y + 2.0f, 10.0f, 16.0f };
+    draggingSlider = false;
+
+    // Move animation control buttons to top-right, below speed bar
+    playButton = { speedBar.x, speedBar.y + 30.0f, 50.0f, 30.0f };
+    pauseButton = { speedBar.x + 60.0f, speedBar.y + 30.0f, 50.0f, 30.0f };
+    backwardButton = { speedBar.x + 120.0f, speedBar.y + 30.0f, 50.0f, 30.0f };
+    forwardButton = { speedBar.x + 180.0f, speedBar.y + 30.0f, 50.0f, 30.0f };
+    paused = false;
+
+    // Load Raleway font
+    ralewayFont = LoadFont("resources/Raleway-Regular.ttf");
 }
 
-//button click
+AVLTreeVisualizer::~AVLTreeVisualizer() {
+    UnloadFont(ralewayFont);  // Unload the font when the visualizer is destroyed
+}
+
 void AVLTreeVisualizer::handleInput() {
     Vector2 mousePos = GetMousePosition();
 
@@ -61,17 +81,23 @@ void AVLTreeVisualizer::handleInput() {
     }
 
     if (CheckCollisionPointRec(mousePos, insertButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !inputText.empty()) {
-        animateInsert(std::stoi(inputText));
+        int insertValue = std::stoi(inputText);
+        animateInsert(insertValue);
         inputText.clear();
     }
+
     if (CheckCollisionPointRec(mousePos, deleteButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !inputText.empty()) {
-        animateDelete(std::stoi(inputText));
+        int deleteValue = std::stoi(inputText);
+        animateDelete(deleteValue);
         inputText.clear();
     }
+
     if (CheckCollisionPointRec(mousePos, searchButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !inputText.empty()) {
-        animateSearch(std::stoi(inputText));
+        int searchValue = std::stoi(inputText);
+        animateSearch(searchValue);
         inputText.clear();
     }
+
     if (CheckCollisionPointRec(mousePos, randomButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         animateRandom();
         inputText.clear();
@@ -96,87 +122,193 @@ void AVLTreeVisualizer::handleInput() {
         animateNext();
         inputText.clear();
     }
-}
 
-//timing algorithms
-void AVLTreeVisualizer::updateAnimation(float deltaTime) {
-    if (currentState == IDLE) {
-        return;
+    if (CheckCollisionPointRec(mousePos, speedBar) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        draggingSlider = true;
+    }
+    if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+        draggingSlider = false;
+    }
+    if (draggingSlider) {
+        float newX = mousePos.x - speedBar.x;
+        if (newX < 0) newX = 0;
+        if (newX > speedBar.width - 10.0f) newX = speedBar.width - 10.0f;
+        animationSpeed = newX / (speedBar.width - 10.0f);
+        sliderHandle.x = speedBar.x + newX;
     }
 
-    stateTimer += deltaTime;
-
-    switch (currentState) {
-    case TRAVERSING:
-        if (stateTimer >= 0.5f && pathIndex < currentPath.size()) {
+    if (CheckCollisionPointRec(mousePos, playButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        paused = false;
+    }
+    if (CheckCollisionPointRec(mousePos, pauseButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        paused = true;
+    }
+    if (CheckCollisionPointRec(mousePos, forwardButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && currentState == TRAVERSING) {
+        if (pathIndex < currentPath.size()) {
             pathIndex++;
             stateTimer = 0.0f;
         }
-        if (pathIndex >= currentPath.size()) {
-            if (currentOperation == "insert") {
-                currentState = INSERTING; 
-            }
-            else {
-                currentState = SHOWING_RESULT; 
-            }
+    }
+    if (CheckCollisionPointRec(mousePos, backwardButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && currentState == TRAVERSING) {
+        if (pathIndex > 0) {
+            pathIndex--;
+            highlightNodes.erase(currentPath[pathIndex]);
             stateTimer = 0.0f;
         }
-        break;
+    }
+}
 
-    case INSERTING:
-        if (stateTimer >= 0.5f) {
-            tree.insert(tree.root, pendingInsertValue); 
-            AVLTree treeReplica(tree);
-            treeUndoState.push(treeReplica);
-            currentPath = tree.getInsertionPath(pendingInsertValue); 
-            pathIndex = currentPath.size(); 
+void AVLTreeVisualizer::updateAnimation(float deltaTime) {
+    if (currentState == IDLE || paused) {
+        return;
+    }
+
+    stateTimer += deltaTime * (animationSpeed * 5.0f);
+
+    float duration = 0.0f;
+
+    switch (currentState) {
+        case TRAVERSING:
+            if (stateTimer >= 0.5f && pathIndex < currentPath.size()) {
+                Node* currentNode = currentPath[pathIndex];
+                highlightNodes.insert(currentNode);
+                notificationMessage = "Traverse: " + std::to_string(currentNode->data);
+                pathIndex++;
+                stateTimer = 0.0f;
+            }
+            if (pathIndex >= currentPath.size()) {
+                if (currentOperation == "insert") {
+                    currentState = INSERTING;
+                } else if (currentOperation == "delete") {
+                    if (!tree.search(operationValue)) {
+                        notificationMessage = "Node " + std::to_string(operationValue) + " Not Found";
+                        stateTimer = 0.0f;
+                        currentState = SHOWING_RESULT;
+                    } else {
+                        currentState = HIGHLIGHTING_BEFORE_DELETE;
+                    }
+                } else if (currentOperation == "search") {
+                    currentState = SEARCHING;
+                }
+                stateTimer = 0.0f;
+            }
+            break;
+
+        case INSERTING:
+            if (stateTimer >= 0.5f) {
+                if (!tree.search(pendingInsertValue)) {
+                    tree.insert(tree.root, pendingInsertValue);
+                    AVLTree treeReplica(tree);
+                    treeUndoState.push(treeReplica);
+                    notificationMessage = "Inserted " + std::to_string(pendingInsertValue);
+                } else {
+                    notificationMessage = "Duplicate " + std::to_string(pendingInsertValue) + " Not Inserted";
+                }
+                currentPath = tree.getInsertionPath(pendingInsertValue);
+                pathIndex = currentPath.size();
+                currentState = SHOWING_RESULT;
+                resultTimer = 0.0f;
+                stateTimer = 0.0f;
+            }
+            break;
+
+        case HIGHLIGHTING_BEFORE_DELETE:
+            if (stateTimer >= 0.5f) {
+                notificationMessage = "Deleting " + std::to_string(operationValue);
+                currentState = DELETING;
+                stateTimer = 0.0f;
+            }
+            break;
+
+        case DELETING:
+            if (stateTimer >= 0.5f) {
+                tree.remove(tree.root, operationValue);
+                AVLTree treeReplica(tree);
+                treeUndoState.push(treeReplica);
+                notificationMessage = std::to_string(operationValue) + " Deleted";
+                currentState = SHOWING_RESULT;
+                resultTimer = 0.0f;
+                stateTimer = 0.0f;
+            }
+            break;
+
+        case ROTATING:
+            notificationMessage = "Executing rotation";
             currentState = SHOWING_RESULT;
             resultTimer = 0.0f;
-            stateTimer = 0.0f;
-        }
-        break;
+            break;
 
-    case ROTATING:
-        currentState = SHOWING_RESULT;
-        resultTimer = 0.0f;
-        break;
+        case SHOWING_RESULT:
+            resultTimer += deltaTime;
+            duration = (currentOperation == "search" || currentOperation == "delete") && !searchFound ? 4.0f : 2.0f;
+            if (resultTimer >= duration) {
+                currentState = IDLE;
+                currentPath.clear();
+                pathIndex = 0;
+                rotationIndex = 0;
+                searchFound = false;
+                highlightNodes.clear();
+            }
+            break;
 
-    case SHOWING_RESULT:
-        resultTimer += deltaTime;
-        if (resultTimer >= 2.0f) {
-            currentState = IDLE;
-            currentPath.clear();
-            rotationNodes.clear();
-            pathIndex = 0;
-            rotationIndex = 0;
-            searchFound = false; // Reset searchFound after showing result
-        }
-        break;
+        case SEARCHING:
+            if (stateTimer >= 0.5f && pathIndex < currentPath.size()) {
+                Node* currentNode = currentPath[pathIndex];
+                highlightNodes.insert(currentNode);
+                notificationMessage = "Searching: " + std::to_string(currentNode->data);
+                if (currentNode->data == operationValue) {
+                    searchFound = true;
+                    notificationMessage = "Found " + std::to_string(operationValue);
+                    currentState = SHOWING_RESULT;
+                    stateTimer = 0.0f;
+                    resultTimer = 0.0f;
+                    break;
+                }
+                pathIndex++;
+                stateTimer = 0.0f;
+            }
+            if (pathIndex >= currentPath.size() && !searchFound) {
+                notificationMessage = "Node " + std::to_string(operationValue) + " Not Found";
+                stateTimer = 0.0f;
+                currentState = SHOWING_RESULT;
+            }
+            break;
     }
 }
 
 void AVLTreeVisualizer::drawTree(Node* node, float x, float y, float offset, const std::set<Node*>& highlight) {
     if (!node) return;
 
-    Color nodeColor = (highlight.count(node)) ? YELLOW : WHITE;
-    if (currentState == SHOWING_RESULT && node->data == operationValue) {
-
-        if (currentOperation == "search" && searchFound) 
+    Color nodeColor = WHITE;
+    if (highlight.count(node)) {
+        if (currentState == SEARCHING && node->data == operationValue && searchFound) {
             nodeColor = GREEN;
+        } else if (currentState == HIGHLIGHTING_BEFORE_DELETE && node->data == operationValue) {
+            nodeColor = ORANGE;
+        } else {
+            nodeColor = YELLOW;
+        }
+    } else if (currentState == SHOWING_RESULT && node->data == operationValue) {
+        if (currentOperation == "insert") {
+            nodeColor = GREEN;
+        } else if (currentOperation == "delete") {
+            nodeColor = RED;
+        }
     }
 
     DrawCircle(x, y, NODE_RADIUS, nodeColor);
     std::string valueStr = std::to_string(node->data);
-    DrawText(valueStr.c_str(), x - MeasureText(valueStr.c_str(), 20) / 2, y - 10, 20, BLACK);
+    DrawTextEx(ralewayFont, valueStr.c_str(), { x - MeasureText(valueStr.c_str(), 20) / 2, y - 10 }, 20, 1, BLACK);
 
     if (node->left) {
         float leftX = tree.getSubtreeWidth(node->left->right);
         float hypotenus = sqrt(60.0f * 60.0f + leftX * leftX);
-        float startLineX = x - NODE_RADIUS*leftX/hypotenus;
-        float startLineY = y + NODE_RADIUS*60.0f/hypotenus;
+        float startLineX = x - NODE_RADIUS * leftX / hypotenus;
+        float startLineY = y + NODE_RADIUS * 60.0f / hypotenus;
         DrawLine(startLineX, startLineY, x - leftX, y + 60, BLACK);
         drawTree(node->left, x - leftX, y + 60, offset / 2, highlight);
     }
+
     if (node->right) {
         float rightX = tree.getSubtreeWidth(node->right->left);
         float hypotenus = sqrt(60.0f * 60.0f + rightX * rightX);
@@ -187,72 +319,89 @@ void AVLTreeVisualizer::drawTree(Node* node, float x, float y, float offset, con
     }
 }
 
-//draw button
 void AVLTreeVisualizer::draw() {
     std::set<Node*> highlightNodes(currentPath.begin(), currentPath.begin() + pathIndex);
 
-    // Existing UI Elements (input box, buttons, tree, etc.)
     DrawRectangleRec(handleSpace, HandleInputSpaceBG);
     DrawRectangleRec(inputBox, LIGHTGRAY);
     DrawRectangleLinesEx(inputBox, 2, inputActive ? BLUE : GRAY);
-    DrawText(inputText.c_str(), inputBox.x + 5, inputBox.y + 5, 20, BLACK);
+    DrawTextEx(ralewayFont, inputText.c_str(), { inputBox.x + 5, inputBox.y + 5 }, 20, 1, BLACK);
 
     DrawRectangleRec(insertButton, GREEN);
     DrawRectangleRec(deleteButton, ORANGE);
     DrawRectangleRec(searchButton, BLUE);
     DrawRectangleRec(randomButton, PURPLE);
     DrawRectangleRec(clearButton, RED);
-    DrawRectangleRec(loadFileButton, MY_TURQUOIS);
+    DrawRectangleRec(loadFileButton, SKYBLUE);
     DrawRectangleRec(previousButton, BlueButton);
     DrawRectangleRec(nextButton, BlueButton);
 
-    DrawText("Insert", insertButton.x + 10, insertButton.y + 5, 20, WHITE);
-    DrawText("Delete", deleteButton.x + 10, deleteButton.y + 5, 20, WHITE);
-    DrawText("Search", searchButton.x + 10, searchButton.y + 5, 20, WHITE);
-    DrawText("Random", randomButton.x + 10, randomButton.y + 5, 20, WHITE);
-    DrawText("Clear", clearButton.x + 10, clearButton.y + 5, 20, WHITE);
-    DrawText("Load File", loadFileButton.x + 10, loadFileButton.y + 5, 20, WHITE);
-    DrawText("Previous", previousButton.x + 10, previousButton.y + 5, 20, WHITE);
-    DrawText("Next", nextButton.x + 10, nextButton.y + 5, 20, WHITE);
+    DrawTextEx(ralewayFont, "Insert", { insertButton.x + 10, insertButton.y + 5 }, 20, 1, WHITE);
+    DrawTextEx(ralewayFont, "Delete", { deleteButton.x + 10, deleteButton.y + 5 }, 20, 1, WHITE);
+    DrawTextEx(ralewayFont, "Search", { searchButton.x + 10, searchButton.y + 5 }, 20, 1, WHITE);
+    DrawTextEx(ralewayFont, "Random", { randomButton.x + 10, randomButton.y + 5 }, 20, 1, WHITE);
+    DrawTextEx(ralewayFont, "Clear", { clearButton.x + 10, clearButton.y + 5 }, 20, 1, WHITE);
+    DrawTextEx(ralewayFont, "Load File", { loadFileButton.x + 10, loadFileButton.y + 5 }, 20, 1, WHITE);
+    DrawTextEx(ralewayFont, "Previous", { previousButton.x + 10, previousButton.y + 5 }, 20, 1, WHITE);
+    DrawTextEx(ralewayFont, "Next", { nextButton.x + 10, nextButton.y + 5 }, 20, 1, WHITE);
 
     if (tree.root) {
         drawTree(tree.root, GetScreenWidth() / 2, 120, 200, highlightNodes);
     }
 
+    if (!notificationMessage.empty()) {
+        int messageSize = MeasureText(notificationMessage.c_str(), 20);
+        DrawTextEx(ralewayFont, notificationMessage.c_str(), { static_cast<float>(GetScreenWidth() - messageSize - 10), 10 }, 20, 1, BLACK);
+    }
+
     if (currentState == SHOWING_RESULT && currentOperation == "search" && !searchFound) {
         std::string messageNotFound = std::to_string(operationValue) + " is not in the tree";
         int messageSize = MeasureText(messageNotFound.c_str(), 20);
-        DrawText(messageNotFound.c_str(), (GetScreenWidth() - messageSize) / 2, GetScreenHeight() - 30, 20, RED);
+        DrawTextEx(ralewayFont, messageNotFound.c_str(), { static_cast<float>(GetScreenWidth() - messageSize - 10), 30 }, 20, 1, RED);
     }
 
-    // Draw pseudocode at the bottom-right corner
-    float boxWidth = 300.0f; // Width of the pseudocode box
-    float boxHeight = 150.0f; // Height of the pseudocode box
-    Rectangle pseudocodeBox = { GetScreenWidth() - boxWidth - 10, GetScreenHeight() - boxHeight - 10, boxWidth, boxHeight };
-
-    DrawRectangleRec(pseudocodeBox, LIGHTGRAY); // Background of the box
-    DrawRectangleLinesEx(pseudocodeBox, 2, BLACK); // Border of the box
-
-    std::string pseudocodeText = getPseudocode(); // Get the pseudocode for current operation
-    int lineHeight = 20; // Height of each line of text
-    int startY = pseudocodeBox.y + 10; // Starting Y position for the first line
-
-    // Split the pseudocode into lines and draw them inside the box
+    std::string pseudocodeText = getPseudocode();
+    int lineHeight = 20;
+    int lineCount = 0;
     std::istringstream stream(pseudocodeText);
     std::string line;
     while (std::getline(stream, line)) {
-        DrawText(line.c_str(), pseudocodeBox.x + 10, startY, 20, BLACK);
+        lineCount++;
+    }
+    int startY = GetScreenHeight() - (lineCount * lineHeight) - 10;
+    stream.clear();
+    stream.str(pseudocodeText);
+    while (std::getline(stream, line)) {
+        DrawTextEx(ralewayFont, line.c_str(), { 10, static_cast<float>(startY) }, 20, 1, BLACK);
         startY += lineHeight;
     }
-}
 
+    DrawRectangleRec(speedBar, LIGHTGRAY);
+    DrawRectangleLinesEx(speedBar, 2, GRAY);
+    DrawRectangleRec(sliderHandle, BLUE);
+    DrawTextEx(ralewayFont, "Speed", { speedBar.x - 50, speedBar.y + 2 }, 20, 1, BLACK);
+
+    std::string speedText = "Speed: " + std::to_string(static_cast<int>(animationSpeed * 500)) + "%";
+    int speedTextSize = MeasureText(speedText.c_str(), 20);
+    DrawTextEx(ralewayFont, speedText.c_str(), { speedBar.x + (speedBar.width - speedTextSize) / 2, speedBar.y - 25 }, 20, 1, BLACK);
+
+    DrawRectangleRec(playButton, GREEN);
+    DrawRectangleRec(pauseButton, RED);
+    DrawRectangleRec(forwardButton, GRAY);
+    DrawRectangleRec(backwardButton, GRAY);
+    DrawTextEx(ralewayFont, "Play", { playButton.x + 5, playButton.y + 5 }, 20, 1, WHITE);
+    DrawTextEx(ralewayFont, "Pause", { pauseButton.x + 5, pauseButton.y + 5 }, 20, 1, WHITE);
+    DrawTextEx(ralewayFont, ">>", { forwardButton.x + 10, forwardButton.y + 5 }, 20, 1, WHITE);
+    DrawTextEx(ralewayFont, "<<", { backwardButton.x + 10, backwardButton.y + 5 }, 20, 1, WHITE);
+}
 
 void AVLTreeVisualizer::animateInsert(int value) {
     currentOperation = "insert";
     operationValue = value;
     pendingInsertValue = value;
-    currentPath = tree.getInsertionPath(value); 
+    currentPath = tree.getInsertionPath(value);
     pathIndex = 0;
+    setNotificationMessage("Inserting " + std::to_string(value));
     currentState = TRAVERSING;
 }
 
@@ -261,40 +410,33 @@ void AVLTreeVisualizer::animateDelete(int value) {
     operationValue = value;
     currentPath = tree.getInsertionPath(value);
     pathIndex = 0;
+    setNotificationMessage("Deleting " + std::to_string(value));
     currentState = TRAVERSING;
-    tree.remove(tree.root, value);
-    AVLTree treeReplica(tree);
-    treeUndoState.push(treeReplica);
+    highlightNodes.clear();
+    if (!currentPath.empty()) highlightNodes.insert(currentPath[pathIndex]);
 }
 
 void AVLTreeVisualizer::animateSearch(int value) {
     currentOperation = "search";
     operationValue = value;
-    currentPath = tree.getInsertionPath(value); 
+    currentPath = tree.getInsertionPath(value);
     pathIndex = 0;
-    searchFound = tree.search(value); 
+    searchFound = tree.search(value);
+    setNotificationMessage("Searching " + std::to_string(value));
     currentState = TRAVERSING;
-    stateTimer = 0.0f; 
-    resultTimer = 0.0f; 
 }
 
 void AVLTreeVisualizer::animateRandom() {
-    // Destroy the existing tree
     tree.~AVLTree();
     new (&tree) AVLTree(); 
-
     int* randomValues = LoadRandomSequence(15, 1, 100);
-
     for (int i = 0; i < 15; i++) {
         tree.insert(tree.root, randomValues[i]);
     }
-
     AVLTree treeReplica(tree);
     treeUndoState.push(treeReplica);
     std::cout << treeUndoState.size() << std::endl;
-
     UnloadRandomSequence(randomValues);
-
     currentOperation = "random";
     currentPath.clear();
     pathIndex = 0;
@@ -306,7 +448,6 @@ void AVLTreeVisualizer::animateRandom() {
 void AVLTreeVisualizer::animateClear() {
     tree.~AVLTree();
     new (&tree) AVLTree();
-
     currentOperation = "";
     currentPath.clear();
     pathIndex = 0;
@@ -316,46 +457,27 @@ void AVLTreeVisualizer::animateClear() {
 }
 
 void AVLTreeVisualizer::animateLoadFile() {
-    const char* filters[] = { "*.txt" };
-    const char* filePath = "";
-    // tinyfd_openFileDialog(
-    //     "Select a Text File", "", 1, filters, "Text Files", 0
-    // );
-
-    if (!filePath) {
+    std::string filePath = "numbers.txt";
+    std::ifstream file(filePath);
+    if (!file.is_open()) {
+        notificationMessage = "Failed to open file: " + filePath;
         currentOperation = "loadfile";
         currentState = SHOWING_RESULT;
         resultTimer = 0.0f;
         return;
     }
 
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    std::wstring wideFilePath = converter.from_bytes(filePath);
-
-    // Use fopen_s instead of fopen
-    FILE* file = nullptr;
-    errno_t err = _wfopen_s(&file, wideFilePath.c_str(), L"r");
-    if (err != 0 || !file) {
-        currentOperation = "loadfile";
-        currentState = SHOWING_RESULT;
-        resultTimer = 0.0f;
-        return;
-    }
-
-    // Clear the current tree before loading new data
     tree.~AVLTree();
     new (&tree) AVLTree();
-
     int value;
-    while (fscanf_s(file, "%d", &value) == 1) {
+    while (file >> value) {
         tree.insert(tree.root, value);
     }
-
-    fclose(file);
+    file.close();
 
     AVLTree treeReplica(tree);
     treeUndoState.push(treeReplica);
-
+    notificationMessage = "Loaded data from " + filePath;
     currentOperation = "loadfile";
     currentPath.clear();
     pathIndex = 0;
@@ -366,15 +488,10 @@ void AVLTreeVisualizer::animateLoadFile() {
 
 void AVLTreeVisualizer::animatePrevious() {
     if (!treeUndoState.empty()) {
-        
-        //push the current tree to redo stack
         AVLTree treeReplica(tree);
         treeRedoState.push(treeReplica);
-
-        //change the tree to previous state
         tree = treeUndoState.top();
         treeUndoState.pop();
-
         currentOperation = "";
         currentPath.clear();
         pathIndex = 0;
@@ -386,14 +503,10 @@ void AVLTreeVisualizer::animatePrevious() {
 
 void AVLTreeVisualizer::animateNext() {
     if (!treeRedoState.empty()) {
-        //push the current tree to undo stack
         AVLTree treeReplica(tree);
         treeUndoState.push(treeReplica);
-
-        //change the tree to next state
         tree = treeRedoState.top();
         treeRedoState.pop();
-
         currentOperation = "";
         currentPath.clear();
         pathIndex = 0;
@@ -402,9 +515,9 @@ void AVLTreeVisualizer::animateNext() {
         resultTimer = 0.0f;
     }
 }
+
 std::string AVLTreeVisualizer::getPseudocode() {
     std::stringstream pseudocode;
-
     if (currentOperation == "insert") {
         pseudocode << "Pseudocode for Insert Operation:\n"
                    << "1. Start at the root.\n"
@@ -432,6 +545,11 @@ std::string AVLTreeVisualizer::getPseudocode() {
     else {
         pseudocode << "No operation selected.\n";
     }
-
     return pseudocode.str();
+}
+
+void AVLTreeVisualizer::setNotificationMessage(const std::string& message) {
+    notificationMessage = message;
+    stateTimer = 0.0f;
+    currentState = SHOWING_RESULT;
 }

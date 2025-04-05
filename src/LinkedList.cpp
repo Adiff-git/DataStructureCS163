@@ -52,7 +52,6 @@ void LinkedList::ProcessOperations() {
     opState.step = 1;
     opState.traversalIndex = 0;
 
-    // Lưu trạng thái trước khi thực hiện thao tác vào operationHistory
     ListState preState;
     Node* current = head;
     while (current) {
@@ -67,12 +66,11 @@ void LinkedList::ProcessOperations() {
     }
     operationHistory.push_back(preState);
 
-    // Xóa past và future_continuous khi bắt đầu một thao tác mới
     past.clear();
     future_continuous.clear();
 
     switch (op.type) {
-        case 1: 
+        case 1: // Initialize
             opState.initCount = op.value1; 
             opState.initIndex = 0; 
             Clear(); 
@@ -81,19 +79,27 @@ void LinkedList::ProcessOperations() {
                 opState.initCount = opState.initValues.size();
             }
             break;
-        case 2: 
+        case 2: // Add Head
             opState.newNode = new Node(op.value1); 
             break;
-        case 3: 
-            opState.deleteValue = op.value1; 
+        case 3: // Add Index
+            opState.newNode = new Node(op.value2);
+            opState.addIndex = op.value1;
+            opState.current = head;
+            break;
+        case 4: // Add Tail
+            opState.newNode = new Node(op.value1); 
+            break;
+        case 5: // Delete
+            opState.deleteValue = op.value1;
             opState.current = head; 
             break;
-        case 4: 
-            opState.searchValue = op.value1; 
+        case 6: // Search
+            opState.searchValue = op.value1;
             opState.current = head; 
             opState.searchResult = false; 
             break;
-        case 5: 
+        case 7: // Update
             opState.updateOld = op.value1; 
             opState.updateNew = op.value2; 
             opState.current = head; 
@@ -116,18 +122,19 @@ void LinkedList::UpdateOperations() {
 
     if (isAnimating || opState.delayTimer > 0) return;
 
-    // Lưu trạng thái trước khi thực hiện bước lớn
     SaveState();
 
     switch (activeFunction) {
         case 1: UpdateInitialize(); break;
-        case 2: UpdateAdd(); break;
-        case 3: UpdateDelete(); break;
-        case 4: UpdateSearch(); break;
-        case 5: UpdateUpdate(); break;
+        case 2: // Add Head
+        case 3: // Add Index
+        case 4: // Add Tail
+            UpdateAdd(); break;
+        case 5: UpdateDelete(); break;
+        case 6: UpdateSearch(); break;
+        case 7: UpdateUpdate(); break;
     }
 
-    // Lưu trạng thái sau khi thực hiện bước lớn và thêm vào future_continuous
     SaveState();
     future_continuous.push_back(past.back());
 }
@@ -150,7 +157,10 @@ void LinkedList::UpdateAnimation() {
                 current->animationProgress = 1.0f;
                 switch (current->animationType) {
                     case 1: current->isActive = false; break;
-                    case 2: current->position = current->targetPosition; current->alpha = 1.0f; break;
+                    case 2: 
+                        current->position = current->targetPosition; 
+                        current->alpha = 1.0f; 
+                        break;
                     case 3: current->alpha = 0.0f; break;
                     case 4: current->position = current->targetPosition; break;
                     case 5: break;
@@ -167,8 +177,9 @@ void LinkedList::UpdateAnimation() {
                         }
                         break;
                     case 2:
+                        current->position.x = Lerp(current->position.x, current->targetPosition.x, t); // Thêm chuyển động x
                         current->position.y = Lerp(current->position.y, current->targetPosition.y, t);
-                        current->alpha = t;
+                        current->alpha = t; // Tăng dần độ rõ
                         break;
                     case 3:
                         current->alpha = 1.0f - t;
@@ -218,12 +229,21 @@ void LinkedList::Draw() {
 void LinkedList::DrawCodeBlock() {
     if (activeFunction == 0) return;
 
-    const char* codeLines[5][7] = {
-        {"Initialize(count):", "1. Clear list", "2. Loop i to count", "3. Add random node", "", "", ""},
-        {"Add(value):", "1. Traverse to end", "2. Add new node", "", "", "", ""},
-        {"Delete(value):", "1. while (current->next &&", "    current->next->value != value)", "2. current->next =", "    current->next->next", "", ""},
-        {"Search(value):", "1. current = head", "2. while (current)", "3.     if (current->value == value) return", "", "", ""},
-        {"Update(old, new):", "1. current = head", "2. while (current)", "3.     if (current->value == old)", "4.         current->value = new", "", ""}
+    const char* codeLines[7][7] = {
+        // Initialize
+        {"Initialize:", "1. Clear List", "2. Add Random Node", "", "", "", ""},
+        // Add Head
+        {"Add Head(value):", "1. Node* newNode = new Node(value)", "2. newNode->next = head", "3. head = newNode", "", "", ""},
+        // Add Index
+        {"Add Index(value):", "1. Node* newNode = new Node(value)", "2. while (!cur && cur->val != value)", "3.     cur = cur->next", "4. prev = prev->next", "5. if (cur) newNode->next = cur", "6. prev->next = newNode"},
+        // Add Tail
+        {"Add Tail(value):", "1. if (!head) head = new Node(value)", "2. while (cur->next)", "3.     cur = cur->next", "4. cur->next = new Node(value)", "", ""},
+        // Delete
+        {"Delete(value):", "1. while (cur->next &&", "2.     cur->next->val != value)", "3.     cur = cur->next", "4. if (cur->next)", "5.     Node* tmp = cur->next", "6.     cur->next = cur->next->next; delete tmp"},
+        // Search
+        {"Search(value):", "1. while (cur && cur->val != value)", "2.     cur = cur->next", "3. if (cur) return true", "4. return false", "", ""},
+        // Update
+        {"Update(old, new):", "1. while (cur && cur->val != old)", "2.     cur = cur->next", "3. if (cur) cur->val = new", "", "", ""}
     };
 
     int numLines = 0;
@@ -232,10 +252,10 @@ void LinkedList::DrawCodeBlock() {
     }
 
     float y = screenHeight - 200;
-    float x = screenWidth - 400;
+    float x = screenWidth - 450; // Điều chỉnh vị trí x để khung không bị che khuất
     float lineHeight = 30;
     float padding = 10;
-    float frameWidth = 350;
+    float frameWidth = 450; // Tăng chiều rộng khung để chứa dòng dài nhất
     float frameHeight = numLines * lineHeight + 2 * padding;
     DrawRectangle(x - padding, y - padding, frameWidth, frameHeight, SKYBLUE);
 
@@ -348,10 +368,13 @@ float LinkedList::GetScrollOffset() const { return scrollOffset; }
 
 void LinkedList::UpdateInitialize() {
     if (opState.step == 1) {
-        activeLine = 1;
+        activeLine = 1; // Highlight "Clear List"
+        Clear();
+        opState.delayTimer = 0.5f;
+        opState.step = 2;
+    } else if (opState.step == 2) {
+        activeLine = 2; // Highlight "Add Random Node"
         if (opState.initIndex < opState.initCount) {
-            activeLine = 2;
-            activeLine = 3;
             Node* newNode;
             if (opState.initValues.empty()) {
                 newNode = new Node(GetRandomValue(1, 99));
@@ -380,6 +403,7 @@ void LinkedList::UpdateInitialize() {
                 opState.current = newNode;
             }
             opState.initIndex++;
+            opState.delayTimer = 0.5f;
         } else {
             notification = "Initialized " + std::to_string(opState.initCount) + " nodes.";
             ResetOperation();
@@ -417,50 +441,168 @@ void LinkedList::SkipInitialize() {
 }
 
 void LinkedList::UpdateAdd() {
-    if (opState.step == 1) {
-        activeLine = 1;
-        if (!head) {
-            activeLine = 2;
+    if (activeFunction == 2) { // Add Head
+        if (opState.step == 1) {
+            activeLine = 1; // Highlight "Node* newNode = new Node(value)"
             opState.newNode->position = {200, 100};
             opState.newNode->alpha = 0.0f;
-            opState.newNode->animationType = 0;
-            opState.newNode->animationProgress = 0.0f;
-            opState.delayTimer = 1.0f;
-            opState.step = 2;
-        } else {
-            if (!opState.current) opState.current = head;
-            opState.current->animationType = 1;
-            opState.current->animationProgress = 0.0f;
-            if (opState.current->next) {
-                opState.current = opState.current->next;
-            } else {
-                activeLine = 2;
-                opState.newNode->position = {opState.current->position.x + SPACING, 100};
-                opState.newNode->alpha = 0.0f;
-                opState.newNode->animationType = 0;
-                opState.newNode->animationProgress = 0.0f;
-                opState.delayTimer = 1.0f;
-                opState.step = 2;
-            }
-        }
-    } else if (opState.step == 2) {
-        activeLine = 2;
-        if (!head) {
-            opState.newNode->targetPosition = {200, 300};
             opState.newNode->animationType = 2;
             opState.newNode->animationProgress = 0.0f;
+            opState.newNode->targetPosition = {200, 300};
+            opState.delayTimer = 0.5f; // Dừng lại để quan sát
+            opState.step = 2;
+        } else if (opState.step == 2) {
+            activeLine = 2; // Highlight "newNode->next = head"
+            if (head) {
+                opState.newNode->next = head;
+                head->animationType = 5;
+                head->animationProgress = 0.0f;
+            }
+            opState.delayTimer = 0.5f; // Dừng lại để quan sát
+            opState.step = 3;
+        } else if (opState.step == 3) {
+            activeLine = 3; // Highlight "head = newNode"
             head = opState.newNode;
-            notification = "Added node with value " + std::to_string(opState.newNode->value) + ".";
+            RealignNodes();
+            notification = "Added node with value " + std::to_string(opState.newNode->value) + " at head.";
             opState.newNode = nullptr;
             ResetOperation();
-        } else {
+        }
+    } else if (activeFunction == 3) { // Add Index
+        if (opState.step == 1) {
+            activeLine = 1; // Highlight "Node* newNode = new Node(value)"
+            if (!head) {
+                if (opState.addIndex == 0) {
+                    opState.newNode->position = {200, 100};
+                    opState.newNode->alpha = 0.0f;
+                    opState.newNode->targetPosition = {200, 300};
+                    opState.newNode->animationType = 2;
+                    opState.newNode->animationProgress = 0.0f;
+                    head = opState.newNode;
+                    notification = "Added node with value " + std::to_string(opState.newNode->value) + " at index 0.";
+                    opState.newNode = nullptr;
+                    ResetOperation();
+                } else {
+                    notification = "List is empty. Cannot add at index " + std::to_string(opState.addIndex) + ".";
+                    delete opState.newNode;
+                    opState.newNode = nullptr;
+                    ResetOperation();
+                }
+                return;
+            }
+
+            if (opState.addIndex == 0) {
+                activeFunction = 2; // Chuyển sang Add Head
+                opState.step = 1;
+                UpdateAdd();
+                return;
+            }
+
+            opState.newNode->position = {200, 100};
+            opState.newNode->alpha = 0.0f;
+            opState.newNode->animationType = 2;
+            opState.newNode->animationProgress = 0.0f;
+            opState.delayTimer = 0.5f;
+            opState.step = 2;
+        } else if (opState.step == 2) {
+            activeLine = 2; // Highlight "while (!cur && cur->val != value)"
+            if (opState.traversalIndex < opState.addIndex) {
+                activeLine = 3; // Highlight "cur = cur->next"
+                if (opState.current) {
+                    opState.current->animationType = 1;
+                    opState.current->animationProgress = 0.0f;
+                    opState.current = opState.current->next;
+                    opState.traversalIndex++;
+                    opState.delayTimer = 0.5f;
+                } else {
+                    notification = "Index " + std::to_string(opState.addIndex) + " out of bounds.";
+                    delete opState.newNode;
+                    opState.newNode = nullptr;
+                    ResetOperation();
+                }
+            } else {
+                opState.step = 3;
+            }
+        } else if (opState.step == 3) {
+            activeLine = 4; // Highlight "prev = prev->next"
+            Node* prev = head;
+            for (int i = 0; i < opState.addIndex - 1 && prev->next; i++) {
+                prev = prev->next;
+            }
+            if (prev) {
+                opState.newNode->targetPosition = {prev->position.x + SPACING, 300};
+                opState.step = 4;
+                opState.delayTimer = 0.5f;
+            } else {
+                notification = "Index " + std::to_string(opState.addIndex) + " out of bounds.";
+                delete opState.newNode;
+                opState.newNode = nullptr;
+                ResetOperation();
+            }
+        } else if (opState.step == 4) {
+            activeLine = 5; // Highlight "if (cur) newNode->next = cur"
+            Node* prev = head;
+            for (int i = 0; i < opState.addIndex - 1 && prev->next; i++) {
+                prev = prev->next;
+            }
+            opState.newNode->next = prev->next;
+            opState.delayTimer = 0.5f;
+            opState.step = 5;
+        } else if (opState.step == 5) {
+            activeLine = 6; // Highlight "prev->next = newNode"
+            Node* prev = head;
+            for (int i = 0; i < opState.addIndex - 1 && prev->next; i++) {
+                prev = prev->next;
+            }
+            prev->next = opState.newNode;
+            prev->animationType = 5;
+            prev->animationProgress = 0.0f;
+            RealignNodes();
+            notification = "Added node with value " + std::to_string(opState.newNode->value) + " at index " + std::to_string(opState.addIndex) + ".";
+            opState.newNode = nullptr;
+            ResetOperation();
+        }
+    } else if (activeFunction == 4) { // Add Tail
+        if (opState.step == 1) {
+            activeLine = 1; // Highlight "if (!head) head = new Node(value)"
+            if (!head) {
+                opState.newNode->position = {200, 100};
+                opState.newNode->alpha = 0.0f;
+                opState.newNode->targetPosition = {200, 300};
+                opState.newNode->animationType = 2;
+                opState.newNode->animationProgress = 0.0f;
+                head = opState.newNode;
+                notification = "Added node with value " + std::to_string(opState.newNode->value) + " at tail.";
+                opState.newNode = nullptr;
+                ResetOperation();
+            } else {
+                opState.step = 2;
+                opState.delayTimer = 0.5f;
+            }
+        } else if (opState.step == 2) {
+            activeLine = 2; // Highlight "while (cur->next)"
+            if (!opState.current) opState.current = head;
+            if (opState.current->next) {
+                activeLine = 3; // Highlight "cur = cur->next"
+                opState.current->animationType = 1;
+                opState.current->animationProgress = 0.0f;
+                opState.current = opState.current->next;
+                opState.delayTimer = 0.5f;
+            } else {
+                opState.step = 3;
+                opState.delayTimer = 0.5f;
+            }
+        } else if (opState.step == 3) {
+            activeLine = 4; // Highlight "cur->next = new Node(value)"
+            opState.newNode->position = {opState.current->position.x + SPACING, 100};
+            opState.newNode->alpha = 0.0f;
             opState.newNode->targetPosition = {opState.current->position.x + SPACING, 300};
             opState.newNode->animationType = 2;
             opState.newNode->animationProgress = 0.0f;
             opState.current->next = opState.newNode;
             opState.current->animationType = 5;
             opState.current->animationProgress = 0.0f;
-            notification = "Added node with value " + std::to_string(opState.newNode->value) + ".";
+            notification = "Added node with value " + std::to_string(opState.newNode->value) + " at tail.";
             opState.newNode = nullptr;
             ResetOperation();
         }
@@ -469,149 +611,241 @@ void LinkedList::UpdateAdd() {
 
 void LinkedList::UpdateDelete() {
     if (opState.step == 1) {
-        activeLine = 1;
+        activeLine = 1; // Highlight "while (cur->next &&"
         if (!head) {
+            activeLine = 1; // Vẫn highlight dòng 1 khi return
             notification = "List is empty. Cannot delete.";
             ResetOperation();
             return;
         }
         if (head->value == opState.deleteValue) {
-            activeLine = 2;
+            opState.step = 4;
+            opState.delayTimer = 1.0f; // Tăng delay lên 1 giây
+            return;
+        }
+
+        if (!opState.current) opState.current = head;
+        activeLine = 2; // Highlight "cur->next->val != value)"
+        if (opState.current->next && opState.current->next->value != opState.deleteValue) {
+            activeLine = 3; // Highlight "cur = cur->next"
+            opState.current->animationType = 1;
+            opState.current->animationProgress = 0.0f;
+            opState.current = opState.current->next;
+            opState.traversalIndex++;
+            opState.delayTimer = 1.0f; // Tăng delay lên 1 giây
+        } else {
+            opState.step = 2;
+            opState.delayTimer = 1.0f; // Tăng delay lên 1 giây
+        }
+    } else if (opState.step == 2) {
+        activeLine = 4; // Highlight "if (cur->next)"
+        if (opState.current->next) {
+            opState.step = 3;
+            opState.delayTimer = 1.0f; // Tăng delay lên 1 giây
+        } else {
+            activeLine = 4; // Highlight "if (cur->next)" khi return
+            notification = "Value " + std::to_string(opState.deleteValue) + " not found.";
+            ResetOperation();
+        }
+    } else if (opState.step == 3) {
+        activeLine = 5; // Highlight "Node* tmp = cur->next"
+        Node* temp = opState.current->next;
+        temp->animationType = 3;
+        temp->animationProgress = 0.0f;
+        opState.delayTimer = 1.0f; // Tăng delay lên 1 giây
+        opState.step = 4;
+    } else if (opState.step == 4) {
+        activeLine = 6; // Highlight "cur->next = cur->next->next; delete tmp"
+        if (head->value == opState.deleteValue) {
             Node* temp = head;
             temp->animationType = 3;
             temp->animationProgress = 0.0f;
             head = head->next;
             delete temp;
-            RealignNodes();
-            notification = "Deleted node with value " + std::to_string(opState.deleteValue) + ".";
-            ResetOperation();
-            return;
-        }
-
-        if (!opState.current) opState.current = head;
-        if (opState.current) {
-            opState.current->animationType = 1;
-            opState.current->animationProgress = 0.0f;
-        }
-        if (opState.current->next) {
-            if (opState.current->next->value == opState.deleteValue) {
-                activeLine = 2;
-                Node* temp = opState.current->next;
-                temp->animationType = 3;
-                temp->animationProgress = 0.0f;
-                opState.current->next = temp->next;
-                delete temp;
-                RealignNodes();
-                notification = "Deleted node with value " + std::to_string(opState.deleteValue) + ".";
-                ResetOperation();
-            } else {
-                opState.current = opState.current->next;
-            }
         } else {
-            notification = "Value " + std::to_string(opState.deleteValue) + " not found.";
-            ResetOperation();
+            Node* temp = opState.current->next;
+            opState.current->next = temp->next;
+            delete temp;
         }
+        RealignNodes();
+        notification = "Deleted node with value " + std::to_string(opState.deleteValue) + ".";
+        ResetOperation();
     }
 }
 
 void LinkedList::UpdateSearch() {
     if (opState.step == 1) {
+        activeLine = 1; // Highlight "while (cur && cur->val != value)"
         if (opState.current) {
-            activeLine = 1;
-            activeLine = 2;
-            if (opState.current) {
-                opState.current->animationType = 1;
-                opState.current->animationProgress = 0.0f;
-            }
-            activeLine = 3;
+            opState.current->animationType = 1;
+            opState.current->animationProgress = 0.0f;
             if (opState.current->value == opState.searchValue) {
-                opState.searchResult = true;
-                foundNode = opState.current;
-                notification = "Found value " + std::to_string(opState.searchValue) + ".";
-                ResetOperation();
+                opState.step = 2;
+                opState.delayTimer = 0.5f;
             } else {
+                activeLine = 2; // Highlight "cur = cur->next"
                 opState.current = opState.current->next;
                 opState.traversalIndex++;
+                opState.delayTimer = 0.5f;
                 if (!opState.current) {
-                    opState.searchResult = false;
-                    notification = "Value " + std::to_string(opState.searchValue) + " not found.";
-                    ResetOperation();
+                    opState.step = 3;
                 }
             }
         } else {
+            activeLine = 1; // Highlight "while (cur && cur->val != value)" khi return
             opState.searchResult = false;
             notification = "List is empty. Cannot search.";
             ResetOperation();
         }
+    } else if (opState.step == 2) {
+        activeLine = 3; // Highlight "if (cur) return true"
+        opState.searchResult = true;
+        foundNode = opState.current;
+        notification = "Found value " + std::to_string(opState.searchValue) + ".";
+        ResetOperation();
+    } else if (opState.step == 3) {
+        activeLine = 4; // Highlight "return false"
+        opState.searchResult = false;
+        notification = "Value " + std::to_string(opState.searchValue) + " not found.";
+        ResetOperation();
     }
 }
 
 void LinkedList::UpdateUpdate() {
     if (opState.step == 1) {
+        activeLine = 1; // Highlight "while (cur && cur->val != old)"
         if (opState.current) {
-            activeLine = 1;
-            activeLine = 2;
-            if (opState.current) {
-                opState.current->animationType = 1;
-                opState.current->animationProgress = 0.0f;
-            }
-            activeLine = 3;
+            opState.current->animationType = 1;
+            opState.current->animationProgress = 0.0f;
             if (opState.current->value == opState.updateOld) {
-                activeLine = 4;
-                opState.current->animationType = 3;
-                opState.current->animationProgress = 0.0f;
-                opState.current->value = opState.updateNew;
-                opState.current->alpha = 0.0f;
-                Vector2 originalPos = opState.current->position;
-                opState.current->position = {originalPos.x, 100};
-                opState.current->targetPosition = originalPos;
-                opState.current->animationType = 2;
-                opState.current->animationProgress = 0.0f;
-                notification = "Updated value from " + std::to_string(opState.updateOld) + " to " + std::to_string(opState.updateNew) + ".";
-                ResetOperation();
+                opState.step = 2;
+                opState.delayTimer = 0.5f;
             } else {
+                activeLine = 2; // Highlight "cur = cur->next"
                 opState.current = opState.current->next;
                 opState.traversalIndex++;
+                opState.delayTimer = 0.5f;
                 if (!opState.current) {
+                    activeLine = 2; // Highlight "cur = cur->next" khi return
                     notification = "Value " + std::to_string(opState.updateOld) + " not found.";
                     ResetOperation();
                 }
             }
         } else {
+            activeLine = 1; // Highlight "while (cur && cur->val != old)" khi return
             notification = "List is empty. Cannot update.";
+            ResetOperation();
+        }
+    } else if (opState.step == 2) {
+        activeLine = 3; // Highlight "if (cur) cur->val = new"
+        // Xóa node cũ
+        opState.current->animationType = 3; // Fade out
+        opState.current->animationProgress = 0.0f;
+        opState.delayTimer = 1.0f; // Đợi animation fade hoàn thành
+        opState.step = 3;
+    } else if (opState.step == 3) {
+        activeLine = 3; // Vẫn highlight "if (cur) cur->val = new" trong khi fade
+        // Đợi animation fade hoàn thành
+        if (opState.current->animationType == 0) { // Animation fade đã hoàn thành
+            // Tạo node mới
+            Node* newNode = new Node(opState.updateNew);
+            newNode->position = {opState.current->position.x, 100}; // Vị trí ban đầu trên cao
+            newNode->alpha = 0.0f;
+            newNode->targetPosition = opState.current->position; // Vị trí đích
+            newNode->animationType = 2; // Drop
+            newNode->animationProgress = 0.0f;
+
+            // Tìm node trước node hiện tại
+            if (opState.current == head) {
+                newNode->next = head->next;
+                head = newNode;
+            } else {
+                Node* prev = head;
+                while (prev && prev->next != opState.current) {
+                    prev = prev->next;
+                }
+                if (prev) {
+                    newNode->next = opState.current->next;
+                    prev->next = newNode;
+                    prev->animationType = 5; // Arrow
+                    prev->animationProgress = 0.0f;
+                }
+            }
+
+            // Xóa node cũ
+            Node* temp = opState.current;
+            delete temp;
+
+            // Lưu node mới để theo dõi animation
+            opState.current = newNode;
+            opState.step = 4;
+            opState.delayTimer = 0.5f;
+        }
+    } else if (opState.step == 4) {
+        activeLine = 3; // Vẫn highlight "if (cur) cur->val = new" trong khi drop
+        // Đợi animation drop của node mới hoàn thành
+        if (opState.current->animationType == 0) { // Animation drop đã hoàn thành
+            notification = "Updated value from " + std::to_string(opState.updateOld) + " to " + std::to_string(opState.updateNew) + ".";
             ResetOperation();
         }
     }
 }
 
 void LinkedList::SkipAdd() {
-    if (activeFunction != 2) return;
-
-    if (!head) {
-        activeLine = 2;
+    if (activeFunction == 2) { // Add Head
         opState.newNode->position = {200, 300};
-        opState.newNode->targetPosition = opState.newNode->position;
+        opState.newNode->targetPosition = {200, 300};
+        opState.newNode->alpha = 1.0f; // Hiển thị ngay
+        opState.newNode->next = head;
         head = opState.newNode;
-    } else {
-        Node* current = head;
-        while (current->next) {
-            current->animationType = 0;
-            current->animationProgress = 0.0f;
-            current->isActive = false;
-            current = current->next;
+        RealignNodesImmediate();
+        notification = "Added node with value " + std::to_string(opState.newNode->value) + " at head.";
+        opState.newNode = nullptr;
+        ResetOperation();
+    } else if (activeFunction == 3) { // Add Index
+        if (!head && opState.addIndex == 0) {
+            opState.newNode->position = {200, 300};
+            opState.newNode->alpha = 1.0f;
+            head = opState.newNode;
+            notification = "Added node with value " + std::to_string(opState.newNode->value) + " at index 0.";
+            opState.newNode = nullptr;
+            ResetOperation();
+            return;
         }
-        current->animationType = 0;
-        current->animationProgress = 0.0f;
-        current->isActive = false;
-        activeLine = 2;
-        opState.newNode->position = {current->position.x + SPACING, 300};
-        opState.newNode->targetPosition = {current->position.x + SPACING, 300};
-        opState.newNode->alpha = 1.0f;
-        current->next = opState.newNode;
+
+        Node* prev = head;
+        for (int i = 0; i < opState.addIndex - 1 && prev; i++) {
+            prev = prev->next;
+        }
+        if (prev) {
+            opState.newNode->position = {prev->position.x + SPACING, 300};
+            opState.newNode->alpha = 1.0f;
+            opState.newNode->next = prev->next;
+            prev->next = opState.newNode;
+            RealignNodesImmediate();
+            notification = "Added node with value " + std::to_string(opState.newNode->value) + " at index " + std::to_string(opState.addIndex) + ".";
+        } else {
+            notification = "Index " + std::to_string(opState.addIndex) + " out of bounds.";
+            delete opState.newNode;
+        }
+        opState.newNode = nullptr;
+        ResetOperation();
+    } else if (activeFunction == 4) { // Add Tail
+        if (!head) {
+            opState.newNode->position = {200, 300};
+            opState.newNode->alpha = 1.0f;
+            head = opState.newNode;
+        } else {
+            Node* current = head;
+            while (current->next) current = current->next;
+            opState.newNode->position = {current->position.x + SPACING, 300};
+            opState.newNode->alpha = 1.0f;
+            current->next = opState.newNode;
+        }
+        notification = "Added node with value " + std::to_string(opState.newNode->value) + " at tail.";
+        opState.newNode = nullptr;
+        ResetOperation();
     }
-    notification = "Added node with value " + std::to_string(opState.newNode->value) + ".";
-    opState.newNode = nullptr;
-    ResetOperation();
 }
 
 void LinkedList::SkipDelete() {
@@ -738,8 +972,10 @@ void LinkedList::RealignNodes() {
     float x = 200;
     while (current) {
         current->targetPosition = {x, 300};
-        current->animationType = 4;
-        current->animationProgress = 0.0f;
+        if (current->animationType != 2) { // Không ghi đè nếu đang drop
+            current->animationType = 4; // Realign
+            current->animationProgress = 0.0f;
+        }
         x += SPACING;
         current = current->next;
     }

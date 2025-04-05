@@ -35,20 +35,21 @@ private:
         float delayTimer = 0.0f;
         std::vector<int> initValues;
         int traversalIndex = 0;
+        int addIndex = 0; // Lưu index cho Add Index
     } opState;
 
-    std::deque<ListState> past; // Lưu các bước lớn trong thao tác hiện tại
-    std::deque<ListState> future_continuous; // Lưu các bước lớn tiếp theo
-    std::deque<ListState> operationHistory; // Lưu lịch sử trạng thái trước mỗi thao tác
+    std::deque<ListState> past;
+    std::deque<ListState> future_continuous;
+    std::deque<ListState> operationHistory;
 
     void Clear();
     void UpdateInitialize();
     void SkipInitialize();
-    void UpdateAdd();
+    void UpdateAdd(); // Gộp tất cả Add vào đây
     void UpdateDelete();
     void UpdateSearch();
     void UpdateUpdate();
-    void SkipAdd();
+    void SkipAdd(); // Gộp tất cả Skip Add vào đây
     void SkipDelete();
     void SkipSearch();
     void SkipUpdate();

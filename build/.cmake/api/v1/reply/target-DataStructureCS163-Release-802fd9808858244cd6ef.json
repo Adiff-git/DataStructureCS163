@@ -108,11 +108,11 @@
 			"id" : "raylib::@7d429ebd5d102775094d"
 		},
 		{
-			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
-		},
-		{
 			"backtrace" : 2,
 			"id" : "glfw::@a896dd99b4a5c6eab3d9"
+		},
+		{
+			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
 		}
 	],
 	"id" : "DataStructureCS163::@6890427a1f51a3e7e1df",

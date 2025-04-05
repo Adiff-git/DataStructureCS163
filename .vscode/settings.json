@@ -51,6 +51,13 @@
         "xlocmes": "cpp",
         "xlocmon": "cpp",
         "xlocnum": "cpp",
-        "xloctime": "cpp"
+        "xloctime": "cpp",
+        "deque": "cpp",
+        "array": "cpp",
+        "fstream": "cpp",
+        "queue": "cpp",
+        "ranges": "cpp",
+        "span": "cpp",
+        "sstream": "cpp"
     }
 }

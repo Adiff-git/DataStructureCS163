@@ -819,7 +819,7 @@ void HashTable::drawInitializeOptions() {
     static bool nInputEnabled = false;
 
     GuiLabel(Rectangle{ 20, 610, 25, 25 }, "M: ");
-    if (GuiSpinner(Rectangle{ 50, 610, 100, 25 }, NULL, &mValue, 1, 14, mInputEnabled)) {
+    if (GuiValueBox(Rectangle{ 50, 610, 100, 25 }, NULL, &mValue, 1, 14, mInputEnabled)) {
         mInputEnabled = !mInputEnabled;
     }
     if (GuiButton(Rectangle{ 160, 610, 25, 25 }, "#193#")) {
@@ -827,7 +827,7 @@ void HashTable::drawInitializeOptions() {
     }
 
     GuiLabel(Rectangle{ 200, 610, 25, 25 }, "N: ");
-    if (GuiSpinner(Rectangle{ 230, 610, 100, 25 }, NULL, &nValue, 0, 99, nInputEnabled)) {
+    if (GuiValueBox(Rectangle{ 230, 610, 100, 25 }, NULL, &nValue, 0, 99, nInputEnabled)) {
         nInputEnabled = !nInputEnabled;
     }
     if (GuiButton(Rectangle{ 340, 610, 25, 25 }, "#193#")) {
@@ -896,7 +896,7 @@ void HashTable::drawInsertOptions() {
     static bool valueInputEnabled = false;
 
     GuiLabel(Rectangle{ 20, 610, 25, 25 }, "K: ");
-    if (GuiSpinner(Rectangle{ 50, 610, 100, 25 }, NULL, &key, 0, 100, keyInputEnabled)) {
+    if (GuiValueBox(Rectangle{ 50, 610, 100, 25 }, NULL, &key, 0, 99, keyInputEnabled)) {
         keyInputEnabled = !keyInputEnabled;
     }
     if (GuiButton(Rectangle{ 160, 610, 25, 25 }, "#193#")) {
@@ -904,7 +904,7 @@ void HashTable::drawInsertOptions() {
     }
 
     GuiLabel(Rectangle{ 200, 610, 25, 25 }, "V: ");
-    if (GuiSpinner(Rectangle{ 230, 610, 100, 25 }, NULL, &value, 0, 100, valueInputEnabled)) {
+    if (GuiValueBox(Rectangle{ 230, 610, 100, 25 }, NULL, &value, 0, 99, valueInputEnabled)) {
         valueInputEnabled = !valueInputEnabled;
     }
     if (GuiButton(Rectangle{ 340, 610, 25, 25 }, "#193#")) {
@@ -925,7 +925,7 @@ void HashTable::drawDeleteOptions() {
     static bool keyInputEnabled = false;
 
     GuiLabel(Rectangle{ 20, 610, 25, 25 }, "K: ");
-    if (GuiSpinner(Rectangle{ 50, 610, 100, 25 }, NULL, &key, 0, 100, keyInputEnabled)) {
+    if (GuiValueBox(Rectangle{ 50, 610, 100, 25 }, NULL, &key, 0, 99, keyInputEnabled)) {
         keyInputEnabled = !keyInputEnabled;
     }
     if (GuiButton(Rectangle{ 160, 610, 25, 25 }, "#193#")) {
@@ -946,7 +946,7 @@ void HashTable::drawSearchOptions() {
     static bool keyInputEnabled = false;
 
     GuiLabel(Rectangle{ 20, 610, 25, 25 }, "K: ");
-    if (GuiSpinner(Rectangle{ 50, 610, 100, 25 }, NULL, &key, 0, 100, keyInputEnabled)) {
+    if (GuiValueBox(Rectangle{ 50, 610, 100, 25 }, NULL, &key, 0, 99, keyInputEnabled)) {
         keyInputEnabled = !keyInputEnabled;
     }
     if (GuiButton(Rectangle{ 160, 610, 25, 25 }, "#193#")) {
@@ -1141,25 +1141,27 @@ void HashTable::resetAnimation() {
 // Amination Menu
 void HashTable::drawAnimationMenu() {
     // Adjusted dimensions and positions for larger buttons and slider
-    float buttonWidth = 40;  // Increased button width
+    float buttonWidth = 80;  // Increased button width
     float buttonHeight = 30; // Increased button height
     float spacing = 20;      // Spacing between buttons
     float sliderWidth = 280; // Increased slider width
     float sliderHeight = 20; // Increased slider height
-	float posX = 700;
+	float posX = 600;
 	float buttonPosY = 700;
 
     // Draw the speed slider
-    GuiSlider(Rectangle{posX, 670, sliderWidth, sliderHeight}, "Speed", ftc(speed), &speed, 1, 30);
+    GuiSlider(Rectangle{posX + 100, 670, sliderWidth, sliderHeight}, "Speed", ftc(speed), &speed, 1, 30);
 	
     // Draw the animation control buttons
 	// -- To first step
-	if (GuiButton(Rectangle{posX, buttonPosY, buttonWidth, buttonHeight}, "#129#")) {
+	// if (GuiButton(Rectangle{posX, buttonPosY, buttonWidth, buttonHeight}, "#129#")) {
+	if (GuiButton(Rectangle{posX, buttonPosY, buttonWidth, buttonHeight}, "First")) {
 		resetAnimation();
 		pause = true;
 	}
 	// -- To previous step
-	if (GuiButton(Rectangle{posX + buttonWidth + spacing, buttonPosY, buttonWidth, buttonHeight}, "#72#")) {
+	// if (GuiButton(Rectangle{posX + buttonWidth + spacing, buttonPosY, buttonWidth, buttonHeight}, "#72#")) {
+	if (GuiButton(Rectangle{posX + buttonWidth + spacing, buttonPosY, buttonWidth, buttonHeight}, "Prev")) {
 		pause = true;
 		if (curStep > 0) {
 			curStep--; done = 0; doneStep = true; doneAnimation = false; curX = 0; delta = 0;
@@ -1167,28 +1169,32 @@ void HashTable::drawAnimationMenu() {
 	}
 	// -- Play / Pause
 	if (pause) {
-		if (GuiButton(Rectangle{posX + 2*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight}, "#131#")) {
+		// if (GuiButton(Rectangle{posX + 2*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight}, "#131#")) {
+		if (GuiButton(Rectangle{posX + 2*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight}, "Play")) {
 			pause = false;
 		}
 	} else {
-		if (GuiButton(Rectangle{posX + 2*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight}, "#132#")) {
+		// if (GuiButton(Rectangle{posX + 2*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight}, "#132#")) {
+		if (GuiButton(Rectangle{posX + 2*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight}, "Pause")) {
 			pause = true;
 		}
 	}
 	// -- To next step
-	if (GuiButton(Rectangle{posX + 3*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight}, "#73#")) {
+	// if (GuiButton(Rectangle{posX + 3*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight}, "#73#")) {
+	if (GuiButton(Rectangle{posX + 3*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight}, "Next")) {
 		pause = true;
 		if (curStep < totalStep - 1) {
 			curStep++;
 		}
 	}
 	// -- To last step
-    if (GuiButton(Rectangle{posX + 4*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight}, "#134#")) {
+    // if (GuiButton(Rectangle{posX + 4*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight}, "#134#")) {
+    if (GuiButton(Rectangle{posX + 4*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight}, "Last")) {
         pause = true;
         curStep = totalStep - 1;
     }
 
-    GuiLabel(Rectangle{ 500, 670, 130, 20 }, TextFormat("Step %d/%d", curStep + 1, totalStep));
+    // GuiLabel(Rectangle{ 500, 670, 130, 20 }, TextFormat("Step %d/%d", curStep + 1, totalStep));
 }
 
 // Code description Menu
@@ -1344,7 +1350,7 @@ void HashTable::drawNodeDetailMenu() {
         GuiLabel(Rectangle{ 1070, 640, 100, 25 }, TextFormat("- Key: %d", selectedNode->key));
         GuiLabel(Rectangle{ 1070, 670, 100, 25 }, "- Value: ");
 
-        if (GuiSpinner(Rectangle{ 1070 + 75, 670, 100, 25 }, NULL, &selectedValue, 0, 100, vInputEnabled)) {
+        if (GuiValueBox(Rectangle{ 1070 + 75, 670, 100, 25 }, NULL, &selectedValue, 0, 99, vInputEnabled)) {
             vInputEnabled = !vInputEnabled;
         };
         

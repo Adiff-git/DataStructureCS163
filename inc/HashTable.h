@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 #include <tuple>
-#include <fstream> // Add this line
+#include <fstream>
 struct HashNode {
     int key;
     int value;
@@ -70,40 +70,40 @@ private:
     std::vector<std::pair<int, int>> pendingInsertions; // Store key-value pairs to insert
 	int insertionIndex = 0;
     int operation_type;
-    // insert, operation type = 1
-    int insertIndex;
+	// insert, operation type = 1
+	int insertIndex;
 	std::vector<std::string> initCodes = {
 		"Init(m, n): Begin initialization",
 		"table.resize(m, nullptr); size = m",
 		"for (n insertions): Insert(key, value)",
 		"Initialization complete"
 	};
-    std::vector<std::string> insertCodes = {
-        " 1. void HashTable::Insert(int key, int value) {",
-        " 2.    int hVal = hash(key);",
-        " 3.    if (!table[hVal]) {",
-        " 4.        HNode* newNode = new HNode(key, value);",
-        " 5.        table[hVal] = newNode;",
-        " 6.    } else {",
-        " 7.        HNode* curr = table[hVal];",
-        " 8.        while (curr->next != NULL && curr -> key != key) {",
-        " 9.            curr = curr->next;",
-        "10.        }",
-        "11.        if (curr->key == key) {",
-        "12.            curr->value = value;",
-        "13.        } else {",
-        "14.            HNode* newNode = new HNode(key, value);",
-        "15.            curr->next = newNode;",
-        "16.        }",
-        "17.    }",
-        "18. }"
-    };
-    std::vector<std::string> insertDescriptions;
-    std::vector<int> insertCodeIndex;
-    std::vector<std::vector<std::tuple<Rectangle, Color>>> insertPaths1;
-    std::vector<std::vector<std::tuple<Rectangle, Color>>> insertPaths2;
-    void drawInsertDescription();
-    void drawInsertAnimation();
+	std::vector<std::string> insertCodes = {
+		" 1. void HashTable::Insert(int key, int value) {",
+		" 2.    int hVal = hash(key);",
+		" 3.    if (!table[hVal]) {",
+		" 4.    HNode* newNode = new HNode(key, value);",
+		" 5.    table[hVal] = newNode;",
+		" 6.    } else {",
+		" 7.        HNode* curr = table[hVal];",
+		" 8. while (curr->next != NULL && curr -> key != key){",
+		" 9.            curr = curr->next;",
+		"10.        }",
+		"11.        if (curr->key == key) {",
+		"12.            curr->value = value;",
+		"13.        } else {",
+		"14.      HNode* newNode = new HNode(key, value);",
+		"15.      curr->next = newNode;",
+		"16.        }",
+		"17.    }",
+		"18. }"
+	};
+	std::vector<std::string> insertDescriptions;
+	std::vector<int> insertCodeIndex;
+	std::vector<std::vector<std::tuple<Rectangle, Color>>> insertPaths1;
+	std::vector<std::vector<std::tuple<Rectangle, Color>>> insertPaths2;
+	void drawInsertDescription();
+	void drawInsertAnimation();
 
     // delete, operation type = 2
     int deleteIndex;

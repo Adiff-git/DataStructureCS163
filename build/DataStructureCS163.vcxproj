@@ -324,6 +324,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\src\Button.cpp" />
     <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\src\HashTable.cpp" />
     <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\src\Program.cpp" />
     <ClCompile Include="C:\Users\Huyen\Documents\DataStructureCS163\src\main.cpp" />

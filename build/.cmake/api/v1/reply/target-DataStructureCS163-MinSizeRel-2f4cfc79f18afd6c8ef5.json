@@ -2,10 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "Release/DataStructureCS163.exe"
+			"path" : "MinSizeRel/DataStructureCS163.exe"
 		},
 		{
-			"path" : "Release/DataStructureCS163.pdb"
+			"path" : "MinSizeRel/DataStructureCS163.pdb"
 		}
 	],
 	"backtrace" : 1,
@@ -68,7 +68,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /O2 /Ob2 /DNDEBUG -MD"
+					"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /O1 /Ob1 /DNDEBUG -MD"
 				}
 			],
 			"defines" : 
@@ -114,15 +114,13 @@
 			[
 				0,
 				1,
-				2
+				2,
+				3
 			]
 		}
 	],
 	"dependencies" : 
 	[
-		{
-			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
-		},
 		{
 			"backtrace" : 2,
 			"id" : "raylib::@7d429ebd5d102775094d"
@@ -130,6 +128,9 @@
 		{
 			"backtrace" : 2,
 			"id" : "glfw::@a896dd99b4a5c6eab3d9"
+		},
+		{
+			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
 		}
 	],
 	"id" : "DataStructureCS163::@6890427a1f51a3e7e1df",
@@ -138,7 +139,7 @@
 		"commandFragments" : 
 		[
 			{
-				"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /O2 /Ob2 /DNDEBUG -MD",
+				"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /O1 /Ob1 /DNDEBUG -MD",
 				"role" : "flags"
 			},
 			{
@@ -151,7 +152,7 @@
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "raylib\\raylib\\Release\\raylib.lib",
+				"fragment" : "raylib\\raylib\\MinSizeRel\\raylib.lib",
 				"role" : "libraries"
 			},
 			{
@@ -191,12 +192,19 @@
 			[
 				0,
 				1,
-				2
+				2,
+				3
 			]
 		}
 	],
 	"sources" : 
 	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/Button.cpp",
+			"sourceGroupIndex" : 0
+		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,

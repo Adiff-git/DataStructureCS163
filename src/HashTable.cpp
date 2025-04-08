@@ -221,6 +221,7 @@ void HashTable::Init(int m, int n) {
         insert(key, value);
     }
     operation_type = -1;
+    selectedNode = nullptr;
 }
 
 void HashTable::insert(int key, int value) {
@@ -243,6 +244,7 @@ void HashTable::insert(int key, int value) {
 }
 
 void HashTable::Insert(int key, int value) {
+    selectedNode = nullptr;
     saveCurrentTable();
     insertDescriptions.clear();
     insertCodeIndex.clear();
@@ -391,6 +393,7 @@ void HashTable::Insert(int key, int value) {
 }
 
 void HashTable::Delete(int key) {
+    selectedNode = nullptr;
     saveCurrentTable();
     deleteDescriptions.clear();
     deleteCodeIndex.clear();
@@ -603,6 +606,7 @@ void HashTable::Delete(int key) {
 }
 
 HashNode* HashTable::Search(int key) {
+    selectedNode = nullptr;
     saveCurrentTable();
     searchDescriptions.clear();
     searchCodeIndex.clear();
@@ -754,6 +758,8 @@ void HashTable::drawInitializeOptions() {
     static char nText[4] = "0";
     static bool mInputEnabled = false;
     static bool nInputEnabled = false;
+    static int mMax = 14;
+    static int nMax = 99;
 
     DrawText("M: ", 20, 610, 20, BLACK);
     Rectangle mRect = {50, 610, 100, 25};
@@ -770,11 +776,17 @@ void HashTable::drawInitializeOptions() {
         if (IsKeyPressed(KEY_BACKSPACE) && strlen(mText) > 0) {
             mText[strlen(mText) - 1] = '\0';
         }
+        if (atoi(mText) > mMax) {
+            mText[0] = '1';
+            mText[1] = '4';
+            mText[2] = '\0';
+        }
     }
     mValue = atoi(mText);
     DrawText(mText, mRect.x + 5, mRect.y + 5, 20, BLACK);
     if (CheckCollisionPointRec(GetMousePosition(), mRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         mInputEnabled = true;
+        nInputEnabled = false;
     }
 
     Rectangle mRandomRect = {160, 610, 25, 25};
@@ -799,11 +811,17 @@ void HashTable::drawInitializeOptions() {
         if (IsKeyPressed(KEY_BACKSPACE) && strlen(nText) > 0) {
             nText[strlen(nText) - 1] = '\0';
         }
+        if (atoi(nText) > nMax) {
+            nText[0] = '9';
+            nText[1] = '9';
+            nText[2] = '\0';
+        }
     }
     nValue = atoi(nText);
     DrawText(nText, nRect.x + 5, nRect.y + 5, 20, BLACK);
     if (CheckCollisionPointRec(GetMousePosition(), nRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         nInputEnabled = true;
+        mInputEnabled = false;
     }
 
     Rectangle nRandomRect = {340, 610, 25, 25};
@@ -867,6 +885,8 @@ void HashTable::drawInitializeOptions() {
 void HashTable::drawInsertOptions() {
     static int key = 0;
     static int value = 0;
+    static int keyMax = 99;
+    static int valueMax = 99;
     static char keyText[4] = "0";
     static char valueText[4] = "0";
     static bool keyInputEnabled = false;
@@ -887,11 +907,17 @@ void HashTable::drawInsertOptions() {
         if (IsKeyPressed(KEY_BACKSPACE) && strlen(keyText) > 0) {
             keyText[strlen(keyText) - 1] = '\0';
         }
+        if (atoi(keyText) > keyMax) {
+            keyText[0] = '9';
+            keyText[1] = '9';
+            keyText[2] = '\0';
+        }
     }
     key = atoi(keyText);
     DrawText(keyText, kRect.x + 5, kRect.y + 5, 20, BLACK);
     if (CheckCollisionPointRec(GetMousePosition(), kRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         keyInputEnabled = true;
+        valueInputEnabled = false;
     }
 
     Rectangle kRandomRect = {160, 610, 25, 25};
@@ -916,11 +942,18 @@ void HashTable::drawInsertOptions() {
         if (IsKeyPressed(KEY_BACKSPACE) && strlen(valueText) > 0) {
             valueText[strlen(valueText) - 1] = '\0';
         }
+        if (atoi(valueText) > valueMax) {
+            valueText[0] = '9';
+            valueText[1] = '9';
+            valueText[2] = '\0';
+        }
     }
     value = atoi(valueText);
+    if (value > valueMax) value = valueMax;
     DrawText(valueText, vRect.x + 5, vRect.y + 5, 20, BLACK);
     if (CheckCollisionPointRec(GetMousePosition(), vRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         valueInputEnabled = true;
+        keyInputEnabled = false;
     }
 
     Rectangle vRandomRect = {340, 610, 25, 25};
@@ -944,6 +977,7 @@ void HashTable::drawInsertOptions() {
 void HashTable::drawDeleteOptions() {
     static int key = 0;
     static char keyText[4] = "0";
+    static int keyMax = 99;
     static bool keyInputEnabled = false;
 
     DrawText("K: ", 20, 610, 20, BLACK);
@@ -960,6 +994,11 @@ void HashTable::drawDeleteOptions() {
         }
         if (IsKeyPressed(KEY_BACKSPACE) && strlen(keyText) > 0) {
             keyText[strlen(keyText) - 1] = '\0';
+        }
+        if (atoi(keyText) > keyMax) {
+            keyText[0] = '9';
+            keyText[1] = '9';
+            keyText[2] = '\0';
         }
     }
     key = atoi(keyText);
@@ -989,6 +1028,7 @@ void HashTable::drawDeleteOptions() {
 void HashTable::drawSearchOptions() {
     static int key = 0;
     static char keyText[4] = "0";
+    static int keyMax = 99;
     static bool keyInputEnabled = false;
 
     DrawText("K: ", 20, 610, 20, BLACK);
@@ -1005,6 +1045,11 @@ void HashTable::drawSearchOptions() {
         }
         if (IsKeyPressed(KEY_BACKSPACE) && strlen(keyText) > 0) {
             keyText[strlen(keyText) - 1] = '\0';
+        }
+        if (atoi(keyText) > keyMax) {
+            keyText[0] = '9';
+            keyText[1] = '9';
+            keyText[2] = '\0';
         }
     }
     key = atoi(keyText);
@@ -1182,7 +1227,11 @@ void HashTable::drawDeleteAnimation() {
         auto path = deletePaths2[curStep][i];
         if (std::get<0>(path).width > 0) {
             Color f = std::get<1>(path);
-            DrawRectangleRec(std::get<0>(path), Fade(f, 0.2f));
+            float fade = 0.2f;
+            if (f.r == 255 && f.b == 255 && f.g == 255) {
+                fade = 1.0f;
+            }
+            DrawRectangleRec(std::get<0>(path), Fade(f, fade));
             DrawRectangleLinesEx(std::get<0>(path), 2, f);
         }
     }
@@ -1195,8 +1244,12 @@ void HashTable::drawDeleteAnimation() {
     std::tuple<Rectangle, Color> path = deletePaths2[curStep][done];
     Rectangle bounds = std::get<0>(path);
     Color color = std::get<1>(path);
+    float fade = 0.2f;
+    if (color.r == 255 && color.b == 255 && color.g == 255) {
+        fade = 1.0f;
+    }
     delta += speed;
-    DrawRectangle(bounds.x, bounds.y, std::min(delta, bounds.width), bounds.height, Fade(color, 0.2f));
+    DrawRectangle(bounds.x, bounds.y, std::min(delta, bounds.width), bounds.height, Fade(color, fade));
     DrawRectangleLinesEx({bounds.x, bounds.y, std::min(delta, bounds.width), bounds.height}, 2, color);
     if (delta >= bounds.width) {
         done++;

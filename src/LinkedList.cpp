@@ -2,6 +2,8 @@
 #include "Button.h"
 #include "Utils.h"
 #include <sstream>
+#include <fstream> // Thêm header này
+#include <string>
 
 LinkedList::LinkedList(int width, int height) 
     : head(nullptr), isPaused(false), skipStep(false), speed(1.0f), 

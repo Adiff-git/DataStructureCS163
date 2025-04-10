@@ -29,9 +29,14 @@ int main() {
     std::string inputTextOld = "";
     std::string inputTextNew = "";
     int inputType = 0;
-    Vector2 inputPosition = {0, 0};
-    Vector2 inputPositionOld = {0, 0};
-    Vector2 inputPositionNew = {0, 0};
+    Vector2 inputPosition = Vector2{0.0f, 0.0f}; // Sửa cú pháp khởi tạo
+    Vector2 inputPositionOld = Vector2{0.0f, 0.0f}; // Sửa cú pháp khởi tạo
+    Vector2 inputPositionNew = Vector2{0.0f, 0.0f}; // Sửa cú pháp khởi tạo
+
+    // Biến cho DrawButton
+    bool buttonClicked = false;
+    const char* buttonMessage = "";
+    Font font = GetFontDefault(); // Font mặc định của Raylib
 
     Rectangle initButton = {20, 20, 100, 40};
     Rectangle addButton = {130, 20, 100, 40};
@@ -42,7 +47,7 @@ int main() {
     Rectangle enterButton = {20, 120, 100, 40};
     Rectangle externalFileButton = {20, 170, 100, 40};
     Rectangle addHeadButton = {130, 70, 100, 40};
-    Rectangle addIndexButton = {130, 120, 100, 40}; // Sửa tên biến, bỏ ký tự "動"
+    Rectangle addIndexButton = {130, 120, 100, 40};
     Rectangle addTailButton = {130, 170, 100, 40};
     Rectangle inputBox = {0, 0, 200, 40};
     Rectangle inputBoxOld = {0, 0, 100, 40};
@@ -52,7 +57,7 @@ int main() {
     Rectangle prevButton = {screenWidth / 2 - 150, screenHeight - 100, 60, 40};
     Rectangle playButton = {screenWidth / 2 - 75, screenHeight - 100, 60, 40};
     Rectangle nextButton = {screenWidth / 2, screenHeight - 100, 60, 40};
-    Rectangle skipButton = {screenWidth / 2 + 75, screenHeight - 100, 60, 40};
+    Rectangle skipButton = {screenWidth / 2 + 75, screenHeight - 100, 60, 40}; // Thêm dấu ; ở đây
     Rectangle slider = {screenWidth / 2 - 150, screenHeight - 50, 300, 20};
     Rectangle scrollBar = {50, screenHeight - 100, 200, 20};
 
@@ -65,42 +70,8 @@ int main() {
         list.ProcessOperations();
         list.UpdateOperations();
 
-        DrawRectangleRec(initButton, LIGHTGRAY);
-        DrawText("Initialize", initButton.x + 10, initButton.y + 10, 20, BLACK);
-        DrawRectangleRec(addButton, LIGHTGRAY);
-        DrawText("Add", addButton.x + 30, addButton.y + 10, 20, BLACK);
-        DrawRectangleRec(deleteButton, LIGHTGRAY);
-        DrawText("Delete", deleteButton.x + 20, deleteButton.y + 10, 20, BLACK);
-        DrawRectangleRec(searchButton, LIGHTGRAY);
-        DrawText("Search", searchButton.x + 20, searchButton.y + 10, 20, BLACK);
-        DrawRectangleRec(updateButton, LIGHTGRAY);
-        DrawText("Update", updateButton.x + 20, updateButton.y + 10, 20, BLACK);
-
-        DrawRectangleRec(slider, LIGHTGRAY);
-        float speed = UpdateSlider(slider, 0.1f, 2.0f, list.GetSpeed());
-        list.SetSpeed(speed);
-        float sliderPos = (speed - 0.1f) / (2.0f - 0.1f) * slider.width;
-        DrawRectangle(slider.x + sliderPos - 5, slider.y - 5, 10, 30, DARKGRAY);
-        DrawText(("Speed: " + std::to_string(speed).substr(0, 4)).c_str(), slider.x, slider.y - 30, 20, BLACK);
-
-        DrawRectangleRec(prevButton, LIGHTGRAY);
-        DrawText("Prev", prevButton.x + 10, prevButton.y + 10, 20, BLACK);
-        DrawRectangleRec(playButton, LIGHTGRAY);
-        DrawText(list.IsPaused() ? "Play" : "Pause", playButton.x + 5, playButton.y + 10, 20, BLACK);
-        DrawRectangleRec(nextButton, LIGHTGRAY);
-        DrawText("Next", nextButton.x + 10, nextButton.y + 10, 20, BLACK);
-        DrawRectangleRec(skipButton, LIGHTGRAY);
-        DrawText("Skip", skipButton.x + 10, skipButton.y + 10, 20, BLACK);
-
-        DrawRectangleRec(scrollBar, LIGHTGRAY);
-        float scrollPos = (-list.GetScrollOffset() / (screenWidth + 200)) * scrollBar.width;
-        DrawRectangle(scrollBar.x + scrollPos - 5, scrollBar.y - 5, 10, 30, DARKGRAY);
-
-        if (!list.GetNotification().empty()) {
-            DrawText(list.GetNotification().c_str(), screenWidth / 2 - MeasureText(list.GetNotification().c_str(), 20) / 2, 50, 20, RED);
-        }
-
-        if (IsButtonClicked(initButton)) {
+        // Vẽ các nút chính
+        if (DrawButton("Initialize", initButton, font, buttonClicked, buttonMessage)) {
             showInitOptions = true;
             showAddOptions = false;
             showInput = false;
@@ -112,7 +83,7 @@ int main() {
             showAddTailInput = false;
             inputText = "";
         }
-        if (IsButtonClicked(addButton)) {
+        if (DrawButton("Add", addButton, font, buttonClicked, buttonMessage)) {
             showInitOptions = false;
             showAddOptions = true;
             showInput = false;
@@ -124,67 +95,82 @@ int main() {
             showAddTailInput = false;
             inputText = "";
         }
-        if (IsButtonClicked(deleteButton)) {
+        if (DrawButton("Delete", deleteButton, font, buttonClicked, buttonMessage)) {
             showAddOptions = false;
             showInput = true;
             inputType = 2;
             inputText = "";
-            inputPosition = {deleteButton.x, deleteButton.y + deleteButton.height + 10};
+            inputPosition = Vector2{deleteButton.x, deleteButton.y + deleteButton.height + 10}; // Sửa cú pháp
         }
-        if (IsButtonClicked(searchButton)) {
+        if (DrawButton("Search", searchButton, font, buttonClicked, buttonMessage)) {
             showAddOptions = false;
             showInput = true;
             inputType = 3;
             inputText = "";
-            inputPosition = {searchButton.x, searchButton.y + searchButton.height + 10}; // Sửa deleteButton thành searchButton
+            inputPosition = Vector2{searchButton.x, searchButton.y + searchButton.height + 10}; // Sửa cú pháp
         }
-        if (IsButtonClicked(updateButton)) {
+        if (DrawButton("Update", updateButton, font, buttonClicked, buttonMessage)) {
             showAddOptions = false;
             showInput = true;
             inputType = 4;
             inputTextOld = "";
             inputTextNew = "";
-            inputPositionOld = {updateButton.x, updateButton.y + updateButton.height + 10};
-            inputPositionNew = {updateButton.x + 150, updateButton.y + updateButton.height + 10};
+            inputPositionOld = Vector2{updateButton.x, updateButton.y + updateButton.height + 10}; // Sửa cú pháp
+            inputPositionNew = Vector2{updateButton.x + 150, updateButton.y + updateButton.height + 10}; // Sửa cú pháp
         }
-        if (IsButtonClicked(prevButton)) list.PreviousStep();
-        if (IsButtonClicked(playButton)) list.SetPaused(!list.IsPaused());
-        if (IsButtonClicked(nextButton)) list.NextStep();
-        if (IsButtonClicked(skipButton)) list.SkipToEnd();
 
+        // Thanh trượt tốc độ
+        DrawRectangleRec(slider, LIGHTGRAY);
+        float speed = UpdateSlider(slider, 0.1f, 2.0f, list.GetSpeed());
+        list.SetSpeed(speed);
+        float sliderPos = (speed - 0.1f) / (2.0f - 0.1f) * slider.width;
+        DrawRectangle(slider.x + sliderPos - 5, slider.y - 5, 10, 30, DARKGRAY);
+        DrawText(("Speed: " + std::to_string(speed).substr(0, 4)).c_str(), slider.x, slider.y - 30, 20, BLACK);
+
+        // Nút điều khiển
+        if (DrawButton("Prev", prevButton, font, buttonClicked, buttonMessage)) list.PreviousStep();
+        if (DrawButton(list.IsPaused() ? "Play" : "Pause", playButton, font, buttonClicked, buttonMessage)) list.SetPaused(!list.IsPaused());
+        if (DrawButton("Next", nextButton, font, buttonClicked, buttonMessage)) list.NextStep();
+        if (DrawButton("Skip", skipButton, font, buttonClicked, buttonMessage)) list.SkipToEnd();
+
+        // Thanh cuộn
+        DrawRectangleRec(scrollBar, LIGHTGRAY);
+        float scrollPos = (-list.GetScrollOffset() / (screenWidth + 200)) * scrollBar.width;
+        DrawRectangle(scrollBar.x + scrollPos - 5, scrollBar.y - 5, 10, 30, DARKGRAY);
+
+        // Hiển thị thông báo
+        if (!list.GetNotification().empty()) {
+            DrawText(list.GetNotification().c_str(), screenWidth / 2 - MeasureText(list.GetNotification().c_str(), 20) / 2, 50, 20, RED);
+        }
+
+        // Menu Add
         if (showAddOptions) {
-            DrawRectangleRec(addHeadButton, LIGHTGRAY);
-            DrawText("Head", addHeadButton.x + 20, addHeadButton.y + 10, 20, BLACK);
-            DrawRectangleRec(addIndexButton, LIGHTGRAY);
-            DrawText("Index", addIndexButton.x + 20, addIndexButton.y + 10, 20, BLACK);
-            DrawRectangleRec(addTailButton, LIGHTGRAY);
-            DrawText("Tail", addTailButton.x + 20, addTailButton.y + 10, 20, BLACK);
-
-            if (IsButtonClicked(addHeadButton)) {
+            if (DrawButton("Head", addHeadButton, font, buttonClicked, buttonMessage)) {
                 showAddHeadInput = true;
                 showAddIndexInput = false;
                 showAddTailInput = false;
                 inputText = "";
-                inputPosition = {addHeadButton.x + addHeadButton.width + 10, addHeadButton.y};
+                inputPosition = Vector2{addHeadButton.x + addHeadButton.width + 10, addHeadButton.y}; // Sửa cú pháp
             }
-            if (IsButtonClicked(addIndexButton)) {
+            if (DrawButton("Index", addIndexButton, font, buttonClicked, buttonMessage)) {
                 showAddHeadInput = false;
                 showAddIndexInput = true;
                 showAddTailInput = false;
                 inputTextOld = "";
                 inputTextNew = "";
-                inputPositionOld = {addIndexButton.x + addIndexButton.width + 10, addIndexButton.y};
-                inputPositionNew = {addIndexButton.x + addIndexButton.width + 120, addIndexButton.y};
+                inputPositionOld = Vector2{addIndexButton.x + addIndexButton.width + 10, addIndexButton.y}; // Sửa cú pháp
+                inputPositionNew = Vector2{addIndexButton.x + addIndexButton.width + 120, addIndexButton.y}; // Sửa cú pháp
             }
-            if (IsButtonClicked(addTailButton)) {
+            if (DrawButton("Tail", addTailButton, font, buttonClicked, buttonMessage)) {
                 showAddHeadInput = false;
                 showAddIndexInput = false;
                 showAddTailInput = true;
                 inputText = "";
-                inputPosition = {addTailButton.x + addTailButton.width + 10, addTailButton.y};
+                inputPosition = Vector2{addTailButton.x + addTailButton.width + 10, addTailButton.y}; // Sửa cú pháp
             }
         }
 
+        // Nhập liệu cho Add Head
         if (showAddHeadInput) {
             inputBox.x = inputPosition.x;
             inputBox.y = inputPosition.y;
@@ -194,8 +180,12 @@ int main() {
             DrawRectangleLines(inputBox.x, inputBox.y, inputBox.width, inputBox.height, BLACK);
             DrawText("Number:", inputBox.x - 80, inputBox.y + 10, 20, BLACK);
             DrawText(inputText.c_str(), inputBox.x + 10, inputBox.y + 10, 20, BLACK);
-            DrawRectangleRec(okButton, LIGHTGRAY);
-            DrawText("OK", okButton.x + 30, okButton.y + 10, 20, BLACK);
+            if (DrawButton("OK", okButton, font, buttonClicked, buttonMessage) && !inputText.empty()) {
+                int value = std::stoi(inputText);
+                list.EnqueueOperation(2, value);
+                showAddOptions = false;
+                showAddHeadInput = false;
+            }
 
             int key = GetCharPressed();
             while (key > 0) {
@@ -207,15 +197,9 @@ int main() {
             if (IsKeyPressed(KEY_BACKSPACE) && !inputText.empty()) {
                 inputText.pop_back();
             }
-
-            if (IsButtonClicked(okButton) && !inputText.empty()) {
-                int value = std::stoi(inputText);
-                list.EnqueueOperation(2, value);
-                showAddOptions = false;
-                showAddHeadInput = false;
-            }
         }
 
+        // Nhập liệu cho Add Tail
         if (showAddTailInput) {
             inputBox.x = inputPosition.x;
             inputBox.y = inputPosition.y;
@@ -225,8 +209,12 @@ int main() {
             DrawRectangleLines(inputBox.x, inputBox.y, inputBox.width, inputBox.height, BLACK);
             DrawText("Number:", inputBox.x - 80, inputBox.y + 10, 20, BLACK);
             DrawText(inputText.c_str(), inputBox.x + 10, inputBox.y + 10, 20, BLACK);
-            DrawRectangleRec(okButton, LIGHTGRAY);
-            DrawText("OK", okButton.x + 30, okButton.y + 10, 20, BLACK);
+            if (DrawButton("OK", okButton, font, buttonClicked, buttonMessage) && !inputText.empty()) {
+                int value = std::stoi(inputText);
+                list.EnqueueOperation(4, value);
+                showAddOptions = false;
+                showAddTailInput = false;
+            }
 
             int key = GetCharPressed();
             while (key > 0) {
@@ -238,15 +226,9 @@ int main() {
             if (IsKeyPressed(KEY_BACKSPACE) && !inputText.empty()) {
                 inputText.pop_back();
             }
-
-            if (IsButtonClicked(okButton) && !inputText.empty()) {
-                int value = std::stoi(inputText);
-                list.EnqueueOperation(4, value);
-                showAddOptions = false;
-                showAddTailInput = false;
-            }
         }
 
+        // Nhập liệu cho Add Index
         if (showAddIndexInput) {
             inputBoxOld.x = inputPositionOld.x;
             inputBoxOld.y = inputPositionOld.y;
@@ -265,8 +247,13 @@ int main() {
             DrawText("Number:", inputBoxNew.x - 80, inputBoxNew.y + 10, 20, BLACK);
             DrawText(inputTextNew.c_str(), inputBoxNew.x + 10, inputBoxNew.y + 10, 20, BLACK);
 
-            DrawRectangleRec(okButton, LIGHTGRAY);
-            DrawText("OK", okButton.x + 30, okButton.y + 10, 20, BLACK);
+            if (DrawButton("OK", okButton, font, buttonClicked, buttonMessage) && !inputTextOld.empty() && !inputTextNew.empty()) {
+                int index = std::stoi(inputTextOld);
+                int value = std::stoi(inputTextNew);
+                list.EnqueueOperation(3, index, value);
+                showAddOptions = false;
+                showAddIndexInput = false;
+            }
 
             if (CheckCollisionPointRec(GetMousePosition(), inputBoxOld)) {
                 int key = GetCharPressed();
@@ -293,39 +280,25 @@ int main() {
                     inputTextNew.pop_back();
                 }
             }
-
-            if (IsButtonClicked(okButton) && !inputTextOld.empty() && !inputTextNew.empty()) {
-                int index = std::stoi(inputTextOld);
-                int value = std::stoi(inputTextNew);
-                list.EnqueueOperation(3, index, value);
-                showAddOptions = false;
-                showAddIndexInput = false;
-            }
         }
 
+        // Menu Initialize
         if (showInitOptions) {
-            DrawRectangleRec(randomButton, LIGHTGRAY);
-            DrawText("Random", randomButton.x + 10, randomButton.y + 10, 20, BLACK);
-            DrawRectangleRec(enterButton, LIGHTGRAY);
-            DrawText("Enter", enterButton.x + 10, enterButton.y + 10, 20, BLACK);
-            DrawRectangleRec(externalFileButton, LIGHTGRAY);
-            DrawText("External File", externalFileButton.x + 10, externalFileButton.y + 10, 20, BLACK);
-
-            if (IsButtonClicked(randomButton)) {
+            if (DrawButton("Random", randomButton, font, buttonClicked, buttonMessage)) {
                 showRandomInput = true;
                 showEnterInput = false;
                 showExternalFile = false;
                 inputText = "";
-                inputPosition = {randomButton.x + randomButton.width + 10, randomButton.y};
+                inputPosition = Vector2{randomButton.x + randomButton.width + 10, randomButton.y}; // Sửa cú pháp
             }
-            if (IsButtonClicked(enterButton)) {
+            if (DrawButton("Enter", enterButton, font, buttonClicked, buttonMessage)) {
                 showRandomInput = false;
                 showEnterInput = true;
                 showExternalFile = false;
                 inputText = "";
-                inputPosition = {enterButton.x + enterButton.width + 10, enterButton.y};
+                inputPosition = Vector2{enterButton.x + enterButton.width + 10, enterButton.y}; // Sửa cú pháp
             }
-            if (IsButtonClicked(externalFileButton)) {
+            if (DrawButton("External File", externalFileButton, font, buttonClicked, buttonMessage)) {
                 showRandomInput = false;
                 showEnterInput = false;
                 showExternalFile = true;
@@ -333,6 +306,7 @@ int main() {
             }
         }
 
+        // Nhập liệu cho Random và Enter
         if (showRandomInput || showEnterInput) {
             inputBox.x = inputPosition.x;
             inputBox.y = inputPosition.y;
@@ -341,23 +315,7 @@ int main() {
             DrawRectangleRec(inputBox, WHITE);
             DrawRectangleLines(inputBox.x, inputBox.y, inputBox.width, inputBox.height, BLACK);
             DrawText(inputText.c_str(), inputBox.x + 10, inputBox.y + 10, 20, BLACK);
-            DrawRectangleRec(okButton, LIGHTGRAY);
-            DrawText("OK", okButton.x + 30, okButton.y + 10, 20, BLACK);
-
-            int key = GetCharPressed();
-            while (key > 0) {
-                if (showRandomInput && (key >= 48 && key <= 57) && inputText.length() < 10) {
-                    inputText += (char)key;
-                } else if (showEnterInput && ((key >= 48 && key <= 57) || key == 32) && inputText.length() < 50) {
-                    inputText += (char)key;
-                }
-                key = GetCharPressed();
-            }
-            if (IsKeyPressed(KEY_BACKSPACE) && !inputText.empty()) {
-                inputText.pop_back();
-            }
-
-            if (IsButtonClicked(okButton) && !inputText.empty()) {
+            if (DrawButton("OK", okButton, font, buttonClicked, buttonMessage) && !inputText.empty()) {
                 if (showRandomInput) {
                     int count = std::stoi(inputText);
                     if (count > 0) {
@@ -387,8 +345,22 @@ int main() {
                 showExternalFile = false;
                 list.SetNotification("");
             }
+
+            int key = GetCharPressed();
+            while (key > 0) {
+                if (showRandomInput && (key >= 48 && key <= 57) && inputText.length() < 10) {
+                    inputText += (char)key;
+                } else if (showEnterInput && ((key >= 48 && key <= 57) || key == 32) && inputText.length() < 50) {
+                    inputText += (char)key;
+                }
+                key = GetCharPressed();
+            }
+            if (IsKeyPressed(KEY_BACKSPACE) && !inputText.empty()) {
+                inputText.pop_back();
+            }
         }
 
+        // Xử lý file thả vào
         if (showExternalFile && IsFileDropped()) {
             FilePathList droppedFiles = LoadDroppedFiles();
             if (droppedFiles.count > 0) {
@@ -402,8 +374,9 @@ int main() {
             list.SetNotification("");
         }
 
+        // Nhập liệu cho Delete, Search, Update
         if (showInput && inputType != 1) {
-            if (inputType == 2 || inputType == 3) { // Delete hoặc Search (nhập value)
+            if (inputType == 2 || inputType == 3) { // Delete hoặc Search
                 inputBox.x = inputPosition.x;
                 inputBox.y = inputPosition.y;
                 okButton.x = inputPosition.x;
@@ -412,8 +385,15 @@ int main() {
                 DrawRectangleLines(inputBox.x, inputBox.y, inputBox.width, inputBox.height, BLACK);
                 DrawText("Value:", inputBox.x - 60, inputBox.y + 10, 20, BLACK);
                 DrawText(inputText.c_str(), inputBox.x + 10, inputBox.y + 10, 20, BLACK);
-                DrawRectangleRec(okButton, LIGHTGRAY);
-                DrawText("OK", okButton.x + 30, okButton.y + 10, 20, BLACK);
+                if (DrawButton("OK", okButton, font, buttonClicked, buttonMessage) && !inputText.empty()) {
+                    int value = std::stoi(inputText);
+                    if (inputType == 2) {
+                        list.EnqueueOperation(5, value); // Delete
+                    } else {
+                        list.EnqueueOperation(6, value); // Search
+                    }
+                    showInput = false;
+                }
 
                 int key = GetCharPressed();
                 while (key > 0) {
@@ -424,16 +404,6 @@ int main() {
                 }
                 if (IsKeyPressed(KEY_BACKSPACE) && !inputText.empty()) {
                     inputText.pop_back();
-                }
-
-                if (IsButtonClicked(okButton) && !inputText.empty()) {
-                    int value = std::stoi(inputText);
-                    if (inputType == 2) {
-                        list.EnqueueOperation(5, value); // Delete
-                    } else {
-                        list.EnqueueOperation(6, value); // Search
-                    }
-                    showInput = false;
                 }
             } else if (inputType == 4) { // Update
                 inputBoxOld.x = inputPositionOld.x;
@@ -453,8 +423,12 @@ int main() {
                 DrawText("New:", inputBoxNew.x - 50, inputBoxNew.y + 10, 20, BLACK);
                 DrawText(inputTextNew.c_str(), inputBoxNew.x + 10, inputBoxNew.y + 10, 20, BLACK);
 
-                DrawRectangleRec(okButton, LIGHTGRAY);
-                DrawText("OK", okButton.x + 30, okButton.y + 10, 20, BLACK);
+                if (DrawButton("OK", okButton, font, buttonClicked, buttonMessage) && !inputTextOld.empty() && !inputTextNew.empty()) {
+                    int oldValue = std::stoi(inputTextOld);
+                    int newValue = std::stoi(inputTextNew);
+                    list.EnqueueOperation(7, oldValue, newValue);
+                    showInput = false;
+                }
 
                 if (CheckCollisionPointRec(GetMousePosition(), inputBoxOld)) {
                     int key = GetCharPressed();
@@ -480,13 +454,6 @@ int main() {
                     if (IsKeyPressed(KEY_BACKSPACE) && !inputTextNew.empty()) {
                         inputTextNew.pop_back();
                     }
-                }
-
-                if (IsButtonClicked(okButton) && !inputTextOld.empty() && !inputTextNew.empty()) {
-                    int oldValue = std::stoi(inputTextOld);
-                    int newValue = std::stoi(inputTextNew);
-                    list.EnqueueOperation(7, oldValue, newValue); // Gọi đúng activeFunction = 7 cho Update
-                    showInput = false;
                 }
             }
         }

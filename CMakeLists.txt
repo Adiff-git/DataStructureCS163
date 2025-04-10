@@ -1,11 +1,11 @@
-
 cmake_minimum_required(VERSION 3.16)
-
+set(CMAKE_CXX_COMPILER "g++")
+set(CMAKE_C_COMPIlER "gcc")
 # Đặt tên cho project
 project(DataStructureCS163)
 
 # Thêm tất cả file .cpp trong thư mục src/
-file(GLOB_RECURSE SOURCES src/*.cpp)
+file(GLOB_RECURSE SOURCES src/*.cpp src/*.c)
 
 # Thêm tất cả file .h trong thư mục inc/
 include_directories(inc/)

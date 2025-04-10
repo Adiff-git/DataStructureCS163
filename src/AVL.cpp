@@ -1,8 +1,7 @@
 #include "../inc/AVL.h"
 
-
 // Node constructor
-Node::Node(int data) : data(data), left(nullptr), right(nullptr) {}
+Node::Node(int data) : data(data), left(nullptr), right(nullptr), height(1) {}
 
 // AVLTree implementation
 AVLTree::AVLTree() : root(nullptr) {}
@@ -32,11 +31,13 @@ void AVLTree::destroyTree(Node* node) {
     node->right = nullptr;
 
     delete node;
+    root = nullptr; // Ensure root is reset
 }
 
 Node* AVLTree::copyTree(const Node* node) {
     if (!node) return nullptr;
     Node* newNode = new Node(node->data);
+    newNode->height = node->height; // Copy height
     newNode->left = copyTree(node->left);
     newNode->right = copyTree(node->right);
     return newNode;
@@ -44,24 +45,19 @@ Node* AVLTree::copyTree(const Node* node) {
 
 int AVLTree::getHeight(Node* node) const {
     if (!node) return 0;
-
-    int left = getHeight(node->left);
-    int right = getHeight(node->right);
-
-    return (left >= right ? left : right) + 1;
+    return node->height; // Use the height field
 }
 
 int AVLTree::getBalanceFactor(Node* node) {
     if (!node) return 0;
-
     return getHeight(node->left) - getHeight(node->right);
 }
 
 float AVLTree::getSubtreeWidth(Node* node) {
     if (!node) return 25.0f;
 
-    int leftWidth = getSubtreeWidth(node->left);
-    int rightWidth = getSubtreeWidth(node->right);
+    float leftWidth = getSubtreeWidth(node->left);
+    float rightWidth = getSubtreeWidth(node->right);
 
     return leftWidth + rightWidth + 20.0f;
 }
@@ -78,22 +74,28 @@ void AVLTree::rightRotate(Node*& node) {
     Node* newNode = node->left;
     Node* subRight = newNode->right;
 
-    //begin rotate
+    // Perform rotation
     newNode->right = node;
     node->left = subRight;
     node = newNode;
 
+    // Update heights
+    node->right->height = 1 + std::max(getHeight(node->right->left), getHeight(node->right->right));
+    node->height = 1 + std::max(getHeight(node->left), getHeight(node->right));
 }
 
 void AVLTree::leftRotate(Node*& node) {
     Node* newNode = node->right;
     Node* subLeft = newNode->left;
 
-    //begin rotate
+    // Perform rotation
     newNode->left = node;
     node->right = subLeft;
     node = newNode;
 
+    // Update heights
+    node->left->height = 1 + std::max(getHeight(node->left->left), getHeight(node->left->right));
+    node->height = 1 + std::max(getHeight(node->left), getHeight(node->right));
 }
 
 void AVLTree::insert(Node*& node, int value) {
@@ -104,37 +106,38 @@ void AVLTree::insert(Node*& node, int value) {
 
     if (value < node->data) {
         insert(node->left, value);
-    }
-    else if (value > node->data) {
+    } else if (value > node->data) {
         insert(node->right, value);
-    }
-    else {   //value == root->data
-        return;
+    } else { // value == node->data
+        return; // Duplicate, ignore
     }
 
-    //check for possible rotation
-    int bf = getHeight(node->left) - getHeight(node->right);
+    // Update height of the current node
+    node->height = 1 + std::max(getHeight(node->left), getHeight(node->right));
 
-    //case L-L
+    // Check balance factor
+    int bf = getBalanceFactor(node);
+
+    // Left-Left Case
     if (bf >= 2 && value < node->left->data) {
         rightRotate(node);
         return;
     }
 
-    //case R-R
+    // Right-Right Case
     if (bf <= -2 && value > node->right->data) {
         leftRotate(node);
         return;
     }
 
-    //case L-R
+    // Left-Right Case
     if (bf >= 2 && value > node->left->data) {
         leftRotate(node->left);
         rightRotate(node);
         return;
     }
 
-    //case R-L
+    // Right-Left Case
     if (bf <= -2 && value < node->right->data) {
         rightRotate(node->right);
         leftRotate(node);
@@ -145,29 +148,21 @@ void AVLTree::insert(Node*& node, int value) {
 void AVLTree::remove(Node*& node, int value) {
     if (!node) return;
 
-    //normal bst deletion
-
+    // Normal BST deletion
     if (value > node->data) {
         remove(node->right, value);
-    }
-
-    else if (value < node->data){
+    } else if (value < node->data) {
         remove(node->left, value);
-    }
-    else {
+    } else {
         if (!node->left) {
             Node* temp = node;
             node = node->right;
             delete temp;
-        }
-
-        else if (!node->right) {
+        } else if (!node->right) {
             Node* temp = node;
             node = node->left;
             delete temp;
-        }
-
-        else {
+        } else {
             Node* curr = minValueNode(node->right);
             node->data = curr->data;
             remove(node->right, curr->data);
@@ -176,7 +171,10 @@ void AVLTree::remove(Node*& node, int value) {
 
     if (!node) return;
 
-    //check for possible rotation
+    // Update height
+    node->height = 1 + std::max(getHeight(node->left), getHeight(node->right));
+
+    // Check balance factor and rotate if needed
     int bf = getBalanceFactor(node);
 
     if (bf > 1 && getBalanceFactor(node->left) >= 0) {
@@ -184,7 +182,7 @@ void AVLTree::remove(Node*& node, int value) {
         return;
     }
 
-    if (bf > 1 && getBalanceFactor(node->left) == -1) {
+    if (bf > 1 && getBalanceFactor(node->left) < 0) {
         leftRotate(node->left);
         rightRotate(node);
         return;
@@ -195,11 +193,11 @@ void AVLTree::remove(Node*& node, int value) {
         return;
     }
 
-    if (bf < -1 && getBalanceFactor(node->right) == 1) {
+    if (bf < -1 && getBalanceFactor(node->right) > 0) {
         rightRotate(node->right);
         leftRotate(node);
         return;
-    }  
+    }
 }
 
 bool AVLTree::search(int value) {
@@ -220,13 +218,23 @@ std::vector<Node*> AVLTree::getInsertionPath(int value) {
         path.push_back(current);
         if (value < current->data) {
             current = current->left;
-        }
-        else if (value > current->data) {
+        } else if (value > current->data) {
             current = current->right;
-        }
-        else {
+        } else {
             break;
         }
     }
     return path;
+}
+
+void AVLTree::printInOrder(Node* node) const {
+    if (node) {
+        printInOrder(node->left);
+        std::cout << node->data << " ";
+        printInOrder(node->right);
+    }
+}
+
+void AVLTree::printInOrder() const {
+    printInOrder(root);
 }

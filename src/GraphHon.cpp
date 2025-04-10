@@ -633,7 +633,7 @@ void drawBezierEdge(Vector2 start, Vector2 end, float thickness, Color color) {
 void drawEdgeWeight(Vector2 start, Vector2 end, int weight) {
     Vector2 midPoint = Vector2Lerp(start, end, 0.5f); // Use Lerp for midpoint
     std::string weightText = std::to_string(weight);
-    int fontSize = 14; // Consider making font size dynamic based on zoom?
+    int fontSize = 18; // Consider making font size dynamic based on zoom?
     Vector2 textSize = MeasureTextEx(GetFontDefault(), weightText.c_str(), fontSize, 1); // Use MeasureTextEx
 
     // Calculate position to center the text background
@@ -643,7 +643,7 @@ void drawEdgeWeight(Vector2 start, Vector2 end, int weight) {
     };
 
     // Padding for the background rectangle
-    float padding = 2.0f;
+    float padding = 4.0f;
     Rectangle bgRect = {
         textPosition.x - padding,
         textPosition.y - padding,
@@ -652,6 +652,7 @@ void drawEdgeWeight(Vector2 start, Vector2 end, int weight) {
     };
 
     DrawRectangleRec(bgRect, WHITE); // Draw background first
+    DrawRectangleLinesEx(bgRect, 1.0f, GRAY);
     DrawText(weightText.c_str(), (int)textPosition.x, (int)textPosition.y, fontSize, BLACK); // Draw text on top
 }
 
@@ -1176,11 +1177,11 @@ int main() {
     Rectangle kruskalButton = {primButton.x + mstButtonWidth + mstButtonSpacing, mstButtonsY, (float)mstButtonWidth, (float)mstButtonHeight};
     Rectangle backButton = {kruskalButton.x + mstButtonWidth + mstButtonSpacing, mstButtonsY, (float)mstButtonWidth, (float)mstButtonHeight};
     // Define pause button relative position for drawMSTInfo
-    Rectangle pauseResumeButtonDef = {mstMenuRect.x + 10, mstMenuRect.y + 75, 100, 30}; // drawMSTInfo calculates final Y
-    Rectangle prevStepButton = { pauseResumeButtonDef.x + pauseResumeButtonDef.width + mstButtonSpacing, pauseResumeButtonDef.y, stepButtonWidth, mstButtonHeight };
-    Rectangle nextStepButton = { prevStepButton.x + prevStepButton.width + mstButtonSpacing, pauseResumeButtonDef.y, stepButtonWidth, mstButtonHeight };
-    Rectangle skipButton = { nextStepButton.x + nextStepButton.width + mstButtonSpacing, pauseResumeButtonDef.y, stepButtonWidth, mstButtonHeight };
-    Rectangle actualPauseButton = pauseResumeButtonDef;
+    Rectangle prevStepButton = { 0 };
+    Rectangle nextStepButton = { 0 };
+    Rectangle skipButton = { 0 };
+    Rectangle pauseResumeButton = { 0 }; // Sẽ tính toán vị trí khi vẽ
+    Rectangle weightBox = { 0 };
 
     Slider speedSlider = Slider({mstMenuRect.x + mstMenuRect.width - 160, mstMenuRect.y + 45, 150, 20}, 0.1f, 2.0f, "Speed:"); // Position near top right
 
@@ -1713,23 +1714,12 @@ int main() {
                  } else if (CheckCollisionPointRec(mousePos, backButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                      showMSTMenu = false; // Exit MST menu
                      showMSTError = false; // Clear error on exit
-                 } else if (showWeightInfo && CheckCollisionPointRec(mousePos, pauseResumeButtonDef) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                       // Note: pauseResumeButtonDef Y position is approximate here, drawMSTInfo calculates actual.
-                       // Need to use the actual drawn button rect if available, or recalculate.
-                       // Recalculate Y based on drawMSTInfo logic:
-                       std::string tempWeightStr = "Total Weight: XXX";
-                       Vector2 tempWeightTextSize = MeasureTextEx(GetFontDefault(), tempWeightStr.c_str(), 20, 1);
-                       Rectangle tempWeightBox = {pauseResumeButtonDef.x, mstMenuRect.y + 40, tempWeightTextSize.x + 10, tempWeightTextSize.y + 10};
-                       Rectangle actualPauseButton = pauseResumeButtonDef;
-                       actualPauseButton.y = tempWeightBox.y + tempWeightBox.height + 5;
-                       if (CheckCollisionPointRec(mousePos, actualPauseButton)) {
-                            isMSTDrawingPaused = !isMSTDrawingPaused;
-                       }
-                 } else if (showWeightInfo && CheckCollisionPointRec(mousePos, actualPauseButton)) { // Dùng actualPauseButton đã tính Y
+                 } else if (showWeightInfo && CheckCollisionPointRec(mousePos, pauseResumeButton)) { // Dùng pauseResumeButton mới
                     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                         isMSTDrawingPaused = !isMSTDrawingPaused;
                     }
-                 } else if (showWeightInfo && CheckCollisionPointRec(mousePos, prevStepButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                 }
+                 else if (showWeightInfo && CheckCollisionPointRec(mousePos, prevStepButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                     if (mstEdgeIndex > 0) { // Chỉ lùi lại nếu có bước trước đó
                         isMSTDrawingPaused = true; // Tạm dừng khi nhấn Prev
                         mstDoneDrawing = false;   // Chắc chắn không phải đã xong
@@ -2251,13 +2241,23 @@ int main() {
              DrawText("Minimum Spanning Tree", mstMenuRect.x + 10, mstMenuRect.y + 10, 20, BLACK);
      
              // Draw the graph area within the MST menu
-             Rectangle graphArea = {mstMenuRect.x + 10, mstMenuRect.y + 90, mstMenuRect.width - 20, mstMenuRect.height - 140};
-             DrawRectangleLinesEx(graphArea, 1, BLUE); // Optional: visualize graph area
-             
              float controlY = mstMenuRect.y + 40; // Vị trí Y chung cho hàng này
              float currentX = mstMenuRect.x + 10; // Vị trí X bắt đầu
              int fontSize = 20;
              const float controlSpacing = 10.0f; // Khoảng cách giữa các control
+             const float controlButtonHeight = 30.0f; // Chiều cao chuẩn cho các nút control
+            
+             float maxControlHeight = weightBox.height;
+             if (showWeightInfo) maxControlHeight = std::max(maxControlHeight, controlButtonHeight);
+             // Chiều cao slider = speedSlider.rect.height (mặc định 20) + khoảng cách label (20)
+             maxControlHeight = std::max(maxControlHeight, speedSlider.rect.height + 20); // Xem xét cả chiều cao của slider và label
+             maxControlHeight = std::max(maxControlHeight, 40.0f); // Giả sử chiều cao tối đa hàng control là khoảng 40-50px
+ 
+             float graphAreaY = controlY + maxControlHeight + controlSpacing; // Y bắt đầu dưới hàng control
+             float graphAreaHeight = mstButtonsY - controlSpacing - graphAreaY;
+             graphAreaHeight = std::max(0.0f, graphAreaHeight);
+             Rectangle graphArea = {mstMenuRect.x + 10, graphAreaY, mstMenuRect.width - 20, graphAreaHeight };
+ 
              // Calculate scaling and offset for MST graph drawing
              int numNodesToDraw = nodePositions.size(); // Use original node count
              std::vector<Vector2> mstDrawNodePositions(numNodesToDraw);
@@ -2376,36 +2376,91 @@ int main() {
              DrawRectangleRec(primButton, WHITE); DrawText("Prim", primButton.x + 10, primButton.y + 7, 20, BLACK);
              DrawRectangleRec(kruskalButton, WHITE); DrawText("Kruskal", kruskalButton.x + 10, kruskalButton.y + 7, 20, BLACK);
              DrawRectangleRec(backButton, WHITE); DrawText("Back", backButton.x + 10, backButton.y + 7, 20, BLACK);
- 
-             // Draw MST Info (Weight, Pause/Resume) if an algorithm ran
-             Rectangle weightBox = { 0 }; // Khởi tạo trống
+             // 1. Tính toán và Vẽ ô Total Weight (nếu showWeightInfo)
              if (showWeightInfo) {
-                std::string tempWeightStr = "Total Weight: XXX";
-                Vector2 tempWeightTextSize = MeasureTextEx(GetFontDefault(), tempWeightStr.c_str(), 20, 1);
-                Rectangle tempWeightBox = {pauseResumeButtonDef.x, mstMenuRect.y + 40, tempWeightTextSize.x + 10, tempWeightTextSize.y + 10};
-                actualPauseButton.y = tempWeightBox.y + tempWeightBox.height + 5; // Y cuối cùng
-                drawMSTInfo(totalMSTWeight, isMSTDrawingPaused, actualPauseButton, mstMenuRect); // Vẽ info và nút Pause/Resume
+                int weightFontSize = 24;
+                std::string weightStr = "Total Weight: " + std::to_string(totalMSTWeight);
+                Vector2 weightTextSize = MeasureTextEx(GetFontDefault(), weightStr.c_str(), weightFontSize, 1);
 
-                // ----> VẼ CÁC NÚT MỚI (PREV, NEXT, SKIP) <----
-                // Đặt Y của chúng dựa trên Y thực tế của nút Pause/Resume
-                prevStepButton.y = actualPauseButton.y;
-                nextStepButton.y = actualPauseButton.y;
-                skipButton.y = actualPauseButton.y;
+                // 2. Tăng Padding (Ví dụ: X=15, Y=8)
+                float weightBoxPaddingX = 15.0f;
+                float weightBoxPaddingY = 8.0f;
 
-                DrawRectangleRec(prevStepButton, WHITE);
-                DrawRectangleLinesEx(prevStepButton, 1, CheckCollisionPointRec(GetMousePosition(), prevStepButton) ? RED : BLACK);
-                DrawText("Prev", prevStepButton.x + 10, prevStepButton.y + 7, 20, (mstEdgeIndex > 0) ? BLACK : GRAY); // Disable nếu không thể prev
+                // 3. Tính toán kích thước và vị trí weightBox dựa trên text và padding
+                float weightBoxHeight = weightTextSize.y + 2 * weightBoxPaddingY; // Chiều cao động
+                weightBox = {currentX, controlY, weightTextSize.x + 2 * weightBoxPaddingX, weightBoxHeight};
 
-                DrawRectangleRec(nextStepButton, WHITE);
-                DrawRectangleLinesEx(nextStepButton, 1, CheckCollisionPointRec(GetMousePosition(), nextStepButton) ? RED : BLACK);
-                DrawText("Next", nextStepButton.x + 10, nextStepButton.y + 7, 20, (mstEdgeIndex < mstEdges.size()) ? BLACK : GRAY); // Disable nếu đã xong
+                DrawRectangleRec(weightBox, WHITE); // Nền trắng
+                DrawRectangleLinesEx(weightBox, 1, BLACK); // Viền đen
 
-                DrawRectangleRec(skipButton, WHITE);
-                DrawRectangleLinesEx(skipButton, 1, CheckCollisionPointRec(GetMousePosition(), skipButton) ? RED : BLACK);
-                DrawText("Skip", skipButton.x + 10, skipButton.y + 7, 20, mstDoneDrawing ? GRAY : BLACK); // Disable nếu đã xong
+                // Vẽ chữ, căn giữa trong ô mới
+                DrawText(weightStr.c_str(),
+                         weightBox.x + weightBoxPaddingX, // Vị trí X + padding trái
+                         weightBox.y + weightBoxPaddingY, // Vị trí Y + padding trên
+                         weightFontSize, BLACK);
+
+                currentX += weightBox.width + controlSpacing; // Cập nhật X cho control tiếp theo
+            }
+            float otherControlsY = controlY + (weightBox.height - controlButtonHeight) / 2.0f; // Tính Y để căn giữa với weightBox
+            if (otherControlsY < controlY) otherControlsY = controlY;
+            if (showWeightInfo) {
+                int controlFontSize = 20; // Font size cho các nút còn lại
+                const char* pauseText = isMSTDrawingPaused ? "Resume" : "Pause ";
+                Vector2 pauseTextSize = MeasureTextEx(GetFontDefault(), pauseText, controlFontSize, 1);
+                float pauseButtonWidth = pauseTextSize.x + 20;
+                // Sử dụng otherControlsY cho vị trí Y
+                pauseResumeButton = {currentX, otherControlsY, pauseButtonWidth, controlButtonHeight};
+
+                DrawRectangleRec(pauseResumeButton, WHITE);
+                DrawRectangleLinesEx(pauseResumeButton, 1, CheckCollisionPointRec(GetMousePosition(), pauseResumeButton) ? RED : BLACK);
+                DrawText(pauseText,
+                   pauseResumeButton.x + (pauseResumeButton.width - pauseTextSize.x) / 2,
+                   pauseResumeButton.y + (pauseResumeButton.height - fontSize) / 2.0f +1,
+                   fontSize, BLACK);
+                   currentX += pauseResumeButton.width + controlSpacing; // Cập nhật X
+                }
+
+            if (showWeightInfo) {
+                int controlFontSize = 20; // Font size cho các nút còn lại
+                // Sử dụng otherControlsY cho vị trí Y
+                prevStepButton = {currentX, otherControlsY, stepButtonWidth, controlButtonHeight}; currentX += stepButtonWidth + controlSpacing;
+                nextStepButton = {currentX, otherControlsY, stepButtonWidth, controlButtonHeight}; currentX += stepButtonWidth + controlSpacing;
+                skipButton = {currentX, otherControlsY, stepButtonWidth, controlButtonHeight};
+
+                // Vẽ Prev
+                DrawRectangleRec(prevStepButton, WHITE); DrawRectangleLinesEx(prevStepButton, 1, CheckCollisionPointRec(GetMousePosition(), prevStepButton) ? RED : BLACK);
+                DrawText("Prev", prevStepButton.x + 10, prevStepButton.y + 7, fontSize, (mstEdgeIndex > 0) ? BLACK : GRAY);
+                // Vẽ Next
+                DrawRectangleRec(nextStepButton, WHITE); DrawRectangleLinesEx(nextStepButton, 1, CheckCollisionPointRec(GetMousePosition(), nextStepButton) ? RED : BLACK);
+                DrawText("Next", nextStepButton.x + 10, nextStepButton.y + 7, fontSize, (mstEdgeIndex < mstEdges.size()) ? BLACK : GRAY);
+                // Vẽ Skip
+                DrawRectangleRec(skipButton, WHITE); DrawRectangleLinesEx(skipButton, 1, CheckCollisionPointRec(GetMousePosition(), skipButton) ? RED : BLACK);
+                DrawText("Skip", skipButton.x + 10, skipButton.y + 7, fontSize, mstDoneDrawing ? GRAY : BLACK);
             }
 
-             speedSlider.draw(); // Draw slider
+            int sliderLabelFontSize = 20; // Font size của label trong Slider::draw
+            float labelWidth = MeasureText(speedSlider.getLabel().c_str(), sliderLabelFontSize);
+            float labelPadding = 6.0f; // Thêm chút khoảng cách sau nhãn
+
+            // Đặt vị trí X của slider SAU KHI cộng thêm chiều rộng nhãn và padding
+            float sliderStartX = currentX + labelWidth + labelPadding;
+
+            if (sliderStartX + speedSlider.rect.width < mstMenuRect.x + mstMenuRect.width - 10)
+            {
+                  speedSlider.rect.x = sliderStartX;
+                  speedSlider.rect.y = otherControlsY;
+                  speedSlider.knob.x = speedSlider.rect.x + (speedSlider.rect.width - speedSlider.knob.width) * speedSlider.value;
+                  speedSlider.knob.y = speedSlider.rect.y - 5;
+
+                 speedSlider.draw(); // Vẽ slider ở vị trí mới
+                 currentX += labelWidth + labelPadding + speedSlider.rect.width + controlSpacing; // Cập nhật currentX bao gồm cả phần label đã thêm
+            }  else {
+                  speedSlider.rect.x = mstMenuRect.x + mstMenuRect.width - speedSlider.rect.width - 10; // Gần góc phải
+                  speedSlider.rect.y = mstMenuRect.y + 45; // Vị trí Y cũ
+                  speedSlider.knob.x = speedSlider.rect.x + (speedSlider.rect.width - speedSlider.knob.width) * speedSlider.value;
+                  speedSlider.knob.y = speedSlider.rect.y - 5;
+                  speedSlider.draw();
+            }
 
          } // end if showMSTMenu
          if (showMSTError) {

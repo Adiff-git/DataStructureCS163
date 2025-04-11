@@ -2,6 +2,7 @@
 #include "LinkedList.h"
 #include "Button.h"
 #include "Utils.h"
+#include "ControlManager.h"
 #include <vector>
 #include <string>
 #include <fstream>
@@ -16,6 +17,9 @@ int main() {
     SetTargetFPS(60);
 
     LinkedList list(screenWidth, screenHeight);
+    list.SetPaused(true);  // Start with the operation paused
+    ControlManager control(list, screenWidth, screenHeight, GetFontDefault());
+
     bool showInput = false;
     bool showInitOptions = false;
     bool showRandomInput = false;
@@ -29,14 +33,13 @@ int main() {
     std::string inputTextOld = "";
     std::string inputTextNew = "";
     int inputType = 0;
-    Vector2 inputPosition = Vector2{0.0f, 0.0f}; // Sửa cú pháp khởi tạo
-    Vector2 inputPositionOld = Vector2{0.0f, 0.0f}; // Sửa cú pháp khởi tạo
-    Vector2 inputPositionNew = Vector2{0.0f, 0.0f}; // Sửa cú pháp khởi tạo
+    Vector2 inputPosition = {0.0f, 0.0f};
+    Vector2 inputPositionOld = {0.0f, 0.0f};
+    Vector2 inputPositionNew = {0.0f, 0.0f};
 
-    // Biến cho DrawButton
     bool buttonClicked = false;
     const char* buttonMessage = "";
-    Font font = GetFontDefault(); // Font mặc định của Raylib
+    Font font = GetFontDefault();
 
     Rectangle initButton = {20, 20, 100, 40};
     Rectangle addButton = {130, 20, 100, 40};
@@ -53,12 +56,6 @@ int main() {
     Rectangle inputBoxOld = {0, 0, 100, 40};
     Rectangle inputBoxNew = {0, 0, 100, 40};
     Rectangle okButton = {0, 0, 100, 40};
-
-    Rectangle prevButton = {screenWidth / 2 - 150, screenHeight - 100, 60, 40};
-    Rectangle playButton = {screenWidth / 2 - 75, screenHeight - 100, 60, 40};
-    Rectangle nextButton = {screenWidth / 2, screenHeight - 100, 60, 40};
-    Rectangle skipButton = {screenWidth / 2 + 75, screenHeight - 100, 60, 40}; // Thêm dấu ; ở đây
-    Rectangle slider = {screenWidth / 2 - 150, screenHeight - 50, 300, 20};
     Rectangle scrollBar = {50, screenHeight - 100, 200, 20};
 
     while (!WindowShouldClose()) {
@@ -70,7 +67,9 @@ int main() {
         list.ProcessOperations();
         list.UpdateOperations();
 
-        // Vẽ các nút chính
+        control.Update();
+        control.Draw();
+
         if (DrawButton("Initialize", initButton, font, buttonClicked, buttonMessage)) {
             showInitOptions = true;
             showAddOptions = false;
@@ -100,14 +99,14 @@ int main() {
             showInput = true;
             inputType = 2;
             inputText = "";
-            inputPosition = Vector2{deleteButton.x, deleteButton.y + deleteButton.height + 10}; // Sửa cú pháp
+            inputPosition = {deleteButton.x, deleteButton.y + deleteButton.height + 10};
         }
         if (DrawButton("Search", searchButton, font, buttonClicked, buttonMessage)) {
             showAddOptions = false;
             showInput = true;
             inputType = 3;
             inputText = "";
-            inputPosition = Vector2{searchButton.x, searchButton.y + searchButton.height + 10}; // Sửa cú pháp
+            inputPosition = {searchButton.x, searchButton.y + searchButton.height + 10};
         }
         if (DrawButton("Update", updateButton, font, buttonClicked, buttonMessage)) {
             showAddOptions = false;
@@ -115,42 +114,25 @@ int main() {
             inputType = 4;
             inputTextOld = "";
             inputTextNew = "";
-            inputPositionOld = Vector2{updateButton.x, updateButton.y + updateButton.height + 10}; // Sửa cú pháp
-            inputPositionNew = Vector2{updateButton.x + 150, updateButton.y + updateButton.height + 10}; // Sửa cú pháp
+            inputPositionOld = {updateButton.x, updateButton.y + updateButton.height + 10};
+            inputPositionNew = {updateButton.x + 150, updateButton.y + updateButton.height + 10};
         }
 
-        // Thanh trượt tốc độ
-        DrawRectangleRec(slider, LIGHTGRAY);
-        float speed = UpdateSlider(slider, 0.1f, 2.0f, list.GetSpeed());
-        list.SetSpeed(speed);
-        float sliderPos = (speed - 0.1f) / (2.0f - 0.1f) * slider.width;
-        DrawRectangle(slider.x + sliderPos - 5, slider.y - 5, 10, 30, DARKGRAY);
-        DrawText(("Speed: " + std::to_string(speed).substr(0, 4)).c_str(), slider.x, slider.y - 30, 20, BLACK);
-
-        // Nút điều khiển
-        if (DrawButton("Prev", prevButton, font, buttonClicked, buttonMessage)) list.PreviousStep();
-        if (DrawButton(list.IsPaused() ? "Play" : "Pause", playButton, font, buttonClicked, buttonMessage)) list.SetPaused(!list.IsPaused());
-        if (DrawButton("Next", nextButton, font, buttonClicked, buttonMessage)) list.NextStep();
-        if (DrawButton("Skip", skipButton, font, buttonClicked, buttonMessage)) list.SkipToEnd();
-
-        // Thanh cuộn
         DrawRectangleRec(scrollBar, LIGHTGRAY);
         float scrollPos = (-list.GetScrollOffset() / (screenWidth + 200)) * scrollBar.width;
         DrawRectangle(scrollBar.x + scrollPos - 5, scrollBar.y - 5, 10, 30, DARKGRAY);
 
-        // Hiển thị thông báo
         if (!list.GetNotification().empty()) {
             DrawText(list.GetNotification().c_str(), screenWidth / 2 - MeasureText(list.GetNotification().c_str(), 20) / 2, 50, 20, RED);
         }
 
-        // Menu Add
         if (showAddOptions) {
             if (DrawButton("Head", addHeadButton, font, buttonClicked, buttonMessage)) {
                 showAddHeadInput = true;
                 showAddIndexInput = false;
                 showAddTailInput = false;
                 inputText = "";
-                inputPosition = Vector2{addHeadButton.x + addHeadButton.width + 10, addHeadButton.y}; // Sửa cú pháp
+                inputPosition = {addHeadButton.x + addHeadButton.width + 10, addHeadButton.y};
             }
             if (DrawButton("Index", addIndexButton, font, buttonClicked, buttonMessage)) {
                 showAddHeadInput = false;
@@ -158,19 +140,18 @@ int main() {
                 showAddTailInput = false;
                 inputTextOld = "";
                 inputTextNew = "";
-                inputPositionOld = Vector2{addIndexButton.x + addIndexButton.width + 10, addIndexButton.y}; // Sửa cú pháp
-                inputPositionNew = Vector2{addIndexButton.x + addIndexButton.width + 120, addIndexButton.y}; // Sửa cú pháp
+                inputPositionOld = {addIndexButton.x + addIndexButton.width + 10, addIndexButton.y};
+                inputPositionNew = {addIndexButton.x + addIndexButton.width + 120, addIndexButton.y};
             }
             if (DrawButton("Tail", addTailButton, font, buttonClicked, buttonMessage)) {
                 showAddHeadInput = false;
                 showAddIndexInput = false;
                 showAddTailInput = true;
                 inputText = "";
-                inputPosition = Vector2{addTailButton.x + addTailButton.width + 10, addTailButton.y}; // Sửa cú pháp
+                inputPosition = {addTailButton.x + addTailButton.width + 10, addTailButton.y};
             }
         }
 
-        // Nhập liệu cho Add Head
         if (showAddHeadInput) {
             inputBox.x = inputPosition.x;
             inputBox.y = inputPosition.y;
@@ -199,7 +180,6 @@ int main() {
             }
         }
 
-        // Nhập liệu cho Add Tail
         if (showAddTailInput) {
             inputBox.x = inputPosition.x;
             inputBox.y = inputPosition.y;
@@ -228,7 +208,6 @@ int main() {
             }
         }
 
-        // Nhập liệu cho Add Index
         if (showAddIndexInput) {
             inputBoxOld.x = inputPositionOld.x;
             inputBoxOld.y = inputPositionOld.y;
@@ -282,21 +261,20 @@ int main() {
             }
         }
 
-        // Menu Initialize
         if (showInitOptions) {
             if (DrawButton("Random", randomButton, font, buttonClicked, buttonMessage)) {
                 showRandomInput = true;
                 showEnterInput = false;
                 showExternalFile = false;
                 inputText = "";
-                inputPosition = Vector2{randomButton.x + randomButton.width + 10, randomButton.y}; // Sửa cú pháp
+                inputPosition = {randomButton.x + randomButton.width + 10, randomButton.y};
             }
             if (DrawButton("Enter", enterButton, font, buttonClicked, buttonMessage)) {
                 showRandomInput = false;
                 showEnterInput = true;
                 showExternalFile = false;
                 inputText = "";
-                inputPosition = Vector2{enterButton.x + enterButton.width + 10, enterButton.y}; // Sửa cú pháp
+                inputPosition = {enterButton.x + enterButton.width + 10, enterButton.y};
             }
             if (DrawButton("External File", externalFileButton, font, buttonClicked, buttonMessage)) {
                 showRandomInput = false;
@@ -306,7 +284,6 @@ int main() {
             }
         }
 
-        // Nhập liệu cho Random và Enter
         if (showRandomInput || showEnterInput) {
             inputBox.x = inputPosition.x;
             inputBox.y = inputPosition.y;
@@ -360,7 +337,6 @@ int main() {
             }
         }
 
-        // Xử lý file thả vào
         if (showExternalFile && IsFileDropped()) {
             FilePathList droppedFiles = LoadDroppedFiles();
             if (droppedFiles.count > 0) {
@@ -374,9 +350,8 @@ int main() {
             list.SetNotification("");
         }
 
-        // Nhập liệu cho Delete, Search, Update
         if (showInput && inputType != 1) {
-            if (inputType == 2 || inputType == 3) { // Delete hoặc Search
+            if (inputType == 2 || inputType == 3) {
                 inputBox.x = inputPosition.x;
                 inputBox.y = inputPosition.y;
                 okButton.x = inputPosition.x;
@@ -388,9 +363,9 @@ int main() {
                 if (DrawButton("OK", okButton, font, buttonClicked, buttonMessage) && !inputText.empty()) {
                     int value = std::stoi(inputText);
                     if (inputType == 2) {
-                        list.EnqueueOperation(5, value); // Delete
+                        list.EnqueueOperation(5, value);
                     } else {
-                        list.EnqueueOperation(6, value); // Search
+                        list.EnqueueOperation(6, value);
                     }
                     showInput = false;
                 }
@@ -405,7 +380,7 @@ int main() {
                 if (IsKeyPressed(KEY_BACKSPACE) && !inputText.empty()) {
                     inputText.pop_back();
                 }
-            } else if (inputType == 4) { // Update
+            } else if (inputType == 4) {
                 inputBoxOld.x = inputPositionOld.x;
                 inputBoxOld.y = inputPositionOld.y;
                 inputBoxNew.x = inputPositionNew.x;

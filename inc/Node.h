@@ -16,14 +16,33 @@ struct Node {
                     targetPosition({0, 0}), animationProgress(0.0f), animationType(0) {}
 };
 
+// Define OperationState before ListState to avoid dependency issues
+struct OperationState {
+    int step = 0;
+    int initCount = 0, initIndex = 0;
+    Node* newNode = nullptr;
+    Node* current = nullptr;
+    int deleteValue = 0;
+    int searchValue = 0;
+    bool searchResult = false;
+    int updateOld = 0, updateNew = 0;
+    float delayTimer = 0.0f;
+    std::vector<int> initValues;
+    int traversalIndex = 0;
+    int addIndex = 0; // For Add Index
+};
+
 struct ListState {
     std::vector<int> values;
     std::vector<Vector2> positions;
     std::vector<bool> isActive;
     std::vector<float> alphas;
-    std::vector<Vector2> targetPositions; // Thêm để lưu targetPosition
-    std::vector<float> animationProgresses; // Thêm để lưu animationProgress
-    std::vector<int> animationTypes; // Thêm để lưu animationType
+    std::vector<Vector2> targetPositions;
+    std::vector<float> animationProgresses;
+    std::vector<int> animationTypes;
+    int activeFunction;  // Explicitly specify type
+    int activeLine;      // Explicitly specify type
+    OperationState opState;
 };
 
 struct Operation {

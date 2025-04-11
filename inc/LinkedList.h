@@ -23,33 +23,20 @@ private:
     Node* foundNode;
     std::queue<Operation> operationQueue;
 
-    struct OperationState {
-        int step = 0;
-        int initCount = 0, initIndex = 0;
-        Node* newNode = nullptr;
-        Node* current = nullptr;
-        int deleteValue = 0;
-        int searchValue = 0;
-        bool searchResult = false;
-        int updateOld = 0, updateNew = 0;
-        float delayTimer = 0.0f;
-        std::vector<int> initValues;
-        int traversalIndex = 0;
-        int addIndex = 0; // Lưu index cho Add Index
-    } opState;
+    OperationState opState;
 
-    std::deque<ListState> past;
-    std::deque<ListState> future_continuous;
+    std::vector<ListState> operationStates; // Replaced past and future_continuous
+    int currentStepIndex; // Track the current step
     std::deque<ListState> operationHistory;
 
     void Clear();
     void UpdateInitialize();
     void SkipInitialize();
-    void UpdateAdd(); // Gộp tất cả Add vào đây
+    void UpdateAdd();
     void UpdateDelete();
     void UpdateSearch();
     void UpdateUpdate();
-    void SkipAdd(); // Gộp tất cả Skip Add vào đây
+    void SkipAdd();
     void SkipDelete();
     void SkipSearch();
     void SkipUpdate();

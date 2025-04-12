@@ -70,10 +70,13 @@ void HashTable::saveCurrentTable() {
 
 // Data structure area
 void HashTable::drawPrevTable() {
+    bool buttonClicked = false;
+    const char* buttonMessage = nullptr;
+
     for (int i = 0; i < size; i++) {
         // Index node
         Rectangle indexRect = {tablePosX, tablePosY + (nodeHeight + nodeSpaceY) * i, indexWidth, nodeHeight};
-        DrawStyledButton(indexRect, TextFormat("Index: %d", i), false);
+        DrawButton(TextFormat("Index: %d", i), indexRect, GetFontDefault(), buttonClicked, buttonMessage);
         
         HashNode* current = prevTable[i];
         if (!current) {
@@ -84,7 +87,7 @@ void HashTable::drawPrevTable() {
             if (IsButtonClicked(nullRect)) {
                 selectedNode = nullptr;
             }
-            DrawStyledButton(nullRect, "NULL", false);
+            DrawButton("NULL", nullRect, GetFontDefault(), buttonClicked, buttonMessage);
         }
         int idx = 0;
         while (current) {
@@ -104,7 +107,7 @@ void HashTable::drawPrevTable() {
                 selectedValue = current->value;
                 selectedNodeArea = nodeRect;
             }
-            DrawStyledButton(nodeRect, TextFormat("%d | %d", current->key, current->value), selectedNode == current);
+            DrawButton(TextFormat("%d | %d", current->key, current->value), nodeRect, GetFontDefault(), buttonClicked, buttonMessage);
             current = current->next;
             idx++;
         }
@@ -112,10 +115,13 @@ void HashTable::drawPrevTable() {
 }
 
 void HashTable::drawTable() {
+    bool buttonClicked = false;
+    const char* buttonMessage = nullptr;
+
     for (int i = 0; i < size; i++) {
         // Index node
         Rectangle indexRect = {tablePosX, tablePosY + (nodeHeight + nodeSpaceY) * i, indexWidth, nodeHeight};
-        DrawStyledButton(indexRect, TextFormat("Index: %d", i), false);
+        DrawButton(TextFormat("Index: %d", i), indexRect, GetFontDefault(), buttonClicked, buttonMessage);
         
         HashNode* current = table[i];
         if (!current) {
@@ -126,7 +132,7 @@ void HashTable::drawTable() {
             if (IsButtonClicked(nullRect)) {
                 selectedNode = nullptr;
             }
-            DrawStyledButton(nullRect, "NULL", false);
+            DrawButton("NULL", nullRect, GetFontDefault(), buttonClicked, buttonMessage);
         }
         
         int idx = 0;
@@ -147,7 +153,7 @@ void HashTable::drawTable() {
                 selectedValue = current->value;
                 selectedNodeArea = nodeRect;
             }
-            DrawStyledButton(nodeRect, TextFormat("%d | %d", current->key, current->value), selectedNode == current);
+            DrawButton(TextFormat("%d | %d", current->key, current->value), nodeRect, GetFontDefault(), buttonClicked, buttonMessage);
             current = current->next;
             idx++;
         }
@@ -713,19 +719,22 @@ void HashTable::drawInitializeAnimation() {
         doneAnimation = true;
         return;
     }
+    bool buttonClicked = false;
+    const char* buttonMessage = nullptr;
+
     for (int i = 0; i <= curStep; i++) {
         Rectangle keyRect = {tablePosX, tablePosY + 30 * i, 60, 20};
-        DrawStyledButton(keyRect, TextFormat("Key: %d", i), false);
+        DrawButton(TextFormat("Key: %d", i), keyRect, GetFontDefault(), buttonClicked, buttonMessage);
         
         HashNode* current = table[i];
         int idx = 0;
         while (current && (i < curStep || idx <= done)) {
             Rectangle nodeBounds = {llPosX + 60 * idx, tablePosY + 30 * i, 50, 20};
             if (i == curStep && idx == done) {
-                DrawStyledButton(nodeBounds, TextFormat("%d | %d", current->key, current->value), true);
+                DrawButton(TextFormat("%d | %d", current->key, current->value), nodeBounds, GetFontDefault(), buttonClicked, buttonMessage);
                 DrawRectangleLinesEx(nodeBounds, 2, GREEN);
             } else {
-                DrawStyledButton(nodeBounds, TextFormat("%d | %d", current->key, current->value), false);
+                DrawButton(TextFormat("%d | %d", current->key, current->value), nodeBounds, GetFontDefault(), buttonClicked, buttonMessage);
                 DrawRectangleLinesEx(nodeBounds, 2, GRAY);
             }
             current = current->next;
@@ -760,6 +769,8 @@ void HashTable::drawInitializeOptions() {
     static bool nInputEnabled = false;
     static int mMax = 14;
     static int nMax = 99;
+    bool buttonClicked = false;
+    const char* buttonMessage = nullptr;
 
     DrawText("M: ", 20, 610, 20, BLACK);
     Rectangle mRect = {50, 610, 100, 25};
@@ -794,7 +805,7 @@ void HashTable::drawInitializeOptions() {
         mValue = GetRandomValue(1, 14);
         sprintf(mText, "%d", mValue);
     }
-    DrawStyledButton(mRandomRect, "?", false);
+    DrawButton("?", mRandomRect, GetFontDefault(), buttonClicked, buttonMessage);
 
     DrawText("N: ", 200, 610, 20, BLACK);
     Rectangle nRect = {230, 610, 100, 25};
@@ -829,7 +840,7 @@ void HashTable::drawInitializeOptions() {
         nValue = GetRandomValue(0, 99);
         sprintf(nText, "%d", nValue);
     }
-    DrawStyledButton(nRandomRect, "?", false);
+    DrawButton("?", nRandomRect, GetFontDefault(), buttonClicked, buttonMessage);
 
     Rectangle uploadRect = {30, 650, 80, 30};
     if (IsButtonClicked(uploadRect)) {
@@ -837,7 +848,7 @@ void HashTable::drawInitializeOptions() {
         fileLoaded = false;
         TraceLog(LOG_INFO, "Upload button clicked, waiting for file drop");
     }
-    DrawStyledButton(uploadRect, "Upload", false);
+    DrawButton("Upload", uploadRect, GetFontDefault(), buttonClicked, buttonMessage);
 
     Rectangle okRect = {350, 650, 40, 30};
     if (IsButtonClicked(okRect)) {
@@ -875,7 +886,7 @@ void HashTable::drawInitializeOptions() {
         }
         showUploadPrompt = false;
     }
-    DrawStyledButton(okRect, "OK", false);
+    DrawButton("OK", okRect, GetFontDefault(), buttonClicked, buttonMessage);
 
     if (showUploadPrompt) {
         DrawText("Drop a file here", 120, 655, 20, GRAY);
@@ -891,6 +902,8 @@ void HashTable::drawInsertOptions() {
     static char valueText[4] = "0";
     static bool keyInputEnabled = false;
     static bool valueInputEnabled = false;
+    bool buttonClicked = false;
+    const char* buttonMessage = nullptr;
 
     DrawText("K: ", 20, 610, 20, BLACK);
     Rectangle kRect = {50, 610, 100, 25};
@@ -925,7 +938,7 @@ void HashTable::drawInsertOptions() {
         key = GetRandomValue(0, 100);
         sprintf(keyText, "%d", key);
     }
-    DrawStyledButton(kRandomRect, "?", false);
+    DrawButton("?", kRandomRect, GetFontDefault(), buttonClicked, buttonMessage);
 
     DrawText("V: ", 200, 610, 20, BLACK);
     Rectangle vRect = {230, 610, 100, 25};
@@ -961,7 +974,7 @@ void HashTable::drawInsertOptions() {
         value = GetRandomValue(0, 100);
         sprintf(valueText, "%d", value);
     }
-    DrawStyledButton(vRandomRect, "?", false);
+    DrawButton("?", vRandomRect, GetFontDefault(), buttonClicked, buttonMessage);
 
     Rectangle okRect = {350, 650, 40, 30};
     if (IsButtonClicked(okRect)) {
@@ -971,7 +984,7 @@ void HashTable::drawInsertOptions() {
         delta = 0;
         pause = false;
     }
-    DrawStyledButton(okRect, "OK", false);
+    DrawButton("OK", okRect, GetFontDefault(), buttonClicked, buttonMessage);
 }
 
 void HashTable::drawDeleteOptions() {
@@ -979,6 +992,8 @@ void HashTable::drawDeleteOptions() {
     static char keyText[4] = "0";
     static int keyMax = 99;
     static bool keyInputEnabled = false;
+    bool buttonClicked = false;
+    const char* buttonMessage = nullptr;
 
     DrawText("K: ", 20, 610, 20, BLACK);
     Rectangle kRect = {50, 610, 100, 25};
@@ -1012,7 +1027,7 @@ void HashTable::drawDeleteOptions() {
         key = GetRandomValue(0, 100);
         sprintf(keyText, "%d", key);
     }
-    DrawStyledButton(kRandomRect, "?", false);
+    DrawButton("?", kRandomRect, GetFontDefault(), buttonClicked, buttonMessage);
 
     Rectangle okRect = {350, 650, 40, 30};
     if (IsButtonClicked(okRect)) {
@@ -1022,7 +1037,7 @@ void HashTable::drawDeleteOptions() {
         delta = 0;
         pause = false;
     }
-    DrawStyledButton(okRect, "OK", false);
+    DrawButton("OK", okRect, GetFontDefault(), buttonClicked, buttonMessage);
 }
 
 void HashTable::drawSearchOptions() {
@@ -1030,6 +1045,8 @@ void HashTable::drawSearchOptions() {
     static char keyText[4] = "0";
     static int keyMax = 99;
     static bool keyInputEnabled = false;
+    bool buttonClicked = false;
+    const char* buttonMessage = nullptr;
 
     DrawText("K: ", 20, 610, 20, BLACK);
     Rectangle kRect = {50, 610, 100, 25};
@@ -1063,7 +1080,7 @@ void HashTable::drawSearchOptions() {
         key = GetRandomValue(0, 100);
         sprintf(keyText, "%d", key);
     }
-    DrawStyledButton(kRandomRect, "?", false);
+    DrawButton("?", kRandomRect, GetFontDefault(), buttonClicked, buttonMessage);
 
     Rectangle okRect = {350, 650, 40, 30};
     if (IsButtonClicked(okRect)) {
@@ -1073,7 +1090,7 @@ void HashTable::drawSearchOptions() {
         delta = 0;
         pause = false;
     }
-    DrawStyledButton(okRect, "OK", false);
+    DrawButton("OK", okRect, GetFontDefault(), buttonClicked, buttonMessage);
 }
 
 // Operation Menu
@@ -1083,11 +1100,14 @@ void HashTable::drawOperationMenu() {
     static float opPosY = 700;
     static float opWidth = 80;
     static float opHeight = 30;
+    bool buttonClicked = false;
+    const char* buttonMessage = nullptr;
+
     Rectangle initializeButtonPos = {opPosX, opPosY, opWidth, opHeight};
     if (IsButtonClicked(initializeButtonPos)) {
         showInitializeOption = !showInitializeOption;
     }
-    DrawStyledButton(initializeButtonPos, "Init", false);
+    DrawButton("Init", initializeButtonPos, GetFontDefault(), buttonClicked, buttonMessage);
     if (showInitializeOption) {
         drawInitializeOptions();
     }
@@ -1097,7 +1117,7 @@ void HashTable::drawOperationMenu() {
     if (IsButtonClicked(insertButtonPos)) {
         showInsertOption = !showInsertOption;
     }
-    DrawStyledButton(insertButtonPos, "Insert", false);
+    DrawButton("Insert", insertButtonPos, GetFontDefault(), buttonClicked, buttonMessage);
     if (showInsertOption) {
         drawInsertOptions();
     }
@@ -1107,7 +1127,7 @@ void HashTable::drawOperationMenu() {
     if (IsButtonClicked(deleteButtonPos)) {
         showDeleteOption = !showDeleteOption;
     }
-    DrawStyledButton(deleteButtonPos, "Delete", false);
+    DrawButton("Delete", deleteButtonPos, GetFontDefault(), buttonClicked, buttonMessage);
     if (showDeleteOption) {
         drawDeleteOptions();
     }
@@ -1117,7 +1137,7 @@ void HashTable::drawOperationMenu() {
     if (IsButtonClicked(searchButtonPos)) {
         showSearchOption = !showSearchOption;
     }
-    DrawStyledButton(searchButtonPos, "Search", false);
+    DrawButton("Search", searchButtonPos, GetFontDefault(), buttonClicked, buttonMessage);
     if (showSearchOption) {
         drawSearchOptions();
     }
@@ -1275,6 +1295,8 @@ void HashTable::drawAnimationMenu() {
     float sliderHeight = 20;
     float posX = 600;
     float buttonPosY = 700;
+    bool buttonClicked = false;
+    const char* buttonMessage = nullptr;
 
     Rectangle sliderRect = {posX + 100, 670, sliderWidth, sliderHeight};
     DrawRectangleRec(sliderRect, LIGHTGRAY);
@@ -1292,7 +1314,7 @@ void HashTable::drawAnimationMenu() {
         resetAnimation();
         pause = true;
     }
-    DrawStyledButton(firstRect, "First", false);
+    DrawButton("First", firstRect, GetFontDefault(), buttonClicked, buttonMessage);
 
     Rectangle prevRect = {posX + buttonWidth + spacing, buttonPosY, buttonWidth, buttonHeight};
     if (IsButtonClicked(prevRect)) {
@@ -1306,19 +1328,19 @@ void HashTable::drawAnimationMenu() {
             delta = 0;
         }
     }
-    DrawStyledButton(prevRect, "Prev", false);
+    DrawButton("Prev", prevRect, GetFontDefault(), buttonClicked, buttonMessage);
 
     Rectangle playPauseRect = {posX + 2*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight};
     if (pause) {
         if (IsButtonClicked(playPauseRect)) {
             pause = false;
         }
-        DrawStyledButton(playPauseRect, "Play", false);
+        DrawButton("Play", playPauseRect, GetFontDefault(), buttonClicked, buttonMessage);
     } else {
         if (IsButtonClicked(playPauseRect)) {
             pause = true;
         }
-        DrawStyledButton(playPauseRect, "Pause", false);
+        DrawButton("Pause", playPauseRect, GetFontDefault(), buttonClicked, buttonMessage);
     }
 
     Rectangle nextRect = {posX + 3*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight};
@@ -1328,14 +1350,14 @@ void HashTable::drawAnimationMenu() {
             curStep++;
         }
     }
-    DrawStyledButton(nextRect, "Next", false);
+    DrawButton("Next", nextRect, GetFontDefault(), buttonClicked, buttonMessage);
 
     Rectangle lastRect = {posX + 4*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight};
     if (IsButtonClicked(lastRect)) {
         pause = true;
         curStep = totalStep - 1;
     }
-    DrawStyledButton(lastRect, "Last", false);
+    DrawButton("Last", lastRect, GetFontDefault(), buttonClicked, buttonMessage);
 }
 
 // Code description Menu
@@ -1467,6 +1489,9 @@ void HashTable::drawInitializeDescription() {
 
 // Node detail Menu
 void HashTable::drawNodeDetailMenu() {
+    bool buttonClicked = false;
+    const char* buttonMessage = nullptr;
+
     if (selectedNode) {
         DrawRectangleRec(selectedNodeArea, Fade(BLUE, 0.2f));
         
@@ -1505,7 +1530,7 @@ void HashTable::drawNodeDetailMenu() {
             delta = 0;
             selectedNode = nullptr;
         }
-        DrawStyledButton(deleteRect, "Delete", false);
+        DrawButton("Delete", deleteRect, GetFontDefault(), buttonClicked, buttonMessage);
 
         Rectangle updateRect = {1200, 700, 80, 30};
         if (IsButtonClicked(updateRect)) {
@@ -1514,7 +1539,7 @@ void HashTable::drawNodeDetailMenu() {
             delta = 0;
             selectedNode = nullptr;
         }
-        DrawStyledButton(updateRect, "Update", false);
+        DrawButton("Update", updateRect, GetFontDefault(), buttonClicked, buttonMessage);
     }
 }
 

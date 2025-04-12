@@ -3,9 +3,7 @@
 
 #include "raylib.h"
 
-// Hàm vẽ nút với hiệu ứng màu sắc giống GuiButton của raygui
-void DrawStyledButton(Rectangle bounds, const char* text, bool pressed);
-
+bool DrawButton(const char* text, Rectangle button, Font font, bool& buttonClicked, const char*& buttonMessage);
 // Hàm kiểm tra xem nút có được nhấn hay không
 bool IsButtonClicked(Rectangle bounds);
 

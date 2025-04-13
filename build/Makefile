@@ -293,6 +293,30 @@ src/animation.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/animation.cpp.s
 .PHONY : src/animation.cpp.s
 
+src/button.obj: src/button.cpp.obj
+.PHONY : src/button.obj
+
+# target to build an object file
+src/button.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/button.cpp.obj
+.PHONY : src/button.cpp.obj
+
+src/button.i: src/button.cpp.i
+.PHONY : src/button.i
+
+# target to preprocess a source file
+src/button.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/button.cpp.i
+.PHONY : src/button.cpp.i
+
+src/button.s: src/button.cpp.s
+.PHONY : src/button.s
+
+# target to generate assembly for a file
+src/button.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/button.cpp.s
+.PHONY : src/button.cpp.s
+
 src/init.obj: src/init.cpp.obj
 .PHONY : src/init.obj
 
@@ -341,6 +365,30 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/tinyfiledialogs.obj: src/tinyfiledialogs.c.obj
+.PHONY : src/tinyfiledialogs.obj
+
+# target to build an object file
+src/tinyfiledialogs.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/tinyfiledialogs.c.obj
+.PHONY : src/tinyfiledialogs.c.obj
+
+src/tinyfiledialogs.i: src/tinyfiledialogs.c.i
+.PHONY : src/tinyfiledialogs.i
+
+# target to preprocess a source file
+src/tinyfiledialogs.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/tinyfiledialogs.c.i
+.PHONY : src/tinyfiledialogs.c.i
+
+src/tinyfiledialogs.s: src/tinyfiledialogs.c.s
+.PHONY : src/tinyfiledialogs.s
+
+# target to generate assembly for a file
+src/tinyfiledialogs.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/tinyfiledialogs.c.s
+.PHONY : src/tinyfiledialogs.c.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -366,12 +414,18 @@ help:
 	@echo ... src/animation.obj
 	@echo ... src/animation.i
 	@echo ... src/animation.s
+	@echo ... src/button.obj
+	@echo ... src/button.i
+	@echo ... src/button.s
 	@echo ... src/init.obj
 	@echo ... src/init.i
 	@echo ... src/init.s
 	@echo ... src/main.obj
 	@echo ... src/main.i
 	@echo ... src/main.s
+	@echo ... src/tinyfiledialogs.obj
+	@echo ... src/tinyfiledialogs.i
+	@echo ... src/tinyfiledialogs.s
 .PHONY : help
 
 

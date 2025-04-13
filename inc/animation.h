@@ -2,17 +2,27 @@
 #define ANIMATION_H
 
 #include "AVL.h"
-#include "raylib.h"
 #include "Button.h"
+#include "raylib.h"
 #include <string>
-#include <vector>
+#include <stack>
 #include <set>
-#include <algorithm>
-#include <locale>
-#include <codecvt>
+#include <vector>
+
+enum State {
+    IDLE,
+    TRAVERSING,
+    INSERTING,
+    HIGHLIGHTING_BEFORE_DELETE,
+    DELETING,
+    ROTATING,
+    SHOWING_RESULT,
+    SEARCHING,
+    SEARCH_NOT_FOUND
+};
 
 class AVLTreeVisualizer {
-public:
+private:
     AVLTree tree;
     std::string inputText;
     bool inputActive;
@@ -24,41 +34,36 @@ public:
     Button searchButton;
     Button loadFileButton;
     Button rewindButton;
-    Button playPauseButton;
     Button previousButton;
+    Button playPauseButton;
     Button nextButton;
     Button fastForwardButton;
-
-    enum AnimationState { IDLE, TRAVERSING, INSERTING, ROTATING, SHOWING_RESULT, DELETING, HIGHLIGHTING_BEFORE_DELETE, SEARCHING, SEARCH_NOT_FOUND };
-    AnimationState currentState;
-
-    std::string currentOperation;
+    Rectangle speedBar;
+    Rectangle sliderHandle;
+    State currentState;
     std::vector<Node*> currentPath;
     int pathIndex;
-    std::vector<Node*> rotationNodes;
     int rotationIndex;
     bool searchFound;
     float stateTimer;
     float resultTimer;
     int operationValue;
     int pendingInsertValue;
+    float animationSpeed;
+    bool draggingSlider;
+    bool paused;
     std::string notificationMessage;
     std::set<Node*> highlightNodes;
+    std::string currentOperation;
 
-    float animationSpeed;
-    Rectangle speedBar;
-    Rectangle sliderHandle;
-    bool draggingSlider;
-
-    bool paused;
-
-    Font ralewayFont;
-
+public:
     AVLTreeVisualizer();
     ~AVLTreeVisualizer();
+
     void handleInput();
     void updateAnimation(float deltaTime);
     void draw();
+
     void animateInsert(int value);
     void animateDelete(int value);
     void animateSearch(int value);
@@ -67,9 +72,16 @@ public:
     void animateLoadFile();
     void animatePrevious();
     void animateNext();
-    std::string getPseudocode();
+
     void setNotificationMessage(const std::string& message);
+    std::string getNotificationMessage() const;
+    std::string getPseudocode();
+
+private:
     void drawTree(Node* node, float x, float y, float offset, const std::set<Node*>& highlight);
 };
+
+extern std::stack<AVLTree> treeUndoState;
+extern std::stack<AVLTree> treeRedoState;
 
 #endif // ANIMATION_H

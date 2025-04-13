@@ -1,5 +1,5 @@
 #include "../inc/AVL.h"
-#include "../inc/Color.h"
+
 #include "../inc/animation.h"
 #include "../inc/Button.h"
 #include <sstream>
@@ -19,16 +19,6 @@ AVLTreeVisualizer::AVLTreeVisualizer()
       inputActive(false), 
       handleSpace{0.0f, 0.0f, 1500.0f, 75.0f}, 
       inputBox{20.0f, 20.0f, 200.0f, 30.0f}, 
-      initButton(0.0f, 0.0f, 0.0f, 0.0f, "", DARKPURPLE, WHITE, ralewayFont, 20),
-      insertButton(0.0f, 0.0f, 0.0f, 0.0f, "", DARKGREEN, WHITE, ralewayFont, 20),
-      deleteButton(0.0f, 0.0f, 0.0f, 0.0f, "", RED, WHITE, ralewayFont, 20),
-      searchButton(0.0f, 0.0f, 0.0f, 0.0f, "", DARKBLUE, WHITE, ralewayFont, 20),
-      loadFileButton(0.0f, 0.0f, 0.0f, 0.0f, "", GOLD, WHITE, ralewayFont, 20),
-      rewindButton(0.0f, 0.0f, 0.0f, 0.0f, "", GRAY, WHITE, ralewayFont, 20),
-      previousButton(0.0f, 0.0f, 0.0f, 0.0f, "", GRAY, WHITE, ralewayFont, 20),
-      playPauseButton(0.0f, 0.0f, 0.0f, 0.0f, "", GRAY, WHITE, ralewayFont, 20),
-      nextButton(0.0f, 0.0f, 0.0f, 0.0f, "", GRAY, WHITE, ralewayFont, 20),
-      fastForwardButton(0.0f, 0.0f, 0.0f, 0.0f, "", GRAY, WHITE, ralewayFont, 20),
       currentState(IDLE),
       pathIndex(0),
       rotationIndex(0),
@@ -39,7 +29,17 @@ AVLTreeVisualizer::AVLTreeVisualizer()
       pendingInsertValue(0),
       animationSpeed(0.5f),
       draggingSlider(false),
-      paused(false)
+      paused(false),
+      initButton(10.0f, 0.0f, 80.0f, 30.0f, "Init", WHITE, WHITE, GetFontDefault(), 20),
+      insertButton(90.0f, 0.0f, 80.0f, 30.0f, "Insert", WHITE, WHITE, GetFontDefault(), 20),
+      deleteButton(170.0f, 0.0f, 80.0f, 30.0f, "Delete", WHITE, WHITE, GetFontDefault(), 20),
+      searchButton(250.0f, 0.0f, 80.0f, 30.0f, "Search", WHITE, WHITE, GetFontDefault(), 20),
+      loadFileButton(330.0f, 0.0f, 80.0f, 30.0f, "Load", WHITE, WHITE, GetFontDefault(), 20),
+      rewindButton(0.0f, 0.0f, 70.0f, 30.0f, "|<<", WHITE, WHITE, GetFontDefault(), 20),
+      previousButton(0.0f, 0.0f, 70.0f, 30.0f, "Prev", WHITE, WHITE, GetFontDefault(), 20),
+      playPauseButton(0.0f, 0.0f, 70.0f, 30.0f, "Pause", WHITE, WHITE, GetFontDefault(), 20),
+      nextButton(0.0f, 0.0f, 70.0f, 30.0f, "Next", WHITE, WHITE, GetFontDefault(), 20),
+      fastForwardButton(0.0f, 0.0f, 70.0f, 30.0f, ">>|", WHITE, WHITE, GetFontDefault(), 20)
 {
     float screenWidth = (float)GetScreenWidth();
     float screenHeight = (float)GetScreenHeight();
@@ -62,25 +62,22 @@ AVLTreeVisualizer::AVLTreeVisualizer()
 
     float leftButtonY = speedBar.y - buttonHeight - 10.0f;
 
-    ralewayFont = LoadFont("src/Raleway-Regular.ttf");
-    if (ralewayFont.texture.id == 0) {
-        std::cerr << "Failed to load Raleway font! Falling back to default font." << std::endl;
-    }
+    Font defaultFont = GetFontDefault();
 
-    initButton = Button(10.0f, leftButtonY, buttonWidth, buttonHeight, "Init", DARKPURPLE, WHITE, ralewayFont, 20);
-    insertButton = Button(90.0f, leftButtonY, buttonWidth, buttonHeight, "Insert", DARKGREEN, WHITE, ralewayFont, 20);
-    deleteButton = Button(170.0f, leftButtonY, buttonWidth, buttonHeight, "Delete", RED, WHITE, ralewayFont, 20);
-    searchButton = Button(250.0f, leftButtonY, buttonWidth, buttonHeight, "Search", DARKBLUE, WHITE, ralewayFont, 20);
-    loadFileButton = Button(330.0f, leftButtonY, buttonWidth, buttonHeight, "Load", GOLD, WHITE, ralewayFont, 20);
-    rewindButton = Button(controlBarStartX + 0 * (controlButtonWidth + buttonSpacing), controlBarY, controlButtonWidth, buttonHeight, "|<<", GRAY, WHITE, ralewayFont, 20);
-    previousButton = Button(controlBarStartX + 1 * (controlButtonWidth + buttonSpacing), controlBarY, controlButtonWidth, buttonHeight, "Prev", GRAY, WHITE, ralewayFont, 20);
-    playPauseButton = Button(controlBarStartX + 2 * (controlButtonWidth + buttonSpacing), controlBarY, controlButtonWidth, buttonHeight, "Pause", GRAY, WHITE, ralewayFont, 20);
-    nextButton = Button(controlBarStartX + 3 * (controlButtonWidth + buttonSpacing), controlBarY, controlButtonWidth, buttonHeight, "Next", GRAY, WHITE, ralewayFont, 20);
-    fastForwardButton = Button(controlBarStartX + 4 * (controlButtonWidth + buttonSpacing), controlBarY, controlButtonWidth, buttonHeight, ">>|", GRAY, WHITE, ralewayFont, 20);
+    initButton = Button(10.0f, leftButtonY, buttonWidth, buttonHeight, "Init", GRAY, WHITE, defaultFont, 20);
+    insertButton = Button(90.0f, leftButtonY, buttonWidth, buttonHeight, "Insert", GRAY, WHITE, defaultFont, 20);
+    deleteButton = Button(170.0f, leftButtonY, buttonWidth, buttonHeight, "Delete", GRAY, WHITE, defaultFont, 20);
+    searchButton = Button(250.0f, leftButtonY, buttonWidth, buttonHeight, "Search", GRAY, WHITE, defaultFont, 20);
+    loadFileButton = Button(330.0f, leftButtonY, buttonWidth, buttonHeight, "Load", GRAY, WHITE, defaultFont, 20);
+    rewindButton = Button(controlBarStartX + 0 * (controlButtonWidth + buttonSpacing), controlBarY, controlButtonWidth, buttonHeight, "|<<", GRAY, WHITE, defaultFont, 20);
+    previousButton = Button(controlBarStartX + 1 * (controlButtonWidth + buttonSpacing), controlBarY, controlButtonWidth, buttonHeight, "Prev", GRAY, WHITE, defaultFont, 20);
+    playPauseButton = Button(controlBarStartX + 2 * (controlButtonWidth + buttonSpacing), controlBarY, controlButtonWidth, buttonHeight, "Pause", GRAY, WHITE, defaultFont, 20);
+    nextButton = Button(controlBarStartX + 3 * (controlButtonWidth + buttonSpacing), controlBarY, controlButtonWidth, buttonHeight, "Next", GRAY, WHITE, defaultFont, 20);
+    fastForwardButton = Button(controlBarStartX + 4 * (controlButtonWidth + buttonSpacing), controlBarY, controlButtonWidth, buttonHeight, ">>|", GRAY, WHITE, defaultFont, 20);
 }
 
 AVLTreeVisualizer::~AVLTreeVisualizer() {
-    UnloadFont(ralewayFont);
+    // No font to unload
 }
 
 void AVLTreeVisualizer::handleInput() {
@@ -352,7 +349,7 @@ void AVLTreeVisualizer::drawTree(Node* node, float x, float y, float offset, con
 
     DrawCircle(x, y, NODE_RADIUS, nodeColor);
     std::string valueStr = std::to_string(node->data);
-    DrawTextEx(ralewayFont, valueStr.c_str(), { x - MeasureText(valueStr.c_str(), 20) / 2, y - 10 }, 20, 1, BLACK);
+    DrawText(valueStr.c_str(), x - MeasureText(valueStr.c_str(), 20) / 2, y - 10, 20, BLACK);
 
     if (node->left) {
         float leftX = tree.getSubtreeWidth(node->left->right);
@@ -376,27 +373,27 @@ void AVLTreeVisualizer::drawTree(Node* node, float x, float y, float offset, con
 void AVLTreeVisualizer::draw() {
     std::set<Node*> highlightNodes(currentPath.begin(), currentPath.begin() + pathIndex);
 
-    ClearBackground(SKYBLUE);
+    ClearBackground(BEIGE);
     DrawRectangleRec(inputBox, LIGHTGRAY);
     DrawRectangleLinesEx(inputBox, 2, inputActive ? BLUE : GRAY);
-    DrawTextEx(ralewayFont, inputText.c_str(), Vector2{ inputBox.x + 5, inputBox.y + 5 }, 20, 1, BLACK);
+    DrawText(inputText.c_str(), inputBox.x + 5, inputBox.y + 5, 20, BLACK);
 
     int titleSize = MeasureText("AVL Tree Visualizer", 30);
     float titleX = (GetScreenWidth() - titleSize) / 2.0f;
     float titleY = 37.0f;
-    DrawTextEx(ralewayFont, "AVL Tree Visualizer", Vector2{ titleX, titleY }, 30, 1, BLACK);
+    DrawText("AVL Tree Visualizer", titleX, titleY, 30, BLACK);
 
     int speedLabelSize = MeasureText("Speed", 20);
     Rectangle speedLabelBgRect = { speedBar.x, speedBar.y - 20.0f - 5, (float)speedLabelSize + 10, 30.0f };
     DrawRectangleRec(speedLabelBgRect, Fade(LIGHTGRAY, 0.8f));
-    DrawTextEx(ralewayFont, "Speed", Vector2{ speedBar.x + 5, speedBar.y - 20.0f }, 20, 1, BLACK);
+    DrawText("Speed", speedBar.x + 5, speedBar.y - 20.0f, 20, BLACK);
 
     std::string speedText = "Speed: " + std::to_string(static_cast<int>(animationSpeed * 500)) + "%";
     int speedTextSize = MeasureText(speedText.c_str(), 20);
     float speedTextX = speedBar.x + (speedBar.width / 2.0f) - (speedTextSize / 2.0f);
     Rectangle speedTextBgRect = { speedTextX - 5, speedBar.y - 40.0f - 5, (float)speedTextSize + 10, 30.0f };
     DrawRectangleRec(speedTextBgRect, Fade(LIGHTGRAY, 0.8f));
-    DrawTextEx(ralewayFont, speedText.c_str(), Vector2{ speedTextX, speedBar.y - 40.0f }, 20, 1, BLACK);
+    DrawText(speedText.c_str(), speedTextX, speedBar.y - 40.0f, 20, BLACK);
 
     DrawRectangleRec(speedBar, LIGHTGRAY);
     DrawRectangleLinesEx(speedBar, 2, GRAY);
@@ -417,8 +414,7 @@ void AVLTreeVisualizer::draw() {
         drawTree(tree.root, GetScreenWidth() / 2, 120, 200, highlightNodes);
     }
 
-    // Modified: Only draw notification message for "loadfile" operation
-    if (!notificationMessage.empty() && currentOperation == "loadfile") {
+    if (!notificationMessage.empty()) {
         float maxWidth = static_cast<float>(GetScreenWidth()) * 0.8f;
         std::string displayMessage = notificationMessage;
         int messageSize = MeasureText(displayMessage.c_str(), 20);
@@ -434,25 +430,7 @@ void AVLTreeVisualizer::draw() {
         float xPos = (GetScreenWidth() - messageSize) / 2.0f;
         Rectangle bgRect = { xPos - 5.0f, yPos - 5.0f, static_cast<float>(messageSize + 10), 25.0f };
         DrawRectangleRec(bgRect, Fade(LIGHTGRAY, 0.8f));
-        DrawTextEx(ralewayFont, displayMessage.c_str(), Vector2{ xPos, yPos }, 20, 1, BLACK);
-    }
-
-    if (currentState == SHOWING_RESULT && currentOperation == "search" && !searchFound) {
-        std::string messageNotFound = std::to_string(operationValue) + " is not in the tree";
-        float maxWidth = static_cast<float>(GetScreenWidth()) * 0.8f;
-        std::string displayMessage = messageNotFound;
-        int messageSize = MeasureText(displayMessage.c_str(), 20);
-        if (messageSize > maxWidth) {
-            std::string truncatedMessage = displayMessage;
-            while (MeasureText((truncatedMessage + "...").c_str(), 20) > maxWidth && !truncatedMessage.empty()) {
-                truncatedMessage.pop_back();
-            }
-            displayMessage = truncatedMessage + "...";
-            messageSize = MeasureText(displayMessage.c_str(), 20);
-        }
-        Rectangle bgRect = { 10.0f, handleSpace.height + 35.0f, static_cast<float>(messageSize + 10), 25.0f };
-        DrawRectangleRec(bgRect, Fade(LIGHTGRAY, 0.8f));
-        DrawTextEx(ralewayFont, displayMessage.c_str(), Vector2{ 10.0f, handleSpace.height + 35.0f }, 20, 1, RED);
+        DrawText(displayMessage.c_str(), xPos, yPos, 20, BLACK);
     }
 
     std::string pseudocodeText = getPseudocode();
@@ -476,7 +454,7 @@ void AVLTreeVisualizer::draw() {
     int startY = pseudoCodeTopY;
     stream.clear(); stream.str(pseudocodeText);
     while (std::getline(stream, line)) {
-        DrawTextEx(ralewayFont, line.c_str(), Vector2{ 10, static_cast<float>(startY) }, 20, 1, BLACK);
+        DrawText(line.c_str(), 10, startY, 20, BLACK);
         startY += lineHeight;
     }
 }
@@ -704,4 +682,8 @@ void AVLTreeVisualizer::setNotificationMessage(const std::string& message) {
     notificationMessage = message;
     stateTimer = 0.0f;
     currentState = SHOWING_RESULT;
+}
+
+std::string AVLTreeVisualizer::getNotificationMessage() const {
+    return notificationMessage;
 }

@@ -1,33 +1,19 @@
-#include "raylib.h"
+#include "GraphApp.h" // Include header file
+
+// Include headers cần thiết CHỈ cho implementation
 #include <iostream>
-#include <queue>
-#include <vector>
-#include <string>
-#include <cmath>
-#include <cstdlib>
-#include <ctime>
-#include <algorithm>
 #include <sstream>
-#include "raymath.h"
+#include <fstream>
 #include <random>
 #include <iomanip>
-#include "tinyfiledialogs.h"
-#include <fstream>
-#include <functional>
+#include <algorithm>
 #include <stdexcept>
-#include <utility> // For std::pair
+#include <limits.h> // For INT_MAX
 
-struct Edge {
-    int from;
-    int to;
-    int weight;
+// --- Function Definitions ---
 
-    // Used by std::sort
-    bool operator<(const Edge& other) const {
-        return weight < other.weight;
-    }
-};
-
+// -- Graph Utils --
+bool Edge::operator<(const Edge& other) const { return weight < other.weight; }
 bool edgeExists(const std::vector<Edge>& edges, int from, int to) {
     for (const auto& edge : edges) {
         if ((edge.from == from && edge.to == to) || (edge.from == to && edge.to == from)) {
@@ -36,13 +22,9 @@ bool edgeExists(const std::vector<Edge>& edges, int from, int to) {
     }
     return false;
 }
-
-using CompareEdgePair = std::function<bool(const std::pair<int, Edge>&, const std::pair<int, Edge>&)>;
-
 bool compareEdgePrim(const std::pair<int, Edge>& a, const std::pair<int, Edge>& b) {
     return a.first > b.first; // Min-heap based on weight (a.first)
 }
-
 bool isGraphConnected(const std::vector<Edge>& edges, int numNodes) {
     if (numNodes <= 1) return true;
 
@@ -94,11 +76,10 @@ bool isGraphConnected(const std::vector<Edge>& edges, int numNodes) {
              return false; // Found an unvisited node
         }
     }
-
-
     return true; // All nodes are visited
 }
 
+// -- MST Algorithms --
 std::vector<Edge> calculatePrimMST(const std::vector<Edge>& edges, int numNodes) {
     std::vector<Edge> mstEdges;
    if (numNodes <= 0) return mstEdges; // Handle empty or invalid graph
@@ -180,21 +161,18 @@ std::vector<Edge> calculatePrimMST(const std::vector<Edge>& edges, int numNodes)
    // Optional: Check if nodesInMST == numNodes to verify MST could be formed (graph was connected)
    return mstEdges;
 }
-
 int findSet(std::vector<int>& parent, int i) {
     if (parent[i] == i)
         return i;
     // Path compression
     return parent[i] = findSet(parent, parent[i]);
 }
-
 void unionSets(std::vector<int>& parent, int a, int b) {
     int rootA = findSet(parent, a);
     int rootB = findSet(parent, b);
     if (rootA != rootB)
         parent[rootA] = rootB; // Simple union without rank/size optimization
 }
-
 std::vector<Edge> calculateKruskalMST(const std::vector<Edge>& edges, int numNodes) {
     std::vector<Edge> mstEdges;
      if (numNodes <= 0) return mstEdges;
@@ -232,7 +210,7 @@ std::vector<Edge> calculateKruskalMST(const std::vector<Edge>& edges, int numNod
     return mstEdges;
 }
 
-
+// -- Graph Generators --
 void generateCompleteGraph(std::vector<Edge>& edges, int numNodes)
 {
         edges.clear();
@@ -244,7 +222,6 @@ void generateCompleteGraph(std::vector<Edge>& edges, int numNodes)
             }
         }
 }
-
 void generateCycleGraph(std::vector<Edge>& edges, int numNodes) {
     edges.clear();
      if (numNodes < 3) return; // Cycle needs at least 3 nodes
@@ -253,7 +230,6 @@ void generateCycleGraph(std::vector<Edge>& edges, int numNodes) {
     }
     edges.push_back({ numNodes, 1, GetRandomValue(1, 10) }); // Connect last to first
 }
-
 void generatePathGraph(std::vector<Edge>& edges, int numNodes, std::vector<Vector2>& nodePositions, int screenWidth, int screenHeight) {
     edges.clear();
      if (numNodes < 1) return;
@@ -274,7 +250,6 @@ void generatePathGraph(std::vector<Edge>& edges, int numNodes, std::vector<Vecto
         nodePositions[i] = { startX + i * spacing, centerY };
     }
 }
-
 void generateStarGraph(std::vector<Edge>& edges, int numNodes) {
     edges.clear();
     if (numNodes < 2) return; // Star needs at least 2 nodes (center + 1)
@@ -283,7 +258,6 @@ void generateStarGraph(std::vector<Edge>& edges, int numNodes) {
         edges.push_back({ centerNode, i, GetRandomValue(1, 10) });
     }
 }
-
 void generateRandomGraph(std::vector<Edge>& edges, int numNodes, int numEdges) {
     edges.clear();
      if (numNodes <= 0) return;
@@ -353,268 +327,8 @@ void generateRandomGraph(std::vector<Edge>& edges, int numNodes, int numEdges) {
         std::cerr << "Warning: Generated random graph might not be connected (should not happen)." << std::endl;
     }
 }
-// bool isGraphConnected(const std::vector<Edge>& edges, int numNodes); // Declare it if needed
 
-class Slider {
-    public:
-        Rectangle rect;
-        Rectangle knob;
-        float value; // Normalized value (0.0 - 1.0)
-        float minValue;
-        float maxValue;
-        bool isDragging;
-        std::string label;
-        bool editValue;
-        std::string editBuffer;
-    
-        Slider(Rectangle r, float minVal, float maxVal, std::string l);
-    
-        void update();
-        float getValue() const; // Returns the actual value within min/max range
-        void draw();
-        bool isHovered() const;
-        bool isEditing() const;
-        void startEditing();
-        void stopEditing();
-        std::string getLabel() const;
-    
-        // Add a method to set the value externally (e.g., from loaded settings)
-        void setValue(float actualValue);
-};
-
-Slider::Slider(Rectangle r, float minVal, float maxVal, std::string l)
-    : rect(r), minValue(minVal), maxValue(maxVal), value(0.5f), // Default normalized value
-      isDragging(false), label(std::move(l)), editValue(false), editBuffer("") {
-    // Initial knob position based on default value
-    knob = { rect.x + (rect.width - 15) * value, rect.y - 5, 15, rect.height + 10 };
-}
-
-void Slider::update() {
-    Vector2 mousePos = GetMousePosition();
-
-    // Tính toán lại thông tin núm tròn để kiểm tra va chạm
-    Vector2 knobCenter = { knob.x + knob.width / 2.0f, knob.y + knob.height / 2.0f };
-    float knobRadius = knob.height / 1.8f; // Dùng cùng bán kính như khi vẽ
-
-    // --- THAY ĐỔI KIỂM TRA VA CHẠM ---
-    // Check for starting drag using circle collision
-    // if (!isDragging && CheckCollisionPointRec(mousePos, knob) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) { // CŨ
-    if (!isDragging && CheckCollisionPointCircle(mousePos, knobCenter, knobRadius) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) { // MỚI
-        isDragging = true;
-        // Có thể thêm hiệu ứng nhỏ khi nhấn ở đây nếu muốn
-    }
-    // --- KẾT THÚC THAY ĐỔI ---
-
-    // Handle dragging (logic giữ nguyên, nhưng cập nhật knob.x)
-    if (isDragging && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
-        float newKnobCenterX = mousePos.x; // Kéo dựa vào tâm núm
-        // Clamp tâm núm trong khoảng track cho phép
-        float minKnobCenterX = rect.x + knobRadius;
-        float maxKnobCenterX = rect.x + rect.width - knobRadius;
-        float clampedKnobCenterX = Clamp(newKnobCenterX, minKnobCenterX, maxKnobCenterX);
-
-        // Cập nhật lại vị trí knob.x dựa trên tâm mới
-        knob.x = clampedKnobCenterX - knob.width / 2.0f;
-
-        // Cập nhật giá trị value dựa trên vị trí tâm núm
-        if ((maxKnobCenterX - minKnobCenterX) > 0) {
-             value = (clampedKnobCenterX - minKnobCenterX) / (maxKnobCenterX - minKnobCenterX);
-        } else {
-             value = 0.0f;
-        }
-        value = Clamp(value, 0.0f, 1.0f);
-    }
-
-    // Stop dragging
-    if (isDragging && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
-        isDragging = false;
-    }
-
-    // --- Handle Direct Value Editing ---
-    Rectangle valueTextRect = { rect.x + rect.width + 10, rect.y, 60, (float)GetFontDefault().baseSize }; // Approx area of value text
-
-    // Start editing on click
-    if (!editValue && CheckCollisionPointRec(mousePos, valueTextRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-        startEditing();
-    }
-
-    // Handle input while editing
-    if (editValue) {
-         SetMouseCursor(MOUSE_CURSOR_IBEAM);
-         int key = GetCharPressed();
-         while(key > 0) {
-            // Allow numbers, decimal point (only one), and minus sign (at start)
-            if (((key >= '0' && key <= '9') ||
-                 (key == '.' && editBuffer.find('.') == std::string::npos) ||
-                 (key == '-' && editBuffer.empty())) &&
-                 (editBuffer.length() < 10)) // Limit length
-            {
-                 editBuffer += (char)key;
-            }
-             key = GetCharPressed(); // Check next char in queue
-         }
-
-
-        if (IsKeyPressed(KEY_BACKSPACE)) {
-            if (!editBuffer.empty()) {
-                editBuffer.pop_back();
-            }
-        }
-
-        // Finish editing
-        if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_KP_ENTER) || (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !CheckCollisionPointRec(mousePos, valueTextRect))) {
-             stopEditing();
-             SetMouseCursor(MOUSE_CURSOR_DEFAULT);
-        }
-    } else {
-         // Optional: Change cursor on hover over value text
-         if (CheckCollisionPointRec(mousePos, valueTextRect)) {
-             SetMouseCursor(MOUSE_CURSOR_IBEAM);
-         } else {
-             // Check if hovering slider knob or bar before setting default
-             if (!isDragging && !CheckCollisionPointRec(mousePos, knob) && !CheckCollisionPointRec(mousePos, rect)) {
-                 // SetMouseCursor(MOUSE_CURSOR_DEFAULT); // May interfere with other UI elements
-             }
-         }
-    }
-}
-
-
-float Slider::getValue() const {
-    // Lerp between minValue and maxValue based on normalized value
-    return minValue + (maxValue - minValue) * value;
-}
-
-void Slider::draw() {
-    // Draw label
-    DrawText(label.c_str(), rect.x, rect.y - 20, 16, RAYWHITE);
-
-    // Draw slider track
-     DrawRectangleRounded(rect, 0.3f, 4, LIGHTGRAY); // Ví dụ: Bo góc nhẹ
-     Vector2 knobCenter = { knob.x + knob.width / 2.0f, knob.y + knob.height / 2.0f };
-     float knobRadius = knob.height / 1.8f; // Bán kính nhỏ hơn chiều cao một chút cho đẹp
- 
-     // Vẽ phần đã tô màu của thanh trượt (từ đầu đến giữa núm)
-     float filledWidth = knobCenter.x - rect.x;
-     filledWidth = Clamp(filledWidth, 0, rect.width); // Đảm bảo không vẽ ra ngoài
-     if (filledWidth > 0) {
-         // Vẽ phần đã tô màu cũng bo tròn
-         DrawRectangleRounded({rect.x, rect.y, filledWidth, rect.height}, 0.3f, 4, SKYBLUE); // Dùng màu khác (vd: SKYBLUE)
-     }
- 
-     // Xác định màu sắc cho núm dựa trên trạng thái
-     Color knobColor = BLUE; // Màu mặc định
-     bool knobHovered = CheckCollisionPointCircle(GetMousePosition(), knobCenter, knobRadius);
-     if (isDragging) {
-         knobColor = DARKBLUE; // Màu khi đang kéo
-     } else if (knobHovered) {
-         knobColor = SKYBLUE;  // Màu khi di chuột qua
-     }
- 
-     // Vẽ núm hình tròn
-     DrawCircleV(knobCenter, knobRadius, knobColor);
-    // Draw value text
-     std::stringstream ss;
-     ss << std::fixed << std::setprecision(2) << getValue();
-     std::string valueStr = ss.str();
-
-     int valueFontSize = 16;
-     Vector2 valueTextSize = MeasureTextEx(GetFontDefault(), valueStr.c_str(), valueFontSize, 1);
-     Rectangle valueTextRect = { rect.x + rect.width + 15, rect.y + (rect.height - valueFontSize)/2.0f, valueTextSize.x + 10, (float)valueFontSize + 4}; // Điều chỉnh vị trí Y và Width/Height
-
-    if (editValue) {
-         valueTextRect.height = 20;
-         DrawRectangleRec(valueTextRect, WHITE);
-         DrawRectangleLinesEx(valueTextRect, 1, BLACK);
-         DrawText(editBuffer.c_str(), valueTextRect.x + 5, valueTextRect.y , 16, BLACK);
-          // Draw blinking cursor
-         if (((int)(GetTime() * 2.0f)) % 2 == 0) {
-              DrawText("|", valueTextRect.x + 5 + MeasureText(editBuffer.c_str(), 16), valueTextRect.y, 16, BLACK);
-         }
-
-    } else {
-         DrawText(valueStr.c_str(), valueTextRect.x + 5, valueTextRect.y, 16, RAYWHITE);
-         if (CheckCollisionPointRec(GetMousePosition(), valueTextRect)) {
-             DrawRectangleLinesEx(valueTextRect, 1, YELLOW);
-         }
-    }
-}
-
-
-bool Slider::isHovered() const {
-    // Consider hovering over knob or label as well?
-    return CheckCollisionPointRec(GetMousePosition(), rect) || CheckCollisionPointRec(GetMousePosition(), knob);
-}
-
-bool Slider::isEditing() const {
-    return editValue;
-}
-
-void Slider::startEditing() {
-    editValue = true;
-    std::stringstream ss;
-    ss << std::fixed << std::setprecision(2) << getValue();
-    editBuffer = ss.str();
-}
-
-void Slider::stopEditing() {
-     editValue = false;
-     SetMouseCursor(MOUSE_CURSOR_DEFAULT);
-     float newValueFromBuffer = getValue(); // Default to current value if parse fails
-    try {
-        newValueFromBuffer = std::stof(editBuffer);
-         // Clamp the input value to the slider's range
-         newValueFromBuffer = Clamp(newValueFromBuffer, minValue, maxValue);
-         setValue(newValueFromBuffer); // Use setValue to update normalized value and knob
-
-    } catch (const std::invalid_argument& e) {
-         // Handle invalid input (e.g., "abc") - keep the old value
-         TraceLog(LOG_WARNING, "SLIDER: Invalid number format in edit buffer: %s", editBuffer.c_str());
-    } catch (const std::out_of_range& e) {
-         // Handle input out of float range - clamp to min/max
-         TraceLog(LOG_WARNING, "SLIDER: Number out of range in edit buffer: %s", editBuffer.c_str());
-         // Decide whether to clamp or revert - clamping seems more user-friendly
-         try { // Need nested try-catch for potentially huge numbers
-             double largeVal = std::stod(editBuffer); // Use double for intermediate check
-             newValueFromBuffer = Clamp((float)largeVal, minValue, maxValue);
-              setValue(newValueFromBuffer);
-         } catch (...) {
-              // Revert if even double parsing fails
-         }
-
-    }
-    // Update edit buffer to reflect the final value (or revert if needed)
-    // std::stringstream ss;
-    // ss << std::fixed << std::setprecision(2) << getValue();
-    // editBuffer = ss.str(); // Update buffer to match potentially clamped value
-}
-
-std::string Slider::getLabel() const {
-    return label;
-}
-
-// Add the implementation for setValue
-void Slider::setValue(float actualValue) {
-    // Clamp the incoming value to the allowed range
-    actualValue = Clamp(actualValue, minValue, maxValue);
-    // Calculate the normalized value
-    if (maxValue - minValue != 0) {
-         value = (actualValue - minValue) / (maxValue - minValue);
-    } else {
-         value = 0.0f; // Or 0.5f if min == max
-    }
-     value = Clamp(value, 0.0f, 1.0f); // Ensure normalization is clamped
-
-    // Update knob position based on the new normalized value
-    knob.x = rect.x + (rect.width - knob.width) * value;
-    // Update edit buffer if currently editing
-    if (editValue) {
-         std::stringstream ss;
-         ss << std::fixed << std::setprecision(2) << actualValue;
-         editBuffer = ss.str();
-    }
-}
-
+// -- Drawing Utils --
 void positionNodesInCircle(std::vector<Vector2>& nodePositions, int numNodes, float centerX, float centerY, float radius) {
     if (numNodes <= 0) return;
     nodePositions.resize(numNodes);
@@ -635,7 +349,6 @@ void positionNodesInCircle(std::vector<Vector2>& nodePositions, int numNodes, fl
         };
     }
 }
-
 void drawNode(Vector2 position, int id, Color color, float radius) {
     DrawCircleV(position, radius, color);
     DrawCircleV(position, radius * 0.9f, WHITE); // Inner circle slightly smaller
@@ -650,14 +363,9 @@ void drawNode(Vector2 position, int id, Color color, float radius) {
              fontSize,
              DARKGRAY);
 }
-
 void drawBezierEdge(Vector2 start, Vector2 end, float thickness, Color color) {
-    // Actual Bezier implementation would require control points.
-    // Example: Vector2 control = Vector2Lerp(start, end, 0.5f); control.y -= 50; // Simple control point
-    // DrawLineBezier(start, end, thickness, color); // Using Raylib's Bezier function
     DrawLineEx(start, end, thickness, color); // Keep it simple for now
 }
-
 void drawEdgeWeight(Vector2 start, Vector2 end, int weight) {
     Vector2 midPoint = Vector2Lerp(start, end, 0.5f); // Use Lerp for midpoint
     std::string weightText = std::to_string(weight);
@@ -683,37 +391,7 @@ void drawEdgeWeight(Vector2 start, Vector2 end, int weight) {
     DrawRectangleLinesEx(bgRect, 1.0f, GRAY);
     DrawText(weightText.c_str(), (int)textPosition.x, (int)textPosition.y, fontSize, BLACK); // Draw text on top
 }
-
-void drawMSTInfo(int totalWeight, bool isMSTDrawingPaused, Rectangle pauseResumeButton, Rectangle menuRect) {
-    float textX = menuRect.x + 10;
-    float textY = menuRect.y + 40; // Move down below the title
-    int fontSize = 20;
-
-    // Box for Total Weight
-    std::string weightStr = "Total Weight: " + std::to_string(totalWeight);
-    Vector2 weightTextSize = MeasureTextEx(GetFontDefault(), weightStr.c_str(), fontSize, 1);
-    Rectangle weightBox = {textX, textY, weightTextSize.x + 10, weightTextSize.y + 10}; // Fit box to text
-
-    DrawRectangleRec(weightBox, WHITE);
-    DrawRectangleLinesEx(weightBox, 1, BLACK);
-    DrawText(weightStr.c_str(), weightBox.x + 5, weightBox.y + 5, fontSize, BLACK);
-
-    // Position Pause/Resume button below the weight box
-    // Ensure pauseResumeButton passed in has correct X, Width, Height
-    Rectangle actualPauseButton = pauseResumeButton; // Copy to modify Y
-    actualPauseButton.y = weightBox.y + weightBox.height + 5;
-
-    // Draw Pause/Resume Button
-    DrawRectangleRec(actualPauseButton, WHITE);
-    DrawRectangleLinesEx(actualPauseButton, 1, CheckCollisionPointRec(GetMousePosition(), actualPauseButton) ? RED : BLACK); // Highlight on hover
-    const char* pauseText = isMSTDrawingPaused ? "Resume" : "Pause";
-    Vector2 pauseTextSize = MeasureTextEx(GetFontDefault(), pauseText, fontSize, 1);
-    DrawText(pauseText,
-             actualPauseButton.x + (actualPauseButton.width - pauseTextSize.x) / 2, // Center text
-             actualPauseButton.y + (actualPauseButton.height - pauseTextSize.y) / 2,
-             fontSize, BLACK);
-}
-
+// -- Camera Utils --
 void UpdateGraphCamera(Camera2D &camera, const std::vector<Vector2>& nodes, float nodeRadius, int screenWidth, int screenHeight, float uiLeftWidth, float uiRightWidth) {
     // Default camera state
     Vector2 defaultTarget = { (float)screenWidth / 2.0f, (float)screenHeight / 2.0f };
@@ -796,6 +474,7 @@ void UpdateGraphCamera(Camera2D &camera, const std::vector<Vector2>& nodes, floa
    camera.zoom = zoom;
 }
 
+// -- Input/Text Utils --
 int GetCursorIndex(const std::string& text, int row, int col) {
     int currentIndex = 0;
     int currentRow = 0;
@@ -818,7 +497,6 @@ int GetCursorIndex(const std::string& text, int row, int col) {
     // If row/col is beyond the text, return the end index
     return text.length();
 }
-
 int GetColFromIndex(const std::string& text, int index) {
     int col = 0;
     // Clamp index to be within valid range
@@ -833,7 +511,6 @@ int GetColFromIndex(const std::string& text, int index) {
    }
    return col;
 }
-
 Vector2 GetCursorScreenPos(const std::string& text, int row, int col, Rectangle rect, int fontSize) {
     float currentX = rect.x + 5; // Start position with padding
     float currentY = rect.y + 5;
@@ -853,37 +530,19 @@ Vector2 GetCursorScreenPos(const std::string& text, int row, int col, Rectangle 
             currentRow++;
             currentCol = 0;
         } else {
-            // Measure the current character and advance X
-             // Need to handle potential multi-byte UTF-8 chars if supporting them
-             // For basic ASCII/single-byte:
-             // float charWidth = MeasureText(TextFormat("%c", text[textIndex]), fontSize);
-             // For Raylib's default font handling (might handle some UTF-8):
              int codepoint = 0;
              int bytesProcessed = 0;
-             // Get the next codepoint and its size in bytes
              codepoint = GetCodepoint(&text[textIndex], &bytesProcessed);
-             // Get glyph info for the codepoint
              GlyphInfo glyph = GetGlyphInfo(GetFontDefault(), codepoint);
-             // Advance X by the glyph's advanceX, scaled if needed, or just width
-             // Using glyph.advanceX is generally better for text layout
              currentX += (glyph.advanceX == 0) ? glyph.image.width : glyph.advanceX;
-             // Add spacing between characters
              currentX += GetFontDefault().glyphPadding;
-
-
              currentCol++;
-             // Important: Increment textIndex by the number of bytes processed for the codepoint
              textIndex += bytesProcessed -1; // -1 because the loop adds 1 later
         }
          textIndex++;
     }
-
-    // If the loop finishes, the cursor is at the end of the text
-    // If the last char was a newline, currentX/Y are already correct for the start of the next line
-    // Otherwise, currentX/Y point to the position *after* the last character
     return {currentX, currentY};
 }
-
 std::string ValidateMatrixInput(const std::string& input, std::vector<std::vector<int>>& adjacencyMatrix, int& numNodes) {
     adjacencyMatrix.clear();
     numNodes = 0;
@@ -995,6 +654,7 @@ std::string ValidateMatrixInput(const std::string& input, std::vector<std::vecto
     return ""; // Success!
 }
 
+// -- File Utils --
 std::string ReadTextFile(const char *filePath) {
     std::ifstream fileStream(filePath);
     if (!fileStream.is_open()) {
@@ -1006,7 +666,6 @@ std::string ReadTextFile(const char *filePath) {
     fileStream.close();
     return buffer.str();
 }
-
 bool LoadGraphFromFile(const char* filePath,
     std::vector<Edge>& outEdges,
     std::vector<Vector2>& outNodePositions,
@@ -1066,182 +725,339 @@ bool LoadGraphFromFile(const char* filePath,
     float layoutRadius = std::min(screenWidth, screenHeight) / 3.0f; // Adjusted radius
     positionNodesInCircle(outNodePositions, numNodes, screenWidth / 2.0f, screenHeight / 2.0f, layoutRadius);
     }
-return true; 
+     return true; 
 }
 
-enum class EditTool { // Use enum class for stronger typing
-    TOOL_NONE,
-    TOOL_ADD_VERTEX,
-    TOOL_ADD_EDGE_START,
-    TOOL_ADD_EDGE_END,
-    TOOL_EDIT_WEIGHT,
-    TOOL_MOVE_VERTEX,
-    TOOL_DELETE_VERTEX,
-    TOOL_DELETE_EDGE
-};
+// -- Slider Class Method Definitions --
+Slider::Slider(Rectangle r, float minVal, float maxVal, std::string l)
+    : rect(r), minValue(minVal), maxValue(maxVal), value(0.5f), // Default normalized value
+      isDragging(false), label(std::move(l)), editValue(false), editBuffer("") {
+    // Initial knob position based on default value
+    knob = { rect.x + (rect.width - 15) * value, rect.y - 5, 15, rect.height + 10 };
+}
+void Slider::update() {
+    Vector2 mousePos = GetMousePosition();
 
-void ResetStates(bool &isCreating, bool &isRandomizing, bool &isShowingExamples,
-    bool &showMatrixInput, bool &graphDrawn,
-    std::string &numNodesStr, std::string &numEdgesStr, std::string &matrixInput,
-    bool &nodesFocused, bool &edgesFocused,
-    bool &showMSTMenu, bool &isEditingGraph, EditTool& currentTool,
-    bool& showFileError, std::string& fileErrorMessage,
-    bool& showError, std::string& errorMessage,
-    bool& showMSTError, std::string& mstErrorMessage);
-    
-bool isCreating = false; // Keep original definitions here
-bool isRandomizing = false;
-bool isShowingExamples = false; // Flag if "Examples" buttons are active
+    // Tính toán lại thông tin núm tròn để kiểm tra va chạm
+    Vector2 knobCenter = { knob.x + knob.width / 2.0f, knob.y + knob.height / 2.0f };
+    float knobRadius = knob.height / 1.8f; // Dùng cùng bán kính như khi vẽ
 
-bool isCreatingActive = false;       // Flag if "Create" input fields are active
-bool isRandomizingActive = false;    // Flag if "Random" was just clicked
-bool isShowingExamplesActive = false; // Flag if "Examples" buttons are shown
-bool isInputActive = false;          // Flag if "Input" mode (matrix) is active
-bool isFileActive = false;           // Flag if "File" operation is in progress
+    // --- THAY ĐỔI KIỂM TRA VA CHẠM ---
+    // Check for starting drag using circle collision
+    // if (!isDragging && CheckCollisionPointRec(mousePos, knob) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) { // CŨ
+    if (!isDragging && CheckCollisionPointCircle(mousePos, knobCenter, knobRadius) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) { // MỚI
+        isDragging = true;
+        // Có thể thêm hiệu ứng nhỏ khi nhấn ở đây nếu muốn
+    }
+    // --- KẾT THÚC THAY ĐỔI ---
 
-bool graphDrawn = false;
-std::vector<Edge> edges;
-std::vector<Vector2> nodePositions;
-Camera2D graphCamera = { 0 };
+    // Handle dragging (logic giữ nguyên, nhưng cập nhật knob.x)
+    if (isDragging && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+        float newKnobCenterX = mousePos.x; // Kéo dựa vào tâm núm
+        // Clamp tâm núm trong khoảng track cho phép
+        float minKnobCenterX = rect.x + knobRadius;
+        float maxKnobCenterX = rect.x + rect.width - knobRadius;
+        float clampedKnobCenterX = Clamp(newKnobCenterX, minKnobCenterX, maxKnobCenterX);
 
-// UI State / Input Buffers
-std::string numNodesStr = "";
-std::string numEdgesStr = "";
-std::string matrixInput = ""; // For matrix input window
-std::string weightInputBuffer = ""; // For editing edge weights
+        // Cập nhật lại vị trí knob.x dựa trên tâm mới
+        knob.x = clampedKnobCenterX - knob.width / 2.0f;
 
-// Focus flags
-bool nodesFocused = false;
-bool edgesFocused = false;
-bool matrixInputFocused = false;
-bool isEditingWeight = false; // If the weight input box is active
+        // Cập nhật giá trị value dựa trên vị trí tâm núm
+        if ((maxKnobCenterX - minKnobCenterX) > 0) {
+             value = (clampedKnobCenterX - minKnobCenterX) / (maxKnobCenterX - minKnobCenterX);
+        } else {
+             value = 0.0f;
+        }
+        value = Clamp(value, 0.0f, 1.0f);
+    }
 
-// Window/Mode states
-bool showMatrixInput = false;
-bool showExampleButtons = false; // If example buttons (K5, C6...) are visible
-bool showMSTMenu = false;
-bool isEditingGraph = false; // Master flag for graph editing mode
+    // Stop dragging
+    if (isDragging && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+        isDragging = false;
+    }
 
-// Editing Tool State
-EditTool currentTool = EditTool::TOOL_NONE;
-int selectedNodeIndex = -1; // Index of node selected for move/edge start/delete
-int selectedEdgeIndex = -1; // Index of edge selected for weight edit/delete
-bool isDraggingNode = false;
+    // --- Handle Direct Value Editing ---
+    Rectangle valueTextRect = { rect.x + rect.width + 10, rect.y, 60, (float)GetFontDefault().baseSize }; // Approx area of value text
 
-// MST State
-bool usePrim = false;
-bool useKruskal = false;
-std::vector<Edge> mstEdges;
-std::vector<bool> mstEdgesDrawn; // Track which MST edges are visually drawn
-int mstEdgeIndex = 0;
-float mstDrawTimer = 0.0f;
-bool mstDoneDrawing = false;
-int totalMSTWeight = 0;
-bool showWeightInfo = false;
-bool isMSTDrawingPaused = false;
-std::vector<bool> mstNodesDrawn; // Track which nodes are part of the drawn MST
+    // Start editing on click
+    if (!editValue && CheckCollisionPointRec(mousePos, valueTextRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        startEditing();
+    }
 
-// Error message states
-std::string errorMessage = "";      // General/Create errors
-std::string errorMessageInput = ""; // Matrix input errors
-std::string mstErrorMessage = "";   // MST related errors
-std::string fileErrorMessage = "";  // File loading errors
-std::string outErrorMessage = "";
-bool showError = false;
-bool showMSTError = false;
-bool showFileError = false;
+    // Handle input while editing
+    if (editValue) {
+         SetMouseCursor(MOUSE_CURSOR_IBEAM);
+         int key = GetCharPressed();
+         while(key > 0) {
+            // Allow numbers, decimal point (only one), and minus sign (at start)
+            if (((key >= '0' && key <= '9') ||
+                 (key == '.' && editBuffer.find('.') == std::string::npos) ||
+                 (key == '-' && editBuffer.empty())) &&
+                 (editBuffer.length() < 10)) // Limit length
+            {
+                 editBuffer += (char)key;
+            }
+             key = GetCharPressed(); // Check next char in queue
+         }
 
-// Cursor state for matrix input
-int cursorColumn = 0;
-int cursorRow = 0;
-float cursorTimer = 0.0f;
 
-std::vector<std::string> primPseudocode = {
-    "1. MST = {}; Visited = {start_node}; PQ = {}",
-    "2. Add edges from start_node to PQ",
-    "3. while PQ not empty and MST size < N-1:",
-    "4.   edge(u, v), weight = PQ.extract_min()",
-    "5.   if v in Visited: continue",
-    "6.   Add edge(u, v) to MST",        // <-- Dòng tương ứng khi thêm cạnh thành công
-    "7.   Visited.add(v)",
-    "8.   for each edge(v, w) to unvisited w:",
-    "9.     Add edge(v, w) to PQ"
-};
+        if (IsKeyPressed(KEY_BACKSPACE)) {
+            if (!editBuffer.empty()) {
+                editBuffer.pop_back();
+            }
+        }
 
-std::vector<std::string> kruskalPseudocode = {
-    "1. MST = {}",
-    "2. Init DSU for N nodes",
-    "3. Sort all edges E by weight",
-    "4. for each edge(u, v) in sorted E:",
-    "5.   if findSet(u) != findSet(v):", // <-- Dòng tương ứng khi kiểm tra và thấy hợp lệ
-    "6.     Add edge(u, v) to MST",     // <-- Dòng tương ứng khi thêm cạnh thành công
-    "7.     unionSets(u, v)",
-    "8.     if MST size == N-1: break"
-};
+        // Finish editing
+        if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_KP_ENTER) || (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !CheckCollisionPointRec(mousePos, valueTextRect))) {
+             stopEditing();
+             SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+        }
+    } else {
+         // Optional: Change cursor on hover over value text
+         if (CheckCollisionPointRec(mousePos, valueTextRect)) {
+             SetMouseCursor(MOUSE_CURSOR_IBEAM);
+         } else {
+             // Check if hovering slider knob or bar before setting default
+             if (!isDragging && !CheckCollisionPointRec(mousePos, knob) && !CheckCollisionPointRec(mousePos, rect)) {
+                 // SetMouseCursor(MOUSE_CURSOR_DEFAULT); // May interfere with other UI elements
+             }
+         }
+    }
+}
+float Slider::getValue() const {
+    // Lerp between minValue and maxValue based on normalized value
+    return minValue + (maxValue - minValue) * value;
+}
+void Slider::draw() {
+    // Draw label
+    DrawText(label.c_str(), rect.x, rect.y - 20, 16, RAYWHITE);
 
-int currentHighlightLine = -1; // Index của dòng mã giả cần highlight (-1 là không có)
+    // Draw slider track
+     DrawRectangleRounded(rect, 0.3f, 4, LIGHTGRAY); // Ví dụ: Bo góc nhẹ
+     Vector2 knobCenter = { knob.x + knob.width / 2.0f, knob.y + knob.height / 2.0f };
+     float knobRadius = knob.height / 1.8f; // Bán kính nhỏ hơn chiều cao một chút cho đẹp
+ 
+     // Vẽ phần đã tô màu của thanh trượt (từ đầu đến giữa núm)
+     float filledWidth = knobCenter.x - rect.x;
+     filledWidth = Clamp(filledWidth, 0, rect.width); // Đảm bảo không vẽ ra ngoài
+     if (filledWidth > 0) {
+         // Vẽ phần đã tô màu cũng bo tròn
+         DrawRectangleRounded({rect.x, rect.y, filledWidth, rect.height}, 0.3f, 4, SKYBLUE); // Dùng màu khác (vd: SKYBLUE)
+     }
+ 
+     // Xác định màu sắc cho núm dựa trên trạng thái
+     Color knobColor = BLUE; // Màu mặc định
+     bool knobHovered = CheckCollisionPointCircle(GetMousePosition(), knobCenter, knobRadius);
+     if (isDragging) {
+         knobColor = DARKBLUE; // Màu khi đang kéo
+     } else if (knobHovered) {
+         knobColor = SKYBLUE;  // Màu khi di chuột qua
+     }
+ 
+     // Vẽ núm hình tròn
+     DrawCircleV(knobCenter, knobRadius, knobColor);
+    // Draw value text
+     std::stringstream ss;
+     ss << std::fixed << std::setprecision(2) << getValue();
+     std::string valueStr = ss.str();
 
-// --- Main Function ---
-int main() {
+     int valueFontSize = 16;
+     Vector2 valueTextSize = MeasureTextEx(GetFontDefault(), valueStr.c_str(), valueFontSize, 1);
+     Rectangle valueTextRect = { rect.x + rect.width + 15, rect.y + (rect.height - valueFontSize)/2.0f, valueTextSize.x + 10, (float)valueFontSize + 4}; // Điều chỉnh vị trí Y và Width/Height
+
+    if (editValue) {
+         valueTextRect.height = 20;
+         DrawRectangleRec(valueTextRect, WHITE);
+         DrawRectangleLinesEx(valueTextRect, 1, BLACK);
+         DrawText(editBuffer.c_str(), valueTextRect.x + 5, valueTextRect.y , 16, BLACK);
+          // Draw blinking cursor
+         if (((int)(GetTime() * 2.0f)) % 2 == 0) {
+              DrawText("|", valueTextRect.x + 5 + MeasureText(editBuffer.c_str(), 16), valueTextRect.y, 16, BLACK);
+         }
+
+    } else {
+         DrawText(valueStr.c_str(), valueTextRect.x + 5, valueTextRect.y, 16, RAYWHITE);
+         if (CheckCollisionPointRec(GetMousePosition(), valueTextRect)) {
+             DrawRectangleLinesEx(valueTextRect, 1, YELLOW);
+         }
+    }
+}
+bool Slider::isHovered() const {
+    // Consider hovering over knob or label as well?
+    return CheckCollisionPointRec(GetMousePosition(), rect) || CheckCollisionPointRec(GetMousePosition(), knob);
+}
+bool Slider::isEditing() const {
+    return editValue;
+}
+void Slider::startEditing() {
+    editValue = true;
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(2) << getValue();
+    editBuffer = ss.str();
+}
+void Slider::stopEditing() {
+    editValue = false;
+    SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+    float newValueFromBuffer = getValue(); // Default to current value if parse fails
+   try {
+       newValueFromBuffer = std::stof(editBuffer);
+        // Clamp the input value to the slider's range
+        newValueFromBuffer = Clamp(newValueFromBuffer, minValue, maxValue);
+        setValue(newValueFromBuffer); // Use setValue to update normalized value and knob
+
+   } catch (const std::invalid_argument& e) {
+        // Handle invalid input (e.g., "abc") - keep the old value
+        TraceLog(LOG_WARNING, "SLIDER: Invalid number format in edit buffer: %s", editBuffer.c_str());
+   } catch (const std::out_of_range& e) {
+        // Handle input out of float range - clamp to min/max
+        TraceLog(LOG_WARNING, "SLIDER: Number out of range in edit buffer: %s", editBuffer.c_str());
+        // Decide whether to clamp or revert - clamping seems more user-friendly
+        try { // Need nested try-catch for potentially huge numbers
+            double largeVal = std::stod(editBuffer); // Use double for intermediate check
+            newValueFromBuffer = Clamp((float)largeVal, minValue, maxValue);
+             setValue(newValueFromBuffer);
+        } catch (...) {
+             // Revert if even double parsing fails
+        }
+
+   }
+   // Update edit buffer to reflect the final value (or revert if needed)
+   // std::stringstream ss;
+   // ss << std::fixed << std::setprecision(2) << getValue();
+   // editBuffer = ss.str(); // Update buffer to match potentially clamped value
+}
+std::string Slider::getLabel() const {
+    return label;
+}
+void Slider::setValue(float actualValue) {
+    // Clamp the incoming value to the allowed range
+    actualValue = Clamp(actualValue, minValue, maxValue);
+    // Calculate the normalized value
+    if (maxValue - minValue != 0) {
+         value = (actualValue - minValue) / (maxValue - minValue);
+    } else {
+         value = 0.0f; // Or 0.5f if min == max
+    }
+     value = Clamp(value, 0.0f, 1.0f); // Ensure normalization is clamped
+
+    // Update knob position based on the new normalized value
+    knob.x = rect.x + (rect.width - knob.width) * value;
+    // Update edit buffer if currently editing
+    if (editValue) {
+         std::stringstream ss;
+         ss << std::fixed << std::setprecision(2) << actualValue;
+         editBuffer = ss.str();
+    }
+}
+void RunGraphApp() {
+    // --- Di chuyển TẤT CẢ biến toàn cục vào đây ---
     const int screenWidth = 1600;
     const int screenHeight = 900;
 
+    // State Variables
+    bool isCreating = false; bool isRandomizing = false; bool isShowingExamples = false;
+    bool isCreatingActive = false; bool isRandomizingActive = false; bool isShowingExamplesActive = false;
+    bool isInputActive = false; bool isFileActive = false; bool graphDrawn = false;
+    std::vector<Edge> edges; std::vector<Vector2> nodePositions; Camera2D graphCamera = { 0 };
+    std::string numNodesStr = ""; std::string numEdgesStr = ""; std::string matrixInput = "";
+    std::string weightInputBuffer = ""; bool nodesFocused = false; bool edgesFocused = false;
+    bool matrixInputFocused = false; bool isEditingWeight = false; bool showMatrixInput = false;
+    bool showExampleButtons = false; bool showMSTMenu = false; bool isEditingGraph = false;
+    EditTool currentTool = EditTool::TOOL_NONE; int selectedNodeIndex = -1; int selectedEdgeIndex = -1;
+    bool isDraggingNode = false; bool usePrim = false; bool useKruskal = false;
+    std::vector<Edge> mstEdges; std::vector<bool> mstEdgesDrawn; int mstEdgeIndex = 0;
+    float mstDrawTimer = 0.0f; bool mstDoneDrawing = false; int totalMSTWeight = 0;
+    bool showWeightInfo = false; bool isMSTDrawingPaused = true; // Bắt đầu pause
+    std::vector<bool> mstNodesDrawn; std::string errorMessage = ""; std::string errorMessageInput = "";
+    std::string mstErrorMessage = ""; std::string fileErrorMessage = ""; std::string outErrorMessage = "";
+    bool showError = false; bool showMSTError = false; bool showFileError = false;
+    int cursorColumn = 0; int cursorRow = 0; float cursorTimer = 0.0f;
+
+    // Pseudo-code vectors
+    std::vector<std::string> primPseudocode = {
+        "1. MST = {}; Visited = {start_node}; PQ = {}",
+        "2. Add edges from start_node to PQ",
+        "3. while PQ not empty and MST size < N-1:",
+        "4.   edge(u, v), weight = PQ.extract_min()",
+        "5.   if v in Visited: continue",
+        "6.   Add edge(u, v) to MST",        // <-- Dòng tương ứng khi thêm cạnh thành công
+        "7.   Visited.add(v)",
+        "8.   for each edge(v, w) to unvisited w:",
+        "9.     Add edge(v, w) to PQ"
+    };
+    std::vector<std::string> kruskalPseudocode = {
+        "1. MST = {}",
+        "2. Init DSU for N nodes",
+        "3. Sort all edges E by weight",
+        "4. for each edge(u, v) in sorted E:",
+        "5.   if findSet(u) != findSet(v):", // <-- Dòng tương ứng khi kiểm tra và thấy hợp lệ
+        "6.     Add edge(u, v) to MST",     // <-- Dòng tương ứng khi thêm cạnh thành công
+        "7.     unionSets(u, v)",
+        "8.     if MST size == N-1: break"
+    };
+    int currentHighlightLine = -1; // Index của dòng mã giả cần highlight (-1 là không có)
+
+    // MST Scroll variables
+    float mstPseudocodeScrollY = 0.0f;
+    float mstPseudocodeTotalHeight = 0.0f;
+    bool isDraggingScrollbar = false;
+    float scrollbarMouseOffsetY = 0.0f;
+    // -------------------------------------------------
+    
     InitWindow(screenWidth, screenHeight, "Graph MST Visualizer");
     SetTargetFPS(60);
-  
-    // --- Initialize UI Elements ---
-    // Left Panel Buttons
-    const float buttonWidth = 100.0f;
-    const float buttonHeight = 30.0f;
-    const float bottomPadding = 10.0f; // Khoảng cách từ cạnh dưới màn hình
-    const float leftPadding = 10.0f;   // Khoảng cách từ cạnh trái màn hình
-    const float buttonSpacing = 10.0f; // Khoảng cách giữa các nút
-    const float buttonY = screenHeight - buttonHeight - bottomPadding;
-    // Định nghĩa vị trí các nút theo hàng ngang từ trái sang phải
-    Rectangle createButton = {leftPadding, buttonY, buttonWidth, buttonHeight};
-    Rectangle randomButton = {createButton.x + createButton.width + buttonSpacing, buttonY, buttonWidth, buttonHeight};
-    Rectangle exampleButton = {randomButton.x + randomButton.width + buttonSpacing, buttonY, buttonWidth, buttonHeight};
-    Rectangle inputButton = {exampleButton.x + exampleButton.width + buttonSpacing, buttonY, buttonWidth, buttonHeight};
-    Rectangle fileButton = {inputButton.x + inputButton.width + buttonSpacing, buttonY, buttonWidth, buttonHeight};
-    Rectangle editButton = {fileButton.x + fileButton.width + buttonSpacing, buttonY, buttonWidth, buttonHeight};
-    Rectangle mstButton = {editButton.x + editButton.width + buttonSpacing, buttonY, buttonWidth, buttonHeight};
-    // Create Mode Inputs
-    Rectangle nodesInputRect = { 30, 10, 100, 30 };
-    Rectangle edgesInputRect = { nodesInputRect.x + nodesInputRect.width + 30, 10, 100, 30 };
-    // Example Buttons (positions relative to exampleButton)
-    Rectangle k5Button = { 30, 10, 60, 30 };
-    Rectangle c6Button = { k5Button.x + k5Button.width + 10, 10, 60, 30 };
-    Rectangle p4Button = { c6Button.x + c6Button.width + 10, 10, 60, 30 };
-    Rectangle s7Button = { p4Button.x + p4Button.width + 10, 10, 60, 30 };
-    // Matrix Input Window Elements
-    Rectangle inputWindowRect = {screenWidth / 4.0f, screenHeight / 4.0f, screenWidth / 2.0f, screenHeight / 2.0f};
-    Rectangle matrixInputAreaRect = {inputWindowRect.x + 10, inputWindowRect.y + 40, inputWindowRect.width - 20, inputWindowRect.height - 90};
-    Rectangle submitMatrixButton = {inputWindowRect.x + 10, inputWindowRect.y + inputWindowRect.height - 40, 80, 30};
-    Rectangle closeMatrixButton = {submitMatrixButton.x + submitMatrixButton.width + 10, submitMatrixButton.y, 80, 30};
-
-    // MST Menu Elements
-    float mstMenuWidth = screenWidth * 0.85f;
-    float mstMenuHeight = screenHeight * 0.9f;
-    float mstMenuX = (screenWidth - mstMenuWidth) / 2.0f;
-    float mstMenuY = (screenHeight - mstMenuHeight) / 2.0f;
-    Rectangle mstMenuRect = { mstMenuX, mstMenuY, mstMenuWidth, mstMenuHeight }; // Định nghĩa mới!
-    
-    const int mstButtonWidth = 80;
-    const int mstButtonHeight = 30;
-    const int mstButtonSpacing = 10;
-    const float stepButtonWidth = 60.0f;
-    const float mstButtonsY = mstMenuRect.y + mstMenuRect.height - mstButtonHeight - 10;
-    Rectangle primButton = {mstMenuRect.x + 10, mstButtonsY, (float)mstButtonWidth, (float)mstButtonHeight};
-    Rectangle kruskalButton = {primButton.x + mstButtonWidth + mstButtonSpacing, mstButtonsY, (float)mstButtonWidth, (float)mstButtonHeight};
-    Rectangle backButton = {kruskalButton.x + mstButtonWidth + mstButtonSpacing, mstButtonsY, (float)mstButtonWidth, (float)mstButtonHeight};
-    Rectangle prevStepButton = { 0 };
-    Rectangle nextStepButton = { 0 };
-    Rectangle skipButton = { 0 };
-    Rectangle pauseResumeButton = { 0 }; // Sẽ tính toán vị trí khi vẽ
-    Rectangle weightBox = { 0 };
-    Slider speedSlider = Slider({0, 0, 150, 20}, 0.1f, 2.0f, "Speed:");
-    // Slider speedSlider = Slider({mstMenuRect.x + mstMenuRect.width - 160, mstMenuRect.y + 45, 150, 20}, 0.1f, 2.0f, "Speed:"); // Position near top right
-
+     // Left Panel Buttons
+     const float buttonWidth = 100.0f;
+     const float buttonHeight = 30.0f;
+     const float bottomPadding = 10.0f; // Khoảng cách từ cạnh dưới màn hình
+     const float leftPadding = 10.0f;   // Khoảng cách từ cạnh trái màn hình
+     const float buttonSpacing = 10.0f; // Khoảng cách giữa các nút
+     const float buttonY = screenHeight - buttonHeight - bottomPadding;
+     // Định nghĩa vị trí các nút theo hàng ngang từ trái sang phải
+     Rectangle createButton = {leftPadding, buttonY, buttonWidth, buttonHeight};
+     Rectangle randomButton = {createButton.x + createButton.width + buttonSpacing, buttonY, buttonWidth, buttonHeight};
+     Rectangle exampleButton = {randomButton.x + randomButton.width + buttonSpacing, buttonY, buttonWidth, buttonHeight};
+     Rectangle inputButton = {exampleButton.x + exampleButton.width + buttonSpacing, buttonY, buttonWidth, buttonHeight};
+     Rectangle fileButton = {inputButton.x + inputButton.width + buttonSpacing, buttonY, buttonWidth, buttonHeight};
+     Rectangle editButton = {fileButton.x + fileButton.width + buttonSpacing, buttonY, buttonWidth, buttonHeight};
+     Rectangle mstButton = {editButton.x + editButton.width + buttonSpacing, buttonY, buttonWidth, buttonHeight};
+     // Create Mode Inputs
+     Rectangle nodesInputRect = { 30, 10, 100, 30 };
+     Rectangle edgesInputRect = { nodesInputRect.x + nodesInputRect.width + 30, 10, 100, 30 };
+     // Example Buttons (positions relative to exampleButton)
+     Rectangle k5Button = { 30, 10, 60, 30 };
+     Rectangle c6Button = { k5Button.x + k5Button.width + 10, 10, 60, 30 };
+     Rectangle p4Button = { c6Button.x + c6Button.width + 10, 10, 60, 30 };
+     Rectangle s7Button = { p4Button.x + p4Button.width + 10, 10, 60, 30 };
+     // Matrix Input Window Elements
+     Rectangle inputWindowRect = {screenWidth / 4.0f, screenHeight / 4.0f, screenWidth / 2.0f, screenHeight / 2.0f};
+     Rectangle matrixInputAreaRect = {inputWindowRect.x + 10, inputWindowRect.y + 40, inputWindowRect.width - 20, inputWindowRect.height - 90};
+     Rectangle submitMatrixButton = {inputWindowRect.x + 10, inputWindowRect.y + inputWindowRect.height - 40, 80, 30};
+     Rectangle closeMatrixButton = {submitMatrixButton.x + submitMatrixButton.width + 10, submitMatrixButton.y, 80, 30};
+ 
+     // MST Menu Elements
+     float mstMenuWidth = screenWidth * 0.85f;
+     float mstMenuHeight = screenHeight * 0.9f;
+     float mstMenuX = (screenWidth - mstMenuWidth) / 2.0f;
+     float mstMenuY = (screenHeight - mstMenuHeight) / 2.0f;
+     Rectangle mstMenuRect = { mstMenuX, mstMenuY, mstMenuWidth, mstMenuHeight }; // Định nghĩa mới!
+     
+     const int mstButtonWidth = 80;
+     const int mstButtonHeight = 30;
+     const int mstButtonSpacing = 10;
+     const float stepButtonWidth = 60.0f;
+     const float mstButtonsY = mstMenuRect.y + mstMenuRect.height - mstButtonHeight - 10;
+     Rectangle primButton = {mstMenuRect.x + 10, mstButtonsY, (float)mstButtonWidth, (float)mstButtonHeight};
+     Rectangle kruskalButton = {primButton.x + mstButtonWidth + mstButtonSpacing, mstButtonsY, (float)mstButtonWidth, (float)mstButtonHeight};
+     Rectangle backButton = {kruskalButton.x + mstButtonWidth + mstButtonSpacing, mstButtonsY, (float)mstButtonWidth, (float)mstButtonHeight};
+     Rectangle prevStepButton = { 0 };
+     Rectangle nextStepButton = { 0 };
+     Rectangle skipButton = { 0 };
+     Rectangle pauseResumeButton = { 0 }; // Sẽ tính toán vị trí khi vẽ
+     Rectangle weightBox = { 0 };
+     Slider speedSlider = Slider({0, 0, 150, 20}, 0.1f, 2.0f, "Speed:");
+     // Slider speedSlider = Slider({mstMenuRect.x + mstMenuRect.width - 160, mstMenuRect.y + 45, 150, 20}, 0.1f, 2.0f, "Speed:"); // Position near top right
+ 
      // Edit Mode Elements (Right Panel)
      const float editPanelWidth = 130.0f;
      const float editPanelX = screenWidth - editPanelWidth;
@@ -1253,16 +1069,15 @@ int main() {
      Rectangle deleteEdgeButtonRect = { editPanelX + 10, 210, editPanelWidth - 20, 30 };
      Rectangle doneButtonRect = { editPanelX + 10, screenHeight - 50, editPanelWidth - 20, 30 };
      Rectangle weightInputRect = {0, 0, 60, 25}; // Position calculated dynamically
+ 
+ 
+     // Initialize Camera
+     graphCamera.target = { (float)screenWidth / 2.0f, (float)screenHeight / 2.0f };
+     graphCamera.offset = { (float)screenWidth / 2.0f, (float)screenHeight / 2.0f };
+     graphCamera.rotation = 0.0f;
+     graphCamera.zoom = 1.0f;
 
-
-    // Initialize Camera
-    graphCamera.target = { (float)screenWidth / 2.0f, (float)screenHeight / 2.0f };
-    graphCamera.offset = { (float)screenWidth / 2.0f, (float)screenHeight / 2.0f };
-    graphCamera.rotation = 0.0f;
-    graphCamera.zoom = 1.0f;
-
-    // --- Main Game Loop ---
-    while (!WindowShouldClose()) {
+     while (!WindowShouldClose()) {
         // --- Input Handling & State Updates ---
         Vector2 mousePos = GetMousePosition();
         Vector2 worldMousePos = GetScreenToWorld2D(mousePos, graphCamera); // Mouse in graph space
@@ -1276,7 +1091,50 @@ int main() {
          if (!showMSTMenu && !showMatrixInput && !isEditingGraph) {
              if (CheckCollisionPointRec(mousePos, createButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                  clickedOnUI = true;
-                 ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
+                 //ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
+                 isCreating = false;
+                 isRandomizing = false;
+                 isShowingExamples = false;
+                 showMatrixInput = false;
+                 // graphDrawn = false; // Reset graphDrawn ONLY if appropriate for all calls
+             
+                 // Reset input fields
+                 numNodesStr = "";
+                 numEdgesStr = "";
+                 matrixInput = ""; // Reset matrix input field
+                 nodesFocused = false;
+                 edgesFocused = false;
+                 matrixInputFocused = false; // Add this
+             
+                 // Reset UI states
+                 showMSTMenu = false;
+                 isEditingGraph = false;
+                 currentTool = EditTool::TOOL_NONE;
+                 showExampleButtons = false; // Add this
+             
+                 // Reset error messages and flags
+                 showFileError = false;
+                 fileErrorMessage = "";
+                 showError = false; // General/Create error
+                 errorMessage = "";
+                 showMSTError = false;
+                 mstErrorMessage = "";
+                 errorMessageInput = ""; // Add this
+             
+                 // Reset Activity Flags
+                 isCreatingActive = false;
+                 isRandomizingActive = false;
+                 isShowingExamplesActive = false;
+                 isInputActive = false;
+                 isFileActive = false;
+             
+                 // Reset Editing state
+                 selectedNodeIndex = -1;
+                 selectedEdgeIndex = -1;
+                 isDraggingNode = false;
+                 isEditingWeight = false;
+                 weightInputBuffer = "";
+                 mstPseudocodeScrollY = 0.0f; // Reset cuộn
                  edges.clear(); nodePositions.clear(); // Clear graph data
                  isCreating = true; // Enter create mode (input fields)
                  isCreatingActive = true;
@@ -1297,7 +1155,49 @@ int main() {
              }
              else if (CheckCollisionPointRec(mousePos, randomButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                  clickedOnUI = true;
-                 ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
+                 //ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
+                 isCreating = false;
+                 isRandomizing = false;
+                 isShowingExamples = false;
+                 showMatrixInput = false;
+                 // graphDrawn = false; // Reset graphDrawn ONLY if appropriate for all calls
+             
+                 // Reset input fields
+                 numNodesStr = "";
+                 numEdgesStr = "";
+                 matrixInput = ""; // Reset matrix input field
+                 nodesFocused = false;
+                 edgesFocused = false;
+                 matrixInputFocused = false; // Add this
+             
+                 // Reset UI states
+                 showMSTMenu = false;
+                 isEditingGraph = false;
+                 currentTool = EditTool::TOOL_NONE;
+                 showExampleButtons = false; // Add this
+             
+                 // Reset error messages and flags
+                 showFileError = false;
+                 fileErrorMessage = "";
+                 showError = false; // General/Create error
+                 errorMessage = "";
+                 showMSTError = false;
+                 mstErrorMessage = "";
+                 errorMessageInput = ""; // Add this
+             
+                 // Reset Activity Flags
+                 isCreatingActive = false;
+                 isRandomizingActive = false;
+                 isShowingExamplesActive = false;
+                 isInputActive = false;
+                 isFileActive = false;
+             
+                 // Reset Editing state
+                 selectedNodeIndex = -1;
+                 selectedEdgeIndex = -1;
+                 isDraggingNode = false;
+                 isEditingWeight = false;
+                 weightInputBuffer = "";
                  edges.clear(); nodePositions.clear(); // Clear graph data
 
                  // Generate random graph immediately
@@ -1327,7 +1227,49 @@ int main() {
              }
              else if (CheckCollisionPointRec(mousePos, exampleButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                  clickedOnUI = true;
-                 ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
+                 //ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
+                 isCreating = false;
+                 isRandomizing = false;
+                 isShowingExamples = false;
+                 showMatrixInput = false;
+                 // graphDrawn = false; // Reset graphDrawn ONLY if appropriate for all calls
+             
+                 // Reset input fields
+                 numNodesStr = "";
+                 numEdgesStr = "";
+                 matrixInput = ""; // Reset matrix input field
+                 nodesFocused = false;
+                 edgesFocused = false;
+                 matrixInputFocused = false; // Add this
+             
+                 // Reset UI states
+                 showMSTMenu = false;
+                 isEditingGraph = false;
+                 currentTool = EditTool::TOOL_NONE;
+                 showExampleButtons = false; // Add this
+             
+                 // Reset error messages and flags
+                 showFileError = false;
+                 fileErrorMessage = "";
+                 showError = false; // General/Create error
+                 errorMessage = "";
+                 showMSTError = false;
+                 mstErrorMessage = "";
+                 errorMessageInput = ""; // Add this
+             
+                 // Reset Activity Flags
+                 isCreatingActive = false;
+                 isRandomizingActive = false;
+                 isShowingExamplesActive = false;
+                 isInputActive = false;
+                 isFileActive = false;
+             
+                 // Reset Editing state
+                 selectedNodeIndex = -1;
+                 selectedEdgeIndex = -1;
+                 isDraggingNode = false;
+                 isEditingWeight = false;
+                 weightInputBuffer = "";
                  edges.clear(); nodePositions.clear(); // Clear graph data
                  showExampleButtons = !showExampleButtons; // Toggle visibility
                  isShowingExamplesActive = showExampleButtons;
@@ -1335,7 +1277,49 @@ int main() {
              }
              else if (CheckCollisionPointRec(mousePos, inputButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                  clickedOnUI = true;
-                 ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
+                 // ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
+                 isCreating = false;
+                 isRandomizing = false;
+                 isShowingExamples = false;
+                 showMatrixInput = false;
+                 // graphDrawn = false; // Reset graphDrawn ONLY if appropriate for all calls
+             
+                 // Reset input fields
+                 numNodesStr = "";
+                 numEdgesStr = "";
+                 matrixInput = ""; // Reset matrix input field
+                 nodesFocused = false;
+                 edgesFocused = false;
+                 matrixInputFocused = false; // Add this
+             
+                 // Reset UI states
+                 showMSTMenu = false;
+                 isEditingGraph = false;
+                 currentTool = EditTool::TOOL_NONE;
+                 showExampleButtons = false; // Add this
+             
+                 // Reset error messages and flags
+                 showFileError = false;
+                 fileErrorMessage = "";
+                 showError = false; // General/Create error
+                 errorMessage = "";
+                 showMSTError = false;
+                 mstErrorMessage = "";
+                 errorMessageInput = ""; // Add this
+             
+                 // Reset Activity Flags
+                 isCreatingActive = false;
+                 isRandomizingActive = false;
+                 isShowingExamplesActive = false;
+                 isInputActive = false;
+                 isFileActive = false;
+             
+                 // Reset Editing state
+                 selectedNodeIndex = -1;
+                 selectedEdgeIndex = -1;
+                 isDraggingNode = false;
+                 isEditingWeight = false;
+                 weightInputBuffer = ""; 
                  edges.clear(); nodePositions.clear(); // Clear graph data
                  showMatrixInput = true;
                  matrixInput = ""; // Clear previous input
@@ -1348,7 +1332,49 @@ int main() {
              }
              else if (CheckCollisionPointRec(mousePos, fileButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                  clickedOnUI = true;
-                 ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
+                 // ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
+                 isCreating = false;
+                 isRandomizing = false;
+                 isShowingExamples = false;
+                 showMatrixInput = false;
+                 // graphDrawn = false; // Reset graphDrawn ONLY if appropriate for all calls
+             
+                 // Reset input fields
+                 numNodesStr = "";
+                 numEdgesStr = "";
+                 matrixInput = ""; // Reset matrix input field
+                 nodesFocused = false;
+                 edgesFocused = false;
+                 matrixInputFocused = false; // Add this
+             
+                 // Reset UI states
+                 showMSTMenu = false;
+                 isEditingGraph = false;
+                 currentTool = EditTool::TOOL_NONE;
+                 showExampleButtons = false; // Add this
+             
+                 // Reset error messages and flags
+                 showFileError = false;
+                 fileErrorMessage = "";
+                 showError = false; // General/Create error
+                 errorMessage = "";
+                 showMSTError = false;
+                 mstErrorMessage = "";
+                 errorMessageInput = ""; // Add this
+             
+                 // Reset Activity Flags
+                 isCreatingActive = false;
+                 isRandomizingActive = false;
+                 isShowingExamplesActive = false;
+                 isInputActive = false;
+                 isFileActive = false;
+             
+                 // Reset Editing state
+                 selectedNodeIndex = -1;
+                 selectedEdgeIndex = -1;
+                 isDraggingNode = false;
+                 isEditingWeight = false;
+                 weightInputBuffer = "";
                  edges.clear(); nodePositions.clear(); // Clear graph data
                  isFileActive = true; // Indicate file operation
                  isCreating = false;
@@ -1385,8 +1411,50 @@ int main() {
                   clickedOnUI = true;
                   if (graphDrawn && !nodePositions.empty()) {
                       // Enter Edit Mode
-                      ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
+                      // ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
                       // Keep graphDrawn = true
+                      isCreating = false;
+                      isRandomizing = false;
+                      isShowingExamples = false;
+                      showMatrixInput = false;
+                      // graphDrawn = false; // Reset graphDrawn ONLY if appropriate for all calls
+                  
+                      // Reset input fields
+                      numNodesStr = "";
+                      numEdgesStr = "";
+                      matrixInput = ""; // Reset matrix input field
+                      nodesFocused = false;
+                      edgesFocused = false;
+                      matrixInputFocused = false; // Add this
+                  
+                      // Reset UI states
+                      showMSTMenu = false;
+                      isEditingGraph = false;
+                      currentTool = EditTool::TOOL_NONE;
+                      showExampleButtons = false; // Add this
+                  
+                      // Reset error messages and flags
+                      showFileError = false;
+                      fileErrorMessage = "";
+                      showError = false; // General/Create error
+                      errorMessage = "";
+                      showMSTError = false;
+                      mstErrorMessage = "";
+                      errorMessageInput = ""; // Add this
+                  
+                      // Reset Activity Flags
+                      isCreatingActive = false;
+                      isRandomizingActive = false;
+                      isShowingExamplesActive = false;
+                      isInputActive = false;
+                      isFileActive = false;
+                  
+                      // Reset Editing state
+                      selectedNodeIndex = -1;
+                      selectedEdgeIndex = -1;
+                      isDraggingNode = false;
+                      isEditingWeight = false;
+                      weightInputBuffer = "";
                       graphDrawn = true;
                       isEditingGraph = true;
                       currentTool = EditTool::TOOL_NONE; // Start with no tool selected
@@ -1398,7 +1466,49 @@ int main() {
                       isCreating = false;
                   } else {
                       // Show error: Cannot edit without a graph
-                      ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
+                      // ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
+                      isCreating = false;
+                      isRandomizing = false;
+                      isShowingExamples = false;
+                      showMatrixInput = false;
+                      // graphDrawn = false; // Reset graphDrawn ONLY if appropriate for all calls
+                  
+                      // Reset input fields
+                      numNodesStr = "";
+                      numEdgesStr = "";
+                      matrixInput = ""; // Reset matrix input field
+                      nodesFocused = false;
+                      edgesFocused = false;
+                      matrixInputFocused = false; // Add this
+                  
+                      // Reset UI states
+                      showMSTMenu = false;
+                      isEditingGraph = false;
+                      currentTool = EditTool::TOOL_NONE;
+                      showExampleButtons = false; // Add this
+                  
+                      // Reset error messages and flags
+                      showFileError = false;
+                      fileErrorMessage = "";
+                      showError = false; // General/Create error
+                      errorMessage = "";
+                      showMSTError = false;
+                      mstErrorMessage = "";
+                      errorMessageInput = ""; // Add this
+                  
+                      // Reset Activity Flags
+                      isCreatingActive = false;
+                      isRandomizingActive = false;
+                      isShowingExamplesActive = false;
+                      isInputActive = false;
+                      isFileActive = false;
+                  
+                      // Reset Editing state
+                      selectedNodeIndex = -1;
+                      selectedEdgeIndex = -1;
+                      isDraggingNode = false;
+                      isEditingWeight = false;
+                      weightInputBuffer = "";
                       edges.clear(); nodePositions.clear(); // Clear just in case
                       showError = true;
                       errorMessage = "Create or load a graph first to edit.";
@@ -1409,8 +1519,50 @@ int main() {
                  clickedOnUI = true;
                  if (graphDrawn && !nodePositions.empty()) {
                      // Enter MST Menu Mode
-                     ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
+                     // ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
                      // Keep graph data, graphDrawn = true
+                     isCreating = false;
+                     isRandomizing = false;
+                     isShowingExamples = false;
+                     showMatrixInput = false;
+                     // graphDrawn = false; // Reset graphDrawn ONLY if appropriate for all calls
+                 
+                     // Reset input fields
+                     numNodesStr = "";
+                     numEdgesStr = "";
+                     matrixInput = ""; // Reset matrix input field
+                     nodesFocused = false;
+                     edgesFocused = false;
+                     matrixInputFocused = false; // Add this
+                 
+                     // Reset UI states
+                     showMSTMenu = false;
+                     isEditingGraph = false;
+                     currentTool = EditTool::TOOL_NONE;
+                     showExampleButtons = false; // Add this
+                 
+                     // Reset error messages and flags
+                     showFileError = false;
+                     fileErrorMessage = "";
+                     showError = false; // General/Create error
+                     errorMessage = "";
+                     showMSTError = false;
+                     mstErrorMessage = "";
+                     errorMessageInput = ""; // Add this
+                 
+                     // Reset Activity Flags
+                     isCreatingActive = false;
+                     isRandomizingActive = false;
+                     isShowingExamplesActive = false;
+                     isInputActive = false;
+                     isFileActive = false;
+                 
+                     // Reset Editing state
+                     selectedNodeIndex = -1;
+                     selectedEdgeIndex = -1;
+                     isDraggingNode = false;
+                     isEditingWeight = false;
+                     weightInputBuffer = "";
                      graphDrawn = true;
                      showMSTMenu = true;
                      usePrim = false; useKruskal = false; // Reset algorithm choice
@@ -1421,7 +1573,49 @@ int main() {
                      showExampleButtons = false;
                  } else {
                      // Show error: Cannot run MST without a graph
-                     ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
+                     // ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
+                     isCreating = false;
+                     isRandomizing = false;
+                     isShowingExamples = false;
+                     showMatrixInput = false;
+                     // graphDrawn = false; // Reset graphDrawn ONLY if appropriate for all calls
+                 
+                     // Reset input fields
+                     numNodesStr = "";
+                     numEdgesStr = "";
+                     matrixInput = ""; // Reset matrix input field
+                     nodesFocused = false;
+                     edgesFocused = false;
+                     matrixInputFocused = false; // Add this
+                 
+                     // Reset UI states
+                     showMSTMenu = false;
+                     isEditingGraph = false;
+                     currentTool = EditTool::TOOL_NONE;
+                     showExampleButtons = false; // Add this
+                 
+                     // Reset error messages and flags
+                     showFileError = false;
+                     fileErrorMessage = "";
+                     showError = false; // General/Create error
+                     errorMessage = "";
+                     showMSTError = false;
+                     mstErrorMessage = "";
+                     errorMessageInput = ""; // Add this
+                 
+                     // Reset Activity Flags
+                     isCreatingActive = false;
+                     isRandomizingActive = false;
+                     isShowingExamplesActive = false;
+                     isInputActive = false;
+                     isFileActive = false;
+                 
+                     // Reset Editing state
+                     selectedNodeIndex = -1;
+                     selectedEdgeIndex = -1;
+                     isDraggingNode = false;
+                     isEditingWeight = false;
+                     weightInputBuffer = "";
                      edges.clear(); nodePositions.clear(); // Clear just in case
                      // showMSTError = true;
                      showError = true;
@@ -2530,10 +2724,10 @@ int main() {
 
         // Draw General/File Error Messages (if any) - Draw last over UI elements
          if (showError) {
-             DrawText(errorMessage.c_str(), 130, screenHeight - 60, 20, RED); // Position near bottom-left
+             DrawText(errorMessage.c_str(), 130, screenHeight - 70, 20, RED); // Position near bottom-left
          }
          if (showFileError) {
-              DrawText(fileErrorMessage.c_str(), 130, screenHeight - 60, 20, RED); // Position near bottom-left
+              DrawText(fileErrorMessage.c_str(), 130, screenHeight - 90, 20, RED); // Position near bottom-left
          }
 
 
@@ -2541,61 +2735,9 @@ int main() {
     } // End main game loop
 
     CloseWindow();
-    return 0;
 }
 
-void ResetStates(bool &isCreating, bool &isRandomizing, bool &isShowingExamples,
-    bool &showMatrixInput, bool &graphDrawn,
-    std::string &numNodesStr, std::string &numEdgesStr, std::string &matrixInput,
-    bool &nodesFocused, bool &edgesFocused,
-    bool &showMSTMenu, bool &isEditingGraph, EditTool& currentTool,
-    bool& showFileError, std::string& fileErrorMessage,
-    bool& showError, std::string& errorMessage,
-    bool& showMSTError, std::string& mstErrorMessage)
-    {
- // Reset graph creation/generation states
-    isCreating = false;
-    isRandomizing = false;
-    isShowingExamples = false;
-    showMatrixInput = false;
-    // graphDrawn = false; // Reset graphDrawn ONLY if appropriate for all calls
 
-    // Reset input fields
-    numNodesStr = "";
-    numEdgesStr = "";
-    matrixInput = ""; // Reset matrix input field
-    nodesFocused = false;
-    edgesFocused = false;
-    matrixInputFocused = false; // Add this
 
-    // Reset UI states
-    showMSTMenu = false;
-    isEditingGraph = false;
-    currentTool = EditTool::TOOL_NONE;
-    showExampleButtons = false; // Add this
-
-    // Reset error messages and flags
-    showFileError = false;
-    fileErrorMessage = "";
-    showError = false; // General/Create error
-    errorMessage = "";
-    showMSTError = false;
-    mstErrorMessage = "";
-    errorMessageInput = ""; // Add this
-
-    // Reset Activity Flags
-    isCreatingActive = false;
-    isRandomizingActive = false;
-    isShowingExamplesActive = false;
-    isInputActive = false;
-    isFileActive = false;
-
-    // Reset Editing state
-    selectedNodeIndex = -1;
-    selectedEdgeIndex = -1;
-    isDraggingNode = false;
-    isEditingWeight = false;
-    weightInputBuffer = "";
-}
 
 

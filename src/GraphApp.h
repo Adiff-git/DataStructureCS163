@@ -84,13 +84,6 @@ std::string ValidateMatrixInput(const std::string& input, std::vector<std::vecto
 std::string ReadTextFile(const char *filePath);
 bool LoadGraphFromFile(const char* filePath, std::vector<Edge>& outEdges, std::vector<Vector2>& outNodePositions, int screenWidth, int screenHeight, std::string& outErrorMessage);
 
-void DrawMainControls(
-    const Rectangle& createButton, const Rectangle& randomButton, const Rectangle& exampleButton, const Rectangle& fileButton, const Rectangle& editButton,
-    const Rectangle& mstButton,
-    bool isCreating, bool isShowingExamplesActive, 
-    bool isFileActive, bool isEditingGraph, bool showMSTMenu
-);
-
 // --- Main Application Function Prototype ---
 void RunGraphApp();
 

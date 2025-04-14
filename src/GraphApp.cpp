@@ -1,4 +1,5 @@
 #include "GraphApp.h" // Include header file
+#include "GraphMain.h" // <<< THÊM INCLUDE NÀY
 
 // Include headers cần thiết CHỈ cho implementation
 #include <iostream>
@@ -949,37 +950,6 @@ void Slider::setValue(float actualValue) {
          editBuffer = ss.str();
     }
 }
-void DrawButton(const char* text, Rectangle button, Font font, const char* buttonMessage)
-{
-    DrawRectangleLines(button.x, button.y, button.width, button.height, BLACK);
-    Vector2 textSize = MeasureTextEx(font, text, 20, 1); 
-    DrawTextEx(font, text, { button.x + button.width / 2 - textSize.x / 2, button.y + button.height / 2 - textSize.y / 2 }, 20, 1, BLACK); 
-}
-void DrawMainControls(
-    const Rectangle& createButton, const Rectangle& randomButton, const Rectangle& exampleButton, const Rectangle& fileButton, const Rectangle& editButton,
-    const Rectangle& mstButton,
-    bool isCreating, bool isShowingExamplesActive,
-    bool isFileActive, bool isEditingGraph, bool showMSTMenu
-    // Thêm bool isShowingRandomGraph nếu cần
-) {
-    DrawRectangleRec(createButton, isCreating ? ORANGE : WHITE);
-    DrawButton("Create", createButton, GetFontDefault(), "Create"); // Hoặc (isCreating ? ORANGE : WHITE)
-
-    DrawRectangleRec(randomButton, WHITE); // Hoặc (isShowingRandomGraph ? ORANGE : WHITE)
-    DrawButton("Random", randomButton, GetFontDefault(), "Random"); // Hoặc (isShowingRandomGraph ? ORANGE : WHITE)
-
-    DrawRectangleRec(exampleButton, isShowingExamplesActive ? ORANGE : WHITE);
-    DrawButton("Examples", exampleButton, GetFontDefault(), "Examples"); // Hoặc (isShowingExamplesActive ? ORANGE : WHITE)
-
-    DrawRectangleRec(fileButton, isFileActive ? ORANGE : WHITE);
-    DrawButton("File", fileButton, GetFontDefault(), "File"); // Hoặc (isFileActive ? ORANGE : WHITE)
-
-    DrawRectangleRec(editButton, isEditingGraph ? ORANGE : WHITE);
-    DrawButton("Edit", editButton, GetFontDefault(), "Edit"); // Hoặc (isEditingGraph ? ORANGE : WHITE)
-
-    DrawRectangleRec(mstButton, showMSTMenu ? ORANGE : WHITE);
-    DrawButton("MST", mstButton, GetFontDefault(), "MST"); // Hoặc (showMSTMenu ? ORANGE : WHITE)
-}
 
 void RunGraphApp() {
     // --- Di chuyển TẤT CẢ biến toàn cục vào đây ---
@@ -1030,10 +1000,20 @@ void RunGraphApp() {
     int currentHighlightLine = -1; // Index của dòng mã giả cần highlight (-1 là không có)
 
     // MST Scroll variables
-    float mstPseudocodeScrollY = 0.0f;
-    float mstPseudocodeTotalHeight = 0.0f;
-    bool isDraggingScrollbar = false;
-    float scrollbarMouseOffsetY = 0.0f;
+    float mstPseudocodeScrollY = 0.0f;         // Vertical scroll offset
+    float mstPseudocodeScrollX = 0.0f;         // Horizontal scroll offset
+    float mstPseudocodeTotalHeight = 0.0f;     // Calculated total content height
+    float mstPseudocodeMaxWidth = 0.0f;        // Calculated max content width
+    bool isDraggingVScrollbar = false;        // Dragging Vertical Scrollbar
+    bool isDraggingHScrollbar = false;        // Dragging Horizontal Scrollbar
+    float scrollbarMouseOffsetY = 0.0f;      // Mouse offset for V-Scroll
+    float scrollbarMouseOffsetX = 0.0f;      // Mouse offset for H-Scroll
+    Rectangle pseudocodeVScrollbarRect = { 0 }; // Vertical scrollbar track
+    Rectangle pseudocodeVScrollHandleRect = { 0 };// Vertical scrollbar handle
+    Rectangle pseudocodeHScrollbarRect = { 0 }; // Horizontal scrollbar track
+    Rectangle pseudocodeHScrollHandleRect = { 0 };// Horizontal scrollbar handle
+    bool showPseudocodeVScrollbar = false;     // Flag to show V-Scrollbar
+    bool showPseudocodeHScrollbar = false;     // Flag to show H-Scrollbar
     // -------------------------------------------------
     
     InitWindow(screenWidth, screenHeight, "Graph MST Visualizer");
@@ -1108,11 +1088,8 @@ void RunGraphApp() {
         // --- Input Handling & State Updates ---
         Vector2 mousePos = GetMousePosition();
         Vector2 worldMousePos = GetScreenToWorld2D(mousePos, graphCamera); // Mouse in graph space
-
-        // ** Handle UI Interactions FIRST **
-        // This prevents graph interactions when clicking on UI elements
-
         bool clickedOnUI = false;
+        float wheel = GetMouseWheelMove();
 
         // Check Left Panel Buttons (if not in a modal state like MST menu or Matrix input)
          if (!showMSTMenu && !showMatrixInput && !isEditingGraph) {
@@ -1686,7 +1663,7 @@ void RunGraphApp() {
              }
          }
 
-         if (showMSTMenu && !clickedOnUI) {
+         if (showMSTMenu&& !clickedOnUI) {
              if (CheckCollisionPointRec(mousePos, mstMenuRect)) {
                  clickedOnUI = true; // Interactions inside MST menu are UI
                  speedSlider.update(); // Update slider logic
@@ -2099,11 +2076,62 @@ void RunGraphApp() {
                      }
                  }
              }
-         }
           // Update cursor blink timer
           cursorTimer += GetFrameTime();
           if (cursorTimer >= 0.8f) cursorTimer = 0.0f; // Blink interval
+        }
 
+        // --- CHUẨN BỊ STATE ĐỂ VẼ UI ---
+        UIState currentState = {}; // Khởi tạo struct
+
+        // Điền dữ liệu từ các biến của RunGraphApp vào currentState
+        // Flags
+        currentState.isCreating = isCreating;
+        currentState.isShowingExamples = showExampleButtons; // Hoặc isShowingExamples nếu có biến riêng
+        currentState.isShowingExamplesActive = isShowingExamplesActive;
+        currentState.isFileActive = isFileActive;
+        currentState.isEditingGraph = isEditingGraph;
+        currentState.showMSTMenu = showMSTMenu;
+        currentState.showWeightInfo = showWeightInfo;
+        currentState.showError = showError;
+        currentState.showFileError = showFileError;
+        currentState.nodesFocused = nodesFocused;
+        currentState.edgesFocused = edgesFocused;
+        currentState.isEditingWeight = isEditingWeight;
+        currentState.isDraggingVScrollbar = isDraggingVScrollbar;
+        currentState.isDraggingHScrollbar = isDraggingHScrollbar;
+
+
+        // Data
+        currentState.numNodesStr = numNodesStr;
+        currentState.numEdgesStr = numEdgesStr;
+        currentState.weightInputBuffer = weightInputBuffer;
+        currentState.errorMessage = errorMessage;
+        currentState.fileErrorMessage = fileErrorMessage;
+        currentState.currentHighlightLine = currentHighlightLine;
+        currentState.currentTool = currentTool;
+        currentState.selectedNodeIndex = selectedNodeIndex;
+        currentState.selectedEdgeIndex = selectedEdgeIndex;
+        // Rectangles
+        currentState.createButton = createButton; currentState.randomButton = randomButton;
+        currentState.exampleButton = exampleButton; currentState.fileButton = fileButton;
+        currentState.editButton = editButton; currentState.mstButton = mstButton;
+        currentState.nodesInputRect = nodesInputRect; currentState.edgesInputRect = edgesInputRect;
+        currentState.k5Button = k5Button; currentState.c6Button = c6Button;
+        currentState.p4Button = p4Button; currentState.s7Button = s7Button; 
+        currentState.kruskalButton = kruskalButton; currentState.backButton = backButton;
+        currentState.prevStepButton = prevStepButton; currentState.nextStepButton = nextStepButton;
+        currentState.skipButton = skipButton; currentState.pauseResumeButton = pauseResumeButton;
+        currentState.addVertexButtonRect = addVertexButtonRect; currentState.addEdgeButtonRect = addEdgeButtonRect;
+        currentState.editWeightButtonRect = editWeightButtonRect; currentState.moveNodeButtonRect = moveNodeButtonRect;
+        currentState.deleteVertexButtonRect = deleteVertexButtonRect; currentState.deleteEdgeButtonRect = deleteEdgeButtonRect;
+        currentState.doneButtonRect = doneButtonRect; currentState.weightInputRect = weightInputRect;
+        // Rect cho scrollbar/view được tính toán lại trong hàm vẽ, nhưng ta cần truyền các rect handle/track đã tính ở phần input
+        currentState.pseudocodeVScrollbarRect = pseudocodeVScrollbarRect;
+        currentState.pseudocodeVScrollHandleRect = pseudocodeVScrollHandleRect;
+        currentState.pseudocodeHScrollbarRect = pseudocodeHScrollbarRect;
+        currentState.pseudocodeHScrollHandleRect = pseudocodeHScrollHandleRect;
+        // currentState.pseudocodeViewRect = pseudocodeViewRect; // Tính lại trong DrawMSTMenuUI
 
         // --- Drawing ---
         BeginDrawing();
@@ -2180,73 +2208,11 @@ void RunGraphApp() {
          } // End drawing main graph
 
         // --- Draw UI Panels (Outside 2D Mode) ---
-        DrawMainControls(
-            createButton, randomButton, exampleButton, fileButton, editButton, mstButton,
-            isCreating, isShowingExamplesActive, isFileActive, isEditingGraph, showMSTMenu
-        );
+        DrawMainControlsUI(currentState);
         // Draw Create Input Fields (if active)
-         if (isCreating) {
-             DrawText("N:", nodesInputRect.x - 25, nodesInputRect.y + 5, 20, WHITE);
-             DrawRectangleRec(nodesInputRect, LIGHTGRAY);
-             DrawButton("", nodesInputRect, GetFontDefault(), "");
-             DrawText(numNodesStr.c_str(), nodesInputRect.x + 5, nodesInputRect.y + 5, 20, BLACK);
-             if (nodesFocused && ((int)(GetTime()*2.0f)%2 == 0)) DrawText("|", nodesInputRect.x + 5 + MeasureText(numNodesStr.c_str(), 20), nodesInputRect.y + 5, 20, BLACK); // Cursor
-
-             DrawText("E:", edgesInputRect.x - 25, edgesInputRect.y + 5, 20, WHITE);
-             DrawRectangleRec(edgesInputRect, LIGHTGRAY);
-             DrawButton("", edgesInputRect, GetFontDefault(), "");
-             DrawText(numEdgesStr.c_str(), edgesInputRect.x + 5, edgesInputRect.y + 5, 20, BLACK);
-              if (edgesFocused && ((int)(GetTime()*2.0f)%2 == 0)) DrawText("|", edgesInputRect.x + 5 + MeasureText(numEdgesStr.c_str(), 20), edgesInputRect.y + 5, 20, BLACK); // Cursor
-         }
-
-        // Draw Example Buttons (if active)
-         if (showExampleButtons) {
-             DrawRectangleRec(k5Button, WHITE); DrawButton("K5", k5Button, GetFontDefault(), "K5");
-             DrawRectangleRec(c6Button, WHITE); DrawButton("C6", c6Button, GetFontDefault(), "C6");
-             DrawRectangleRec(p4Button, WHITE); DrawButton("P4", p4Button, GetFontDefault(), "P4");
-             DrawRectangleRec(s7Button, WHITE); DrawButton("S7", s7Button, GetFontDefault(), "S7");
-         }
-
-        // Draw Edit Panel (if active)
-         if (isEditingGraph) {
-             DrawRectangle(editPanelX, 0, editPanelWidth, screenHeight, Fade(BLACK, 0.7f)); // Panel background
-             // Draw buttons with highlight for current tool
-             DrawRectangleRec(addVertexButtonRect, (currentTool == EditTool::TOOL_ADD_VERTEX) ? ORANGE : LIGHTGRAY); DrawButton("Add Vertex", addVertexButtonRect, GetFontDefault(), "Add Vertex");
-             DrawRectangleRec(addEdgeButtonRect, (currentTool == EditTool::TOOL_ADD_EDGE_START || currentTool == EditTool::TOOL_ADD_EDGE_END) ? ORANGE : LIGHTGRAY); DrawButton("Add Edge", addEdgeButtonRect, GetFontDefault(), "Add Edge");
-             DrawRectangleRec(editWeightButtonRect, (currentTool == EditTool::TOOL_EDIT_WEIGHT) ? ORANGE : LIGHTGRAY); DrawButton("Edit Weight", editWeightButtonRect, GetFontDefault(), "Edit Weight");
-             DrawRectangleRec(moveNodeButtonRect, (currentTool == EditTool::TOOL_MOVE_VERTEX) ? ORANGE : LIGHTGRAY); DrawButton("Move Node", moveNodeButtonRect, GetFontDefault(), "Move Node");
-             DrawRectangleRec(deleteVertexButtonRect, (currentTool == EditTool::TOOL_DELETE_VERTEX) ? ORANGE : LIGHTGRAY); DrawButton("Delete Vertex", deleteVertexButtonRect, GetFontDefault(), "Delete Vertex");
-             DrawRectangleRec(deleteEdgeButtonRect, (currentTool == EditTool::TOOL_DELETE_EDGE) ? ORANGE : LIGHTGRAY); DrawButton("Delete Edge", deleteEdgeButtonRect, GetFontDefault(), "Delete Edge");
-             DrawRectangleRec(doneButtonRect, RAYWHITE); DrawButton("Done", doneButtonRect, GetFontDefault(), "Done");
-
-             // Draw Weight Input Box (if active) - draw last to be on top
-             if (isEditingWeight) {
-                 DrawRectangleRec(weightInputRect, WHITE);
-                 DrawRectangleLinesEx(weightInputRect, 1, BLACK);
-                 DrawText(weightInputBuffer.c_str(), weightInputRect.x + 5, weightInputRect.y + 4, 20, BLACK);
-                 // Blinking cursor for weight input
-                 if (((int)(GetTime() * 2.0f)) % 2 == 0) {
-                     DrawText("|", weightInputRect.x + 5 + MeasureText(weightInputBuffer.c_str(), 20), weightInputRect.y + 4, 20, BLACK);
-                 }
-             }
-              // Draw Hint Text at bottom
-               const char* hintText = "";
-               switch(currentTool){
-                   case EditTool::TOOL_ADD_VERTEX: hintText = "Click empty space to add vertex."; break;
-                   case EditTool::TOOL_ADD_EDGE_START: hintText = "Click first vertex for edge."; break;
-                   case EditTool::TOOL_ADD_EDGE_END: hintText = "Click second vertex for edge."; break;
-                   case EditTool::TOOL_EDIT_WEIGHT: hintText = "Click near edge to edit weight."; break;
-                   case EditTool::TOOL_MOVE_VERTEX: hintText = "Click and drag a vertex."; break;
-                   case EditTool::TOOL_DELETE_VERTEX: hintText = "Click a vertex to delete."; break;
-                   case EditTool::TOOL_DELETE_EDGE: hintText = "Click near an edge to delete."; break;
-                   default: hintText = "Select a tool from the right panel."; break;
-               }
-               DrawText(hintText, 10, screenHeight - 60, 20, RAYWHITE);
-
-         } // end if isEditingGraph
-
-
-        // Draw Matrix Input Window (if active) - Draw last to be on top of graph
+        if (currentState.isCreating) DrawCreateModeUI(currentState);
+        if (currentState.isShowingExamples) DrawExampleButtonsUI(currentState); // Dùng isShowingExamples từ state
+        if (currentState.isEditingGraph) DrawEditPanelUI(currentState);
 
         // Draw MST Menu (if active) - Draw last to be on top
          if (showMSTMenu) {
@@ -2470,12 +2436,7 @@ void RunGraphApp() {
 
 
         EndDrawing();
-    } // End main game loop
+    } 
 
     CloseWindow();
 }
-
-
-
-
-

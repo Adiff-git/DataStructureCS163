@@ -86,8 +86,8 @@ package_source/fast: package_source
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "No interactive CMake dialog available..."
-	C:\msys64\mingw64\bin\cmake.exe -E echo "No interactive CMake dialog available."
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake cache editor..."
+	"C:\Program Files\CMake\bin\cmake-gui.exe" -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -269,29 +269,29 @@ src/AVL.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.s
 .PHONY : src/AVL.cpp.s
 
-src/animation.obj: src/animation.cpp.obj
-.PHONY : src/animation.obj
+src/AVLmain.obj: src/AVLmain.cpp.obj
+.PHONY : src/AVLmain.obj
 
 # target to build an object file
-src/animation.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/animation.cpp.obj
-.PHONY : src/animation.cpp.obj
+src/AVLmain.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/AVLmain.cpp.obj
+.PHONY : src/AVLmain.cpp.obj
 
-src/animation.i: src/animation.cpp.i
-.PHONY : src/animation.i
+src/AVLmain.i: src/AVLmain.cpp.i
+.PHONY : src/AVLmain.i
 
 # target to preprocess a source file
-src/animation.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/animation.cpp.i
-.PHONY : src/animation.cpp.i
+src/AVLmain.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/AVLmain.cpp.i
+.PHONY : src/AVLmain.cpp.i
 
-src/animation.s: src/animation.cpp.s
-.PHONY : src/animation.s
+src/AVLmain.s: src/AVLmain.cpp.s
+.PHONY : src/AVLmain.s
 
 # target to generate assembly for a file
-src/animation.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/animation.cpp.s
-.PHONY : src/animation.cpp.s
+src/AVLmain.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/AVLmain.cpp.s
+.PHONY : src/AVLmain.cpp.s
 
 src/button.obj: src/button.cpp.obj
 .PHONY : src/button.obj
@@ -316,30 +316,6 @@ src/button.s: src/button.cpp.s
 src/button.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/button.cpp.s
 .PHONY : src/button.cpp.s
-
-src/init.obj: src/init.cpp.obj
-.PHONY : src/init.obj
-
-# target to build an object file
-src/init.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/init.cpp.obj
-.PHONY : src/init.cpp.obj
-
-src/init.i: src/init.cpp.i
-.PHONY : src/init.i
-
-# target to preprocess a source file
-src/init.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/init.cpp.i
-.PHONY : src/init.cpp.i
-
-src/init.s: src/init.cpp.s
-.PHONY : src/init.s
-
-# target to generate assembly for a file
-src/init.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/init.cpp.s
-.PHONY : src/init.cpp.s
 
 src/main.obj: src/main.cpp.obj
 .PHONY : src/main.obj
@@ -411,15 +387,12 @@ help:
 	@echo ... src/AVL.obj
 	@echo ... src/AVL.i
 	@echo ... src/AVL.s
-	@echo ... src/animation.obj
-	@echo ... src/animation.i
-	@echo ... src/animation.s
+	@echo ... src/AVLmain.obj
+	@echo ... src/AVLmain.i
+	@echo ... src/AVLmain.s
 	@echo ... src/button.obj
 	@echo ... src/button.i
 	@echo ... src/button.s
-	@echo ... src/init.obj
-	@echo ... src/init.i
-	@echo ... src/init.s
 	@echo ... src/main.obj
 	@echo ... src/main.i
 	@echo ... src/main.s

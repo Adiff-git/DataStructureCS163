@@ -76,105 +76,105 @@ raylib/raylib/CMakeFiles/raylib.dir/raudio.c.obj: raylib/raylib/CMakeFiles/rayli
 raylib/raylib/CMakeFiles/raylib.dir/raudio.c.obj: C:/Users/LAPTOP\ ACER/Downloads/Project/DataStructureCS163/raylib/src/raudio.c
 raylib/raylib/CMakeFiles/raylib.dir/raudio.c.obj: raylib/raylib/CMakeFiles/raylib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building C object raylib/raylib/CMakeFiles/raylib.dir/raudio.c.obj"
-	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT raylib/raylib/CMakeFiles/raylib.dir/raudio.c.obj -MF CMakeFiles\raylib.dir\raudio.c.obj.d -o CMakeFiles\raylib.dir\raudio.c.obj -c "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\raudio.c"
+	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\ucrt64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT raylib/raylib/CMakeFiles/raylib.dir/raudio.c.obj -MF CMakeFiles\raylib.dir\raudio.c.obj.d -o CMakeFiles\raylib.dir\raudio.c.obj -c "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\raudio.c"
 
 raylib/raylib/CMakeFiles/raylib.dir/raudio.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/raylib.dir/raudio.c.i"
-	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\raudio.c" > CMakeFiles\raylib.dir\raudio.c.i
+	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\ucrt64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\raudio.c" > CMakeFiles\raylib.dir\raudio.c.i
 
 raylib/raylib/CMakeFiles/raylib.dir/raudio.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/raylib.dir/raudio.c.s"
-	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\raudio.c" -o CMakeFiles\raylib.dir\raudio.c.s
+	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\ucrt64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\raudio.c" -o CMakeFiles\raylib.dir\raudio.c.s
 
 raylib/raylib/CMakeFiles/raylib.dir/rcore.c.obj: raylib/raylib/CMakeFiles/raylib.dir/flags.make
 raylib/raylib/CMakeFiles/raylib.dir/rcore.c.obj: raylib/raylib/CMakeFiles/raylib.dir/includes_C.rsp
 raylib/raylib/CMakeFiles/raylib.dir/rcore.c.obj: C:/Users/LAPTOP\ ACER/Downloads/Project/DataStructureCS163/raylib/src/rcore.c
 raylib/raylib/CMakeFiles/raylib.dir/rcore.c.obj: raylib/raylib/CMakeFiles/raylib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_2) "Building C object raylib/raylib/CMakeFiles/raylib.dir/rcore.c.obj"
-	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT raylib/raylib/CMakeFiles/raylib.dir/rcore.c.obj -MF CMakeFiles\raylib.dir\rcore.c.obj.d -o CMakeFiles\raylib.dir\rcore.c.obj -c "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rcore.c"
+	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\ucrt64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT raylib/raylib/CMakeFiles/raylib.dir/rcore.c.obj -MF CMakeFiles\raylib.dir\rcore.c.obj.d -o CMakeFiles\raylib.dir\rcore.c.obj -c "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rcore.c"
 
 raylib/raylib/CMakeFiles/raylib.dir/rcore.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/raylib.dir/rcore.c.i"
-	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rcore.c" > CMakeFiles\raylib.dir\rcore.c.i
+	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\ucrt64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rcore.c" > CMakeFiles\raylib.dir\rcore.c.i
 
 raylib/raylib/CMakeFiles/raylib.dir/rcore.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/raylib.dir/rcore.c.s"
-	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rcore.c" -o CMakeFiles\raylib.dir\rcore.c.s
+	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\ucrt64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rcore.c" -o CMakeFiles\raylib.dir\rcore.c.s
 
 raylib/raylib/CMakeFiles/raylib.dir/rmodels.c.obj: raylib/raylib/CMakeFiles/raylib.dir/flags.make
 raylib/raylib/CMakeFiles/raylib.dir/rmodels.c.obj: raylib/raylib/CMakeFiles/raylib.dir/includes_C.rsp
 raylib/raylib/CMakeFiles/raylib.dir/rmodels.c.obj: C:/Users/LAPTOP\ ACER/Downloads/Project/DataStructureCS163/raylib/src/rmodels.c
 raylib/raylib/CMakeFiles/raylib.dir/rmodels.c.obj: raylib/raylib/CMakeFiles/raylib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_3) "Building C object raylib/raylib/CMakeFiles/raylib.dir/rmodels.c.obj"
-	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT raylib/raylib/CMakeFiles/raylib.dir/rmodels.c.obj -MF CMakeFiles\raylib.dir\rmodels.c.obj.d -o CMakeFiles\raylib.dir\rmodels.c.obj -c "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rmodels.c"
+	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\ucrt64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT raylib/raylib/CMakeFiles/raylib.dir/rmodels.c.obj -MF CMakeFiles\raylib.dir\rmodels.c.obj.d -o CMakeFiles\raylib.dir\rmodels.c.obj -c "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rmodels.c"
 
 raylib/raylib/CMakeFiles/raylib.dir/rmodels.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/raylib.dir/rmodels.c.i"
-	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rmodels.c" > CMakeFiles\raylib.dir\rmodels.c.i
+	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\ucrt64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rmodels.c" > CMakeFiles\raylib.dir\rmodels.c.i
 
 raylib/raylib/CMakeFiles/raylib.dir/rmodels.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/raylib.dir/rmodels.c.s"
-	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rmodels.c" -o CMakeFiles\raylib.dir\rmodels.c.s
+	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\ucrt64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rmodels.c" -o CMakeFiles\raylib.dir\rmodels.c.s
 
 raylib/raylib/CMakeFiles/raylib.dir/rshapes.c.obj: raylib/raylib/CMakeFiles/raylib.dir/flags.make
 raylib/raylib/CMakeFiles/raylib.dir/rshapes.c.obj: raylib/raylib/CMakeFiles/raylib.dir/includes_C.rsp
 raylib/raylib/CMakeFiles/raylib.dir/rshapes.c.obj: C:/Users/LAPTOP\ ACER/Downloads/Project/DataStructureCS163/raylib/src/rshapes.c
 raylib/raylib/CMakeFiles/raylib.dir/rshapes.c.obj: raylib/raylib/CMakeFiles/raylib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_4) "Building C object raylib/raylib/CMakeFiles/raylib.dir/rshapes.c.obj"
-	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT raylib/raylib/CMakeFiles/raylib.dir/rshapes.c.obj -MF CMakeFiles\raylib.dir\rshapes.c.obj.d -o CMakeFiles\raylib.dir\rshapes.c.obj -c "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rshapes.c"
+	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\ucrt64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT raylib/raylib/CMakeFiles/raylib.dir/rshapes.c.obj -MF CMakeFiles\raylib.dir\rshapes.c.obj.d -o CMakeFiles\raylib.dir\rshapes.c.obj -c "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rshapes.c"
 
 raylib/raylib/CMakeFiles/raylib.dir/rshapes.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/raylib.dir/rshapes.c.i"
-	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rshapes.c" > CMakeFiles\raylib.dir\rshapes.c.i
+	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\ucrt64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rshapes.c" > CMakeFiles\raylib.dir\rshapes.c.i
 
 raylib/raylib/CMakeFiles/raylib.dir/rshapes.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/raylib.dir/rshapes.c.s"
-	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rshapes.c" -o CMakeFiles\raylib.dir\rshapes.c.s
+	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\ucrt64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rshapes.c" -o CMakeFiles\raylib.dir\rshapes.c.s
 
 raylib/raylib/CMakeFiles/raylib.dir/rtext.c.obj: raylib/raylib/CMakeFiles/raylib.dir/flags.make
 raylib/raylib/CMakeFiles/raylib.dir/rtext.c.obj: raylib/raylib/CMakeFiles/raylib.dir/includes_C.rsp
 raylib/raylib/CMakeFiles/raylib.dir/rtext.c.obj: C:/Users/LAPTOP\ ACER/Downloads/Project/DataStructureCS163/raylib/src/rtext.c
 raylib/raylib/CMakeFiles/raylib.dir/rtext.c.obj: raylib/raylib/CMakeFiles/raylib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_5) "Building C object raylib/raylib/CMakeFiles/raylib.dir/rtext.c.obj"
-	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT raylib/raylib/CMakeFiles/raylib.dir/rtext.c.obj -MF CMakeFiles\raylib.dir\rtext.c.obj.d -o CMakeFiles\raylib.dir\rtext.c.obj -c "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rtext.c"
+	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\ucrt64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT raylib/raylib/CMakeFiles/raylib.dir/rtext.c.obj -MF CMakeFiles\raylib.dir\rtext.c.obj.d -o CMakeFiles\raylib.dir\rtext.c.obj -c "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rtext.c"
 
 raylib/raylib/CMakeFiles/raylib.dir/rtext.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/raylib.dir/rtext.c.i"
-	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rtext.c" > CMakeFiles\raylib.dir\rtext.c.i
+	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\ucrt64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rtext.c" > CMakeFiles\raylib.dir\rtext.c.i
 
 raylib/raylib/CMakeFiles/raylib.dir/rtext.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/raylib.dir/rtext.c.s"
-	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rtext.c" -o CMakeFiles\raylib.dir\rtext.c.s
+	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\ucrt64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rtext.c" -o CMakeFiles\raylib.dir\rtext.c.s
 
 raylib/raylib/CMakeFiles/raylib.dir/rtextures.c.obj: raylib/raylib/CMakeFiles/raylib.dir/flags.make
 raylib/raylib/CMakeFiles/raylib.dir/rtextures.c.obj: raylib/raylib/CMakeFiles/raylib.dir/includes_C.rsp
 raylib/raylib/CMakeFiles/raylib.dir/rtextures.c.obj: C:/Users/LAPTOP\ ACER/Downloads/Project/DataStructureCS163/raylib/src/rtextures.c
 raylib/raylib/CMakeFiles/raylib.dir/rtextures.c.obj: raylib/raylib/CMakeFiles/raylib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_6) "Building C object raylib/raylib/CMakeFiles/raylib.dir/rtextures.c.obj"
-	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT raylib/raylib/CMakeFiles/raylib.dir/rtextures.c.obj -MF CMakeFiles\raylib.dir\rtextures.c.obj.d -o CMakeFiles\raylib.dir\rtextures.c.obj -c "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rtextures.c"
+	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\ucrt64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT raylib/raylib/CMakeFiles/raylib.dir/rtextures.c.obj -MF CMakeFiles\raylib.dir\rtextures.c.obj.d -o CMakeFiles\raylib.dir\rtextures.c.obj -c "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rtextures.c"
 
 raylib/raylib/CMakeFiles/raylib.dir/rtextures.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/raylib.dir/rtextures.c.i"
-	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rtextures.c" > CMakeFiles\raylib.dir\rtextures.c.i
+	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\ucrt64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rtextures.c" > CMakeFiles\raylib.dir\rtextures.c.i
 
 raylib/raylib/CMakeFiles/raylib.dir/rtextures.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/raylib.dir/rtextures.c.s"
-	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rtextures.c" -o CMakeFiles\raylib.dir\rtextures.c.s
+	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\ucrt64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\rtextures.c" -o CMakeFiles\raylib.dir\rtextures.c.s
 
 raylib/raylib/CMakeFiles/raylib.dir/utils.c.obj: raylib/raylib/CMakeFiles/raylib.dir/flags.make
 raylib/raylib/CMakeFiles/raylib.dir/utils.c.obj: raylib/raylib/CMakeFiles/raylib.dir/includes_C.rsp
 raylib/raylib/CMakeFiles/raylib.dir/utils.c.obj: C:/Users/LAPTOP\ ACER/Downloads/Project/DataStructureCS163/raylib/src/utils.c
 raylib/raylib/CMakeFiles/raylib.dir/utils.c.obj: raylib/raylib/CMakeFiles/raylib.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_7) "Building C object raylib/raylib/CMakeFiles/raylib.dir/utils.c.obj"
-	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT raylib/raylib/CMakeFiles/raylib.dir/utils.c.obj -MF CMakeFiles\raylib.dir\utils.c.obj.d -o CMakeFiles\raylib.dir\utils.c.obj -c "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\utils.c"
+	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\ucrt64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT raylib/raylib/CMakeFiles/raylib.dir/utils.c.obj -MF CMakeFiles\raylib.dir\utils.c.obj.d -o CMakeFiles\raylib.dir\utils.c.obj -c "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\utils.c"
 
 raylib/raylib/CMakeFiles/raylib.dir/utils.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/raylib.dir/utils.c.i"
-	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\utils.c" > CMakeFiles\raylib.dir\utils.c.i
+	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\ucrt64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\utils.c" > CMakeFiles\raylib.dir\utils.c.i
 
 raylib/raylib/CMakeFiles/raylib.dir/utils.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/raylib.dir/utils.c.s"
-	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\utils.c" -o CMakeFiles\raylib.dir\utils.c.s
+	cd /d C:\Users\LAPTOP~1\DOWNLO~1\Project\DATAST~1\build\raylib\raylib && C:\msys64\ucrt64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "C:\Users\LAPTOP ACER\Downloads\Project\DataStructureCS163\raylib\src\utils.c" -o CMakeFiles\raylib.dir\utils.c.s
 
 # Object files for target raylib
 raylib_OBJECTS = \

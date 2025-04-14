@@ -1,8 +1,8 @@
-#ifndef ANIMATION_H
-#define ANIMATION_H
+#ifndef AVLMAIN_H
+#define AVLMAIN_H
 
 #include "AVL.h"
-#include "Button.h"
+#include "button.h"
 #include "raylib.h"
 #include <string>
 #include <stack>
@@ -78,7 +78,6 @@ private:
     std::string fastForwardButtonMessage;
     Rectangle randomButtonRect;
     std::string randomButtonMessage;
-    // New variables for stepping through animation states
     bool manualStepping; // Tracks if we're stepping manually (via Previous/Next)
     std::vector<State> stateHistory; // Tracks the sequence of states for the current operation
     int stateHistoryIndex; // Current position in the state history
@@ -99,9 +98,7 @@ public:
     void animateLoadFile();
     void animatePrevious();
     void animateNext();
-    // New method for stepping backward in animation
     void stepBackward();
-    // New method for stepping forward in animation
     void stepForward();
 
     void setNotificationMessage(const std::string& message);
@@ -115,4 +112,7 @@ private:
 extern std::stack<AVLTree> treeUndoState;
 extern std::stack<AVLTree> treeRedoState;
 
-#endif // ANIMATION_H
+// Function from init.h
+void initAVLProgram();
+
+#endif // AVLMAIN_H

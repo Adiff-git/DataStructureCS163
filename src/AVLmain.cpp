@@ -1,13 +1,13 @@
+#include "../inc/avlmain.h"
 #include "../inc/AVL.h"
-#include "../inc/animation.h"
-#include "../inc/Button.h"
+#include "../inc/button.h"
+#include "../inc/tinyfiledialogs.h"
 #include <sstream>
 #include <cstdlib>
 #include <stack>
 #include <iostream>
 #include <cmath>
 #include <fstream>
-#include "../inc/tinyfiledialogs.h"
 
 std::stack<AVLTree> treeUndoState;
 std::stack<AVLTree> treeRedoState;
@@ -63,7 +63,9 @@ AVLTreeVisualizer::AVLTreeVisualizer()
       playPauseButtonMessage("Pause"),
       nextButtonMessage("=>"),
       fastForwardButtonMessage(">>|"),
-      randomButtonMessage("?")
+      randomButtonMessage("?"),
+      manualStepping(false),
+      stateHistoryIndex(0)
 {
     sliderHandle = { speedBar.x + (animationSpeed * (speedBar.width - 10.0f)), speedBar.y + 2.0f, 10.0f, 16.0f };
 }
@@ -908,4 +910,26 @@ void AVLTreeVisualizer::setNotificationMessage(const std::string& message) {
 
 std::string AVLTreeVisualizer::getNotificationMessage() const {
     return notificationMessage;
+}
+
+// Implementation of initAVLProgram (from init.cpp)
+void initAVLProgram() {
+    const int screenWidth = 1600;
+    const int screenHeight = 900;
+
+    InitWindow(screenWidth, screenHeight, "AVL Tree Visualizer");
+    SetTargetFPS(60);
+
+    AVLTreeVisualizer visualizer;
+
+    while (!WindowShouldClose()) {
+        float deltaTime = GetFrameTime();
+        visualizer.handleInput();
+        visualizer.updateAnimation(deltaTime);
+        BeginDrawing();
+        visualizer.draw();
+        EndDrawing();
+    }
+
+    CloseWindow();
 }

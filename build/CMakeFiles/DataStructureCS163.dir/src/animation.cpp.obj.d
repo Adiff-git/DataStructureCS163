@@ -168,18 +168,6 @@ CMakeFiles/DataStructureCS163.dir/src/animation.cpp.obj: \
  C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/14.2.0/include/stdarg.h \
  C:/msys64/mingw64/include/stdarg.h \
  C:/msys64/mingw64/include/_mingw_stdarg.h \
- C:/msys64/mingw64/include/c++/14.2.0/stack \
- C:/msys64/mingw64/include/c++/14.2.0/bits/stl_stack.h \
- C:/msys64/mingw64/include/c++/14.2.0/set \
- C:/msys64/mingw64/include/c++/14.2.0/bits/stl_tree.h \
- C:/msys64/mingw64/include/c++/14.2.0/ext/aligned_buffer.h \
- C:/msys64/mingw64/include/c++/14.2.0/bits/node_handle.h \
- C:/msys64/mingw64/include/c++/14.2.0/bits/stl_set.h \
- C:/msys64/mingw64/include/c++/14.2.0/bits/stl_multiset.h \
- C:/msys64/mingw64/include/c++/14.2.0/bits/erase_if.h \
- C:/Users/LAPTOP\ ACER/Downloads/Project/DataStructureCS163/inc/button.h \
- C:/msys64/mingw64/include/c++/14.2.0/sstream \
- C:/msys64/mingw64/include/c++/14.2.0/bits/sstream.tcc \
  C:/msys64/mingw64/include/c++/14.2.0/cmath \
  C:/msys64/mingw64/include/math.h \
  C:/msys64/mingw64/include/c++/14.2.0/bits/specfun.h \
@@ -196,6 +184,17 @@ CMakeFiles/DataStructureCS163.dir/src/animation.cpp.obj: \
  C:/msys64/mingw64/include/c++/14.2.0/tr1/poly_hermite.tcc \
  C:/msys64/mingw64/include/c++/14.2.0/tr1/poly_laguerre.tcc \
  C:/msys64/mingw64/include/c++/14.2.0/tr1/riemann_zeta.tcc \
+ C:/msys64/mingw64/include/c++/14.2.0/stack \
+ C:/msys64/mingw64/include/c++/14.2.0/bits/stl_stack.h \
+ C:/msys64/mingw64/include/c++/14.2.0/set \
+ C:/msys64/mingw64/include/c++/14.2.0/bits/stl_tree.h \
+ C:/msys64/mingw64/include/c++/14.2.0/ext/aligned_buffer.h \
+ C:/msys64/mingw64/include/c++/14.2.0/bits/node_handle.h \
+ C:/msys64/mingw64/include/c++/14.2.0/bits/stl_set.h \
+ C:/msys64/mingw64/include/c++/14.2.0/bits/stl_multiset.h \
+ C:/msys64/mingw64/include/c++/14.2.0/bits/erase_if.h \
+ C:/msys64/mingw64/include/c++/14.2.0/sstream \
+ C:/msys64/mingw64/include/c++/14.2.0/bits/sstream.tcc \
  C:/msys64/mingw64/include/c++/14.2.0/fstream \
  C:/msys64/mingw64/include/c++/14.2.0/bits/codecvt.h \
  C:/msys64/mingw64/include/c++/14.2.0/x86_64-w64-mingw32/bits/basic_file.h \

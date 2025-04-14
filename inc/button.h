@@ -1,28 +1,13 @@
-#ifndef BUTTON_H
-#define BUTTON_H
+#pragma once
 
 #include "raylib.h"
-#include <string>
+#include <cmath>
 
-class Button {
-public:
-    Rectangle rect;
-    std::string label;
-    Color bgColor;
-    Color textColor;
-    Font font;
-    int fontSize;
-    bool isPressed;
+// Hàm kiểm tra click chuột
+bool IsButtonClicked(Rectangle button);
 
-    Button(float x, float y, float width, float height, const std::string& label, 
-           Color bgColor, Color textColor, Font font, int fontSize);
+// Hàm xử lý thanh kéo
+float UpdateSlider(Rectangle slider, float minValue, float maxValue, float currentValue);
 
-    bool isClicked() const;
-    void draw() const;
-    void setPosition(float x, float y);
-    void setSize(float width, float height);
-    void setLabel(const std::string& newLabel);
-    void setBgColor(Color newColor);
-};
-
-#endif // BUTTON_H
+// Hàm vẽ nút
+bool DrawButton(const char* text, Rectangle button, Font font, bool& buttonClicked, const char*& buttonMessage);

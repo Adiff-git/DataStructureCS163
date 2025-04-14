@@ -1,5 +1,4 @@
 #include "../inc/AVL.h"
-
 #include "../inc/animation.h"
 #include "../inc/Button.h"
 #include <sstream>
@@ -15,10 +14,23 @@ std::stack<AVLTree> treeRedoState;
 #define NODE_RADIUS 20.0f
 
 AVLTreeVisualizer::AVLTreeVisualizer() 
-    : inputText(""), 
-      inputActive(false), 
-      handleSpace{0.0f, 0.0f, 1500.0f, 75.0f}, 
-      inputBox{20.0f, 20.0f, 200.0f, 30.0f}, 
+    : inputText(""),
+      inputActive(false),
+      handleSpace{0.0f, 0.0f, 1500.0f, 75.0f},
+      inputBox{10.0f, 430.0f, 200.0f, 30.0f},
+      initButtonRect{30.0f, 700.0f, 80.0f, 30.0f},
+      insertButtonRect{130.0f, 700.0f, 80.0f, 30.0f},
+      deleteButtonRect{230.0f, 700.0f, 80.0f, 30.0f},
+      searchButtonRect{330.0f, 700.0f, 80.0f, 30.0f},
+      loadFileButtonRect{430.0f, 700.0f, 80.0f, 30.0f},
+      rewindButtonRect{700.0f, 700.0f, 40.0f, 30.0f},
+      previousButtonRect{760.0f, 700.0f, 40.0f, 30.0f},
+      playPauseButtonRect{820.0f, 700.0f, 40.0f, 30.0f},
+      nextButtonRect{880.0f, 700.0f, 40.0f, 30.0f},
+      fastForwardButtonRect{940.0f, 700.0f, 40.0f, 30.0f},
+      randomButtonRect{210.0f, 430.0f, 30.0f, 30.0f},
+      speedBar{700.0f, 670.0f, 280.0f, 20.0f},
+      sliderHandle{0.0f, 0.0f, 10.0f, 16.0f},
       currentState(IDLE),
       pathIndex(0),
       rotationIndex(0),
@@ -30,50 +42,30 @@ AVLTreeVisualizer::AVLTreeVisualizer()
       animationSpeed(0.5f),
       draggingSlider(false),
       paused(false),
-      initButton(10.0f, 0.0f, 80.0f, 30.0f, "Init", WHITE, WHITE, GetFontDefault(), 20),
-      insertButton(90.0f, 0.0f, 80.0f, 30.0f, "Insert", WHITE, WHITE, GetFontDefault(), 20),
-      deleteButton(170.0f, 0.0f, 80.0f, 30.0f, "Delete", WHITE, WHITE, GetFontDefault(), 20),
-      searchButton(250.0f, 0.0f, 80.0f, 30.0f, "Search", WHITE, WHITE, GetFontDefault(), 20),
-      loadFileButton(330.0f, 0.0f, 80.0f, 30.0f, "Load", WHITE, WHITE, GetFontDefault(), 20),
-      rewindButton(0.0f, 0.0f, 70.0f, 30.0f, "|<<", WHITE, WHITE, GetFontDefault(), 20),
-      previousButton(0.0f, 0.0f, 70.0f, 30.0f, "Prev", WHITE, WHITE, GetFontDefault(), 20),
-      playPauseButton(0.0f, 0.0f, 70.0f, 30.0f, "Pause", WHITE, WHITE, GetFontDefault(), 20),
-      nextButton(0.0f, 0.0f, 70.0f, 30.0f, "Next", WHITE, WHITE, GetFontDefault(), 20),
-      fastForwardButton(0.0f, 0.0f, 70.0f, 30.0f, ">>|", WHITE, WHITE, GetFontDefault(), 20)
+      initButtonClicked(false),
+      insertButtonClicked(false),
+      deleteButtonClicked(false),
+      searchButtonClicked(false),
+      loadFileButtonClicked(false),
+      rewindButtonClicked(false),
+      previousButtonClicked(false),
+      playPauseButtonClicked(false),
+      nextButtonClicked(false),
+      fastForwardButtonClicked(false),
+      randomButtonClicked(false),
+      initButtonMessage("Init"),
+      insertButtonMessage("Insert"),
+      deleteButtonMessage("Delete"),
+      searchButtonMessage("Search"),
+      loadFileButtonMessage("Load"),
+      rewindButtonMessage("|<<"),
+      previousButtonMessage("<="),
+      playPauseButtonMessage("Pause"),
+      nextButtonMessage("=>"),
+      fastForwardButtonMessage(">>|"),
+      randomButtonMessage("?")
 {
-    float screenWidth = (float)GetScreenWidth();
-    float screenHeight = (float)GetScreenHeight();
-
-    float buttonWidth = 80.0f;
-    float controlButtonWidth = 70.0f;
-    float buttonHeight = 30.0f;
-    float buttonSpacing = 5.0f;
-
-    float speedBarWidth = 390.0f;
-    float speedBarHeight = 20.0f;
-    float speedBarStartX = (screenWidth / 2.0f) - (speedBarWidth / 2.0f);
-    float speedBarY = screenHeight - speedBarHeight - 70.0f;
-    speedBar = { speedBarStartX, speedBarY, speedBarWidth, speedBarHeight };
     sliderHandle = { speedBar.x + (animationSpeed * (speedBar.width - 10.0f)), speedBar.y + 2.0f, 10.0f, 16.0f };
-
-    float controlBarWidth = (controlButtonWidth + buttonSpacing) * 5 - buttonSpacing;
-    float controlBarStartX = (screenWidth / 2.0f) - (controlBarWidth / 2.0f);
-    float controlBarY = speedBar.y + speedBarHeight + 10.0f;
-
-    float leftButtonY = speedBar.y - buttonHeight - 10.0f;
-
-    Font defaultFont = GetFontDefault();
-
-    initButton = Button(10.0f, leftButtonY, buttonWidth, buttonHeight, "Init", GRAY, WHITE, defaultFont, 20);
-    insertButton = Button(90.0f, leftButtonY, buttonWidth, buttonHeight, "Insert", GRAY, WHITE, defaultFont, 20);
-    deleteButton = Button(170.0f, leftButtonY, buttonWidth, buttonHeight, "Delete", GRAY, WHITE, defaultFont, 20);
-    searchButton = Button(250.0f, leftButtonY, buttonWidth, buttonHeight, "Search", GRAY, WHITE, defaultFont, 20);
-    loadFileButton = Button(330.0f, leftButtonY, buttonWidth, buttonHeight, "Load", GRAY, WHITE, defaultFont, 20);
-    rewindButton = Button(controlBarStartX + 0 * (controlButtonWidth + buttonSpacing), controlBarY, controlButtonWidth, buttonHeight, "|<<", GRAY, WHITE, defaultFont, 20);
-    previousButton = Button(controlBarStartX + 1 * (controlButtonWidth + buttonSpacing), controlBarY, controlButtonWidth, buttonHeight, "Prev", GRAY, WHITE, defaultFont, 20);
-    playPauseButton = Button(controlBarStartX + 2 * (controlButtonWidth + buttonSpacing), controlBarY, controlButtonWidth, buttonHeight, "Pause", GRAY, WHITE, defaultFont, 20);
-    nextButton = Button(controlBarStartX + 3 * (controlButtonWidth + buttonSpacing), controlBarY, controlButtonWidth, buttonHeight, "Next", GRAY, WHITE, defaultFont, 20);
-    fastForwardButton = Button(controlBarStartX + 4 * (controlButtonWidth + buttonSpacing), controlBarY, controlButtonWidth, buttonHeight, ">>|", GRAY, WHITE, defaultFont, 20);
 }
 
 AVLTreeVisualizer::~AVLTreeVisualizer() {
@@ -102,78 +94,97 @@ void AVLTreeVisualizer::handleInput() {
         }
     }
 
-    if (initButton.isClicked()) {
+    Font defaultFont = GetFontDefault();
+    const char* tempMessage = nullptr;
+
+    if (DrawButton("Init", initButtonRect, defaultFont, initButtonClicked, tempMessage)) {
         animateRandom();
         inputText.clear();
     }
-    if (insertButton.isClicked() && !inputText.empty()) {
+    if (DrawButton("Insert", insertButtonRect, defaultFont, insertButtonClicked, tempMessage) && !inputText.empty()) {
         int insertValue = std::stoi(inputText);
         animateInsert(insertValue);
         inputText.clear();
     }
-    if (deleteButton.isClicked() && !inputText.empty()) {
+    if (DrawButton("Delete", deleteButtonRect, defaultFont, deleteButtonClicked, tempMessage) && !inputText.empty()) {
         int deleteValue = std::stoi(inputText);
         animateDelete(deleteValue);
         inputText.clear();
     }
-    if (searchButton.isClicked() && !inputText.empty()) {
+    if (DrawButton("Search", searchButtonRect, defaultFont, searchButtonClicked, tempMessage) && !inputText.empty()) {
         int searchValue = std::stoi(inputText);
         animateSearch(searchValue);
         inputText.clear();
     }
-    if (loadFileButton.isClicked()) {
+    if (DrawButton("Load", loadFileButtonRect, defaultFont, loadFileButtonClicked, tempMessage)) {
         animateLoadFile();
         inputText.clear();
     }
-
-    if (previousButton.isClicked() && currentState == TRAVERSING) {
-        if (pathIndex > 0) {
-            pathIndex--;
-            highlightNodes.erase(currentPath[pathIndex]);
-            stateTimer = 0.0f;
-        }
+    if (DrawButton("|<<", rewindButtonRect, defaultFont, rewindButtonClicked, tempMessage)) {
+        animatePrevious();
+        inputText.clear();
     }
-
-    if (nextButton.isClicked() && currentState == TRAVERSING) {
-        if (pathIndex < currentPath.size()) {
-            pathIndex++;
-            stateTimer = 0.0f;
-        }
+    if (DrawButton("<=", previousButtonRect, defaultFont, previousButtonClicked, tempMessage)) {
+        stepBackward();
+        inputText.clear();
     }
-
-    if (playPauseButton.isClicked()) {
+    if (DrawButton(paused ? "Play" : "Pause", playPauseButtonRect, defaultFont, playPauseButtonClicked, tempMessage)) {
         paused = !paused;
-        playPauseButton.setLabel(paused ? "Play" : "Pause");
-        playPauseButton.setBgColor(paused ? GREEN : RED);
+        playPauseButtonMessage = paused ? "Play" : "Pause";
     }
-
-    if (rewindButton.isClicked() && currentState == TRAVERSING) {
-        pathIndex = 0;
-        highlightNodes.clear();
-        stateTimer = 0.0f;
+    if (DrawButton("=>", nextButtonRect, defaultFont, nextButtonClicked, tempMessage)) {
+        stepForward();
+        inputText.clear();
     }
+    if (DrawButton(">>|", fastForwardButtonRect, defaultFont, fastForwardButtonClicked, tempMessage)) {
+        if (currentState != IDLE && !currentPath.empty()) {
+            paused = true;
+            playPauseButtonMessage = "Play";
 
-    if (fastForwardButton.isClicked() && currentState == TRAVERSING) {
-        pathIndex = currentPath.size();
-        highlightNodes.clear();
-        for (Node* node : currentPath) {
-            highlightNodes.insert(node);
-        }
-        stateTimer = 0.0f;
-        if (currentOperation == "insert") {
-            currentState = INSERTING;
-        } else if (currentOperation == "delete") {
-            if (!tree.search(operationValue)) {
-                notificationMessage = "Node " + std::to_string(operationValue) + " Not Found";
-                stateTimer = 0.0f;
-                currentState = SHOWING_RESULT;
-            } else {
-                currentState = HIGHLIGHTING_BEFORE_DELETE;
+            pathIndex = currentPath.size();
+            highlightNodes.clear();
+            for (Node* node : currentPath) {
+                highlightNodes.insert(node);
             }
-        } else if (currentOperation == "search") {
-            currentState = SEARCHING;
+
+            if (currentOperation == "insert") {
+                if (!tree.search(pendingInsertValue)) {
+                    tree.insert(tree.root, pendingInsertValue);
+                    AVLTree treeReplica(tree);
+                    treeUndoState.push(treeReplica);
+                    notificationMessage = "Inserted " + std::to_string(pendingInsertValue);
+                } else {
+                    notificationMessage = "Duplicate " + std::to_string(pendingInsertValue) + " Not Inserted";
+                }
+                currentPath = tree.getInsertionPath(pendingInsertValue);
+                pathIndex = currentPath.size();
+                currentState = SHOWING_RESULT;
+            } else if (currentOperation == "delete") {
+                if (!tree.search(operationValue)) {
+                    notificationMessage = "Node " + std::to_string(operationValue) + " Not Found";
+                } else {
+                    tree.remove(tree.root, operationValue);
+                    AVLTree treeReplica(tree);
+                    treeUndoState.push(treeReplica);
+                    notificationMessage = std::to_string(operationValue) + " Deleted";
+                }
+                currentState = SHOWING_RESULT;
+            } else if (currentOperation == "search") {
+                if (searchFound) {
+                    notificationMessage = "Found " + std::to_string(operationValue);
+                } else {
+                    notificationMessage = "Node " + std::to_string(operationValue) + " Not Found";
+                }
+                currentState = SHOWING_RESULT;
+            }
             stateTimer = 0.0f;
+            resultTimer = 0.0f;
         }
+    }
+    if (DrawButton("?", randomButtonRect, defaultFont, randomButtonClicked, tempMessage)) {
+        int randomValue = GetRandomValue(1, 100);
+        inputText = std::to_string(randomValue);
+        inputActive = false;
     }
 
     if (IsKeyPressed(KEY_C)) {
@@ -185,18 +196,148 @@ void AVLTreeVisualizer::handleInput() {
         inputText.clear();
     }
 
-    if (CheckCollisionPointRec(mousePos, speedBar) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-        draggingSlider = true;
+    animationSpeed = UpdateSlider(speedBar, 0.0f, 1.0f, animationSpeed);
+    sliderHandle.x = speedBar.x + (animationSpeed * (speedBar.width - 10.0f));
+}
+
+void AVLTreeVisualizer::stepBackward() {
+    if (currentState == IDLE || currentPath.empty()) {
+        return;
     }
-    if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
-        draggingSlider = false;
+
+    paused = true;
+    playPauseButtonMessage = "Play";
+
+    if (currentState == TRAVERSING || currentState == SEARCHING) {
+        if (pathIndex > 0) {
+            pathIndex--;
+            highlightNodes.clear();
+            for (int i = 0; i < pathIndex; i++) {
+                highlightNodes.insert(currentPath[i]);
+            }
+            if (pathIndex > 0) {
+                notificationMessage = "Traverse: " + std::to_string(currentPath[pathIndex - 1]->data);
+            } else {
+                notificationMessage = "Start of traversal";
+            }
+            stateTimer = 0.0f;
+        }
+    } else if (currentState == INSERTING) {
+        currentState = TRAVERSING;
+        pathIndex = currentPath.size();
+        highlightNodes.clear();
+        for (Node* node : currentPath) {
+            highlightNodes.insert(node);
+        }
+        notificationMessage = "Traverse: " + std::to_string(currentPath[pathIndex - 1]->data);
+        stateTimer = 0.0f;
+    } else if (currentState == HIGHLIGHTING_BEFORE_DELETE) {
+        currentState = TRAVERSING;
+        pathIndex = currentPath.size();
+        highlightNodes.clear();
+        for (Node* node : currentPath) {
+            highlightNodes.insert(node);
+        }
+        notificationMessage = "Traverse: " + std::to_string(currentPath[pathIndex - 1]->data);
+        stateTimer = 0.0f;
+    } else if (currentState == DELETING) {
+        currentState = HIGHLIGHTING_BEFORE_DELETE;
+        notificationMessage = "Deleting " + std::to_string(operationValue);
+        stateTimer = 0.0f;
+    } else if (currentState == SHOWING_RESULT) {
+        if (currentOperation == "insert") {
+            currentState = INSERTING;
+            notificationMessage = "Inserting " + std::to_string(pendingInsertValue);
+        } else if (currentOperation == "delete") {
+            currentState = DELETING;
+            notificationMessage = "Deleting " + std::to_string(operationValue);
+        } else if (currentOperation == "search") {
+            currentState = SEARCHING;
+            pathIndex = currentPath.size();
+            highlightNodes.clear();
+            for (Node* node : currentPath) {
+                highlightNodes.insert(node);
+            }
+            notificationMessage = "Searching: " + std::to_string(currentPath[pathIndex - 1]->data);
+        }
+        stateTimer = 0.0f;
+        resultTimer = 0.0f;
     }
-    if (draggingSlider) {
-        float newX = mousePos.x - speedBar.x;
-        if (newX < 0) newX = 0;
-        if (newX > speedBar.width - 10.0f) newX = speedBar.width - 10.0f;
-        animationSpeed = newX / (speedBar.width - 10.0f);
-        sliderHandle.x = speedBar.x + newX;
+}
+
+void AVLTreeVisualizer::stepForward() {
+    if (currentState == IDLE || currentPath.empty()) {
+        return;
+    }
+
+    paused = true;
+    playPauseButtonMessage = "Play";
+
+    if (currentState == TRAVERSING || currentState == SEARCHING) {
+        if (pathIndex < currentPath.size()) {
+            Node* currentNode = currentPath[pathIndex];
+            highlightNodes.insert(currentNode);
+            notificationMessage = "Traverse: " + std::to_string(currentNode->data);
+            pathIndex++;
+            stateTimer = 0.0f;
+        }
+        if (pathIndex >= currentPath.size()) {
+            if (currentOperation == "insert") {
+                currentState = INSERTING;
+                notificationMessage = "Inserting " + std::to_string(pendingInsertValue);
+            } else if (currentOperation == "delete") {
+                if (!tree.search(operationValue)) {
+                    notificationMessage = "Node " + std::to_string(operationValue) + " Not Found";
+                    currentState = SHOWING_RESULT;
+                } else {
+                    currentState = HIGHLIGHTING_BEFORE_DELETE;
+                    notificationMessage = "Deleting " + std::to_string(operationValue);
+                }
+            } else if (currentOperation == "search") {
+                if (pathIndex >= currentPath.size()) {
+                    if (searchFound) {
+                        notificationMessage = "Found " + std::to_string(operationValue);
+                        currentState = SHOWING_RESULT;
+                    } else {
+                        notificationMessage = "Node " + std::to_string(operationValue) + " Not Found";
+                        currentState = SEARCH_NOT_FOUND;
+                    }
+                    stateTimer = 0.0f;
+                    resultTimer = 0.0f;
+                }
+            }
+        }
+    } else if (currentState == INSERTING) {
+        if (!tree.search(pendingInsertValue)) {
+            tree.insert(tree.root, pendingInsertValue);
+            AVLTree treeReplica(tree);
+            treeUndoState.push(treeReplica);
+            notificationMessage = "Inserted " + std::to_string(pendingInsertValue);
+        } else {
+            notificationMessage = "Duplicate " + std::to_string(pendingInsertValue) + " Not Inserted";
+        }
+        currentPath = tree.getInsertionPath(pendingInsertValue);
+        pathIndex = currentPath.size();
+        currentState = SHOWING_RESULT;
+        resultTimer = 0.0f;
+        stateTimer = 0.0f;
+    } else if (currentState == HIGHLIGHTING_BEFORE_DELETE) {
+        notificationMessage = "Deleting " + std::to_string(operationValue);
+        currentState = DELETING;
+        stateTimer = 0.0f;
+    } else if (currentState == DELETING) {
+        tree.remove(tree.root, operationValue);
+        AVLTree treeReplica(tree);
+        treeUndoState.push(treeReplica);
+        notificationMessage = std::to_string(operationValue) + " Deleted";
+        currentState = SHOWING_RESULT;
+        resultTimer = 0.0f;
+        stateTimer = 0.0f;
+    } else if (currentState == SEARCH_NOT_FOUND) {
+        currentState = SHOWING_RESULT;
+        highlightNodes.clear();
+        stateTimer = 0.0f;
+        resultTimer = 0.0f;
     }
 }
 
@@ -348,6 +489,8 @@ void AVLTreeVisualizer::drawTree(Node* node, float x, float y, float offset, con
     }
 
     DrawCircle(x, y, NODE_RADIUS, nodeColor);
+    // Add black edge to the node
+    DrawCircleLines(x, y, NODE_RADIUS, BLACK);
     std::string valueStr = std::to_string(node->data);
     DrawText(valueStr.c_str(), x - MeasureText(valueStr.c_str(), 20) / 2, y - 10, 20, BLACK);
 
@@ -373,16 +516,39 @@ void AVLTreeVisualizer::drawTree(Node* node, float x, float y, float offset, con
 void AVLTreeVisualizer::draw() {
     std::set<Node*> highlightNodes(currentPath.begin(), currentPath.begin() + pathIndex);
 
-    ClearBackground(BEIGE);
-    DrawRectangleRec(inputBox, LIGHTGRAY);
-    DrawRectangleLinesEx(inputBox, 2, inputActive ? BLUE : GRAY);
-    DrawText(inputText.c_str(), inputBox.x + 5, inputBox.y + 5, 20, BLACK);
+    // Change background color to white
+    ClearBackground(WHITE);
 
+    // Draw pseudocode first to calculate its width
+    std::string pseudocodeText = getPseudocode();
+    int lineHeight = 20;
+    int lineCount = 0;
+    std::istringstream stream(pseudocodeText);
+    std::string line;
+    std::vector<std::string> lines;
+    while (std::getline(stream, line)) {
+        lines.push_back(line);
+        lineCount++;
+    }
+
+    int pseudoCodeTopY = 50.0f;
+    int maxLineWidth = 0;
+    for (const auto& l : lines) {
+        int lineWidth = MeasureText(l.c_str(), 20);
+        if (lineWidth > maxLineWidth) maxLineWidth = lineWidth;
+    }
+
+    // Calculate the offset to shift the title and tree to the right
+    float pseudoCodeRightEdge = 10.0f + maxLineWidth + 10; // Right edge of pseudocode background
+    float offset = pseudoCodeRightEdge + 20.0f; // Add a 20-pixel buffer
+
+    // Draw title with offset
     int titleSize = MeasureText("AVL Tree Visualizer", 30);
-    float titleX = (GetScreenWidth() - titleSize) / 2.0f;
+    float titleX = offset; // Start at the offset instead of centering
     float titleY = 37.0f;
     DrawText("AVL Tree Visualizer", titleX, titleY, 30, BLACK);
 
+    // Draw speed slider and label
     int speedLabelSize = MeasureText("Speed", 20);
     Rectangle speedLabelBgRect = { speedBar.x, speedBar.y - 20.0f - 5, (float)speedLabelSize + 10, 30.0f };
     DrawRectangleRec(speedLabelBgRect, Fade(LIGHTGRAY, 0.8f));
@@ -399,27 +565,45 @@ void AVLTreeVisualizer::draw() {
     DrawRectangleLinesEx(speedBar, 2, GRAY);
     DrawRectangleRec(sliderHandle, BLUE);
 
-    initButton.draw();
-    insertButton.draw();
-    deleteButton.draw();
-    searchButton.draw();
-    loadFileButton.draw();
-    rewindButton.draw();
-    previousButton.draw();
-    playPauseButton.draw();
-    nextButton.draw();
-    fastForwardButton.draw();
+    // Draw buttons with centered text
+    Font defaultFont = GetFontDefault();
+    auto drawCenteredButton = [&](const char* text, Rectangle rect, bool& clicked, const std::string& message) {
+        Vector2 mousePos = GetMousePosition();
+        clicked = CheckCollisionPointRec(mousePos, rect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
+        DrawRectangleRec(rect, LIGHTGRAY);
+        DrawRectangleLinesEx(rect, 2, clicked ? BLUE : GRAY);
 
+        int fontSize = (rect.width < 50) ? 16 : 20;
+        int textSize = MeasureText(text, fontSize);
+        float textX = rect.x + (rect.width - textSize) / 2.0f;
+        float textY = rect.y + (rect.height - fontSize) / 2.0f;
+        DrawText(text, textX, textY, fontSize, BLACK);
+    };
+
+    drawCenteredButton("Init", initButtonRect, initButtonClicked, initButtonMessage);
+    drawCenteredButton("Insert", insertButtonRect, insertButtonClicked, insertButtonMessage);
+    drawCenteredButton("Delete", deleteButtonRect, deleteButtonClicked, deleteButtonMessage);
+    drawCenteredButton("Search", searchButtonRect, searchButtonClicked, searchButtonMessage);
+    drawCenteredButton("Load", loadFileButtonRect, loadFileButtonClicked, loadFileButtonMessage);
+    drawCenteredButton("|<<", rewindButtonRect, rewindButtonClicked, rewindButtonMessage);
+    drawCenteredButton("<=", previousButtonRect, previousButtonClicked, previousButtonMessage);
+    drawCenteredButton(paused ? "Play" : "Pause", playPauseButtonRect, playPauseButtonClicked, playPauseButtonMessage);
+    drawCenteredButton("=>", nextButtonRect, nextButtonClicked, nextButtonMessage);
+    drawCenteredButton(">>|", fastForwardButtonRect, fastForwardButtonClicked, fastForwardButtonMessage);
+    drawCenteredButton("?", randomButtonRect, randomButtonClicked, randomButtonMessage);
+
+    // Draw tree with offset
     if (tree.root) {
-        drawTree(tree.root, GetScreenWidth() / 2, 120, 200, highlightNodes);
+        drawTree(tree.root, offset, 120, 200, highlightNodes); // Use offset instead of GetScreenWidth() / 2
     }
 
+    // Draw notification
     if (!notificationMessage.empty()) {
         float maxWidth = static_cast<float>(GetScreenWidth()) * 0.8f;
         std::string displayMessage = notificationMessage;
         int messageSize = MeasureText(displayMessage.c_str(), 20);
         if (messageSize > maxWidth) {
-            std::string truncatedMessage = displayMessage;
+            std::string truncatedMessage = notificationMessage;
             while (MeasureText((truncatedMessage + "...").c_str(), 20) > maxWidth && !truncatedMessage.empty()) {
                 truncatedMessage.pop_back();
             }
@@ -433,30 +617,67 @@ void AVLTreeVisualizer::draw() {
         DrawText(displayMessage.c_str(), xPos, yPos, 20, BLACK);
     }
 
-    std::string pseudocodeText = getPseudocode();
-    int lineHeight = 20;
-    int lineCount = 0;
-    std::istringstream stream(pseudocodeText);
-    std::string line;
-    while (std::getline(stream, line)) lineCount++;
-
-    int pseudoCodeTopY = initButton.rect.y - (lineCount * lineHeight) - 10;
-    stream.clear(); stream.str(pseudocodeText);
-    int maxLineWidth = 0;
-    while (std::getline(stream, line)) {
-        int lineWidth = MeasureText(line.c_str(), 20);
-        if (lineWidth > maxLineWidth) maxLineWidth = lineWidth;
-    }
-
-    Rectangle pseudoCodeBgRect = { 10.0f - 5, (float)pseudoCodeTopY - 5, (float)maxLineWidth + 10, (float)(lineCount * lineHeight) + 10 };
+    // Draw pseudocode (unchanged)
+    Rectangle pseudoCodeBgRect = { 10.0f - 5, pseudoCodeTopY - 5, (float)maxLineWidth + 10, (float)(lineCount * lineHeight) + 10 };
     DrawRectangleRec(pseudoCodeBgRect, Fade(LIGHTGRAY, 0.8f));
 
     int startY = pseudoCodeTopY;
-    stream.clear(); stream.str(pseudocodeText);
-    while (std::getline(stream, line)) {
-        DrawText(line.c_str(), 10, startY, 20, BLACK);
-        startY += lineHeight;
+    int lineIndex = 0;
+    int activeLine = -1;
+
+    if (currentOperation == "insert") {
+        if (currentState == TRAVERSING) {
+            if (pathIndex == 0) activeLine = 1;
+            else if (pathIndex <= currentPath.size()) {
+                int traversalLine = 2 + (pathIndex - 1) % 5;
+                if (traversalLine <= 6) activeLine = traversalLine;
+                else activeLine = 7;
+            }
+        } else if (currentState == INSERTING) {
+            activeLine = 9;
+        } else if (currentState == SHOWING_RESULT) {
+            activeLine = 10;
+        }
+    } else if (currentOperation == "delete") {
+        if (currentState == TRAVERSING || currentState == HIGHLIGHTING_BEFORE_DELETE) {
+            if (pathIndex == 0) activeLine = 1;
+            else if (pathIndex <= currentPath.size()) {
+                int traversalLine = 2 + (pathIndex - 1) % 5;
+                if (traversalLine <= 6) activeLine = traversalLine;
+                else activeLine = 7;
+            }
+        } else if (currentState == DELETING) {
+            activeLine = 10;
+        } else if (currentState == SEARCH_NOT_FOUND) {
+            activeLine = 9;
+        } else if (currentState == SHOWING_RESULT) {
+            activeLine = 11;
+        }
+    } else if (currentOperation == "search") {
+        if (currentState == TRAVERSING || currentState == SEARCHING) {
+            if (pathIndex == 0) activeLine = 1;
+            else if (pathIndex <= currentPath.size()) {
+                int traversalLine = 2 + (pathIndex - 1) % 5;
+                if (traversalLine <= 6) activeLine = traversalLine;
+                else activeLine = 7;
+            }
+        } else if (currentState == SEARCH_NOT_FOUND || (currentState == SHOWING_RESULT && !searchFound)) {
+            activeLine = 9;
+        } else if (currentState == SHOWING_RESULT && searchFound) {
+            activeLine = 7;
+        }
     }
+
+    for (const auto& l : lines) {
+        Color textColor = (lineIndex == activeLine) ? YELLOW : BLACK;
+        DrawText(l.c_str(), 10, startY, 20, textColor);
+        startY += lineHeight;
+        lineIndex++;
+    }
+
+    DrawRectangleRec(inputBox, LIGHTGRAY);
+    DrawRectangleLinesEx(inputBox, 2, inputActive ? BLUE : GRAY);
+    DrawText(inputText.c_str(), inputBox.x + 5, inputBox.y + 5, 20, BLACK);
 }
 
 void AVLTreeVisualizer::animateInsert(int value) {
@@ -500,7 +721,6 @@ void AVLTreeVisualizer::animateRandom() {
     }
     AVLTree treeReplica(tree);
     treeUndoState.push(treeReplica);
-    std::cout << treeUndoState.size() << std::endl;
     UnloadRandomSequence(randomValues);
     currentOperation = "random";
     currentPath.clear();
@@ -539,19 +759,14 @@ void AVLTreeVisualizer::animateLoadFile() {
         return;
     }
 
-    std::cout << "Selected file path: " << filePath << std::endl;
-
     std::ifstream file(filePath, std::ios::binary);
     if (!file.is_open()) {
-        std::cout << "Failed to open file: " << filePath << std::endl;
         notificationMessage = "Failed to open file: " + std::string(filePath);
         currentOperation = "loadfile";
         currentState = SHOWING_RESULT;
         resultTimer = 0.0f;
         return;
     }
-
-    std::cout << "File opened successfully: " << filePath << std::endl;
 
     char bom[3];
     file.read(bom, 3);
@@ -570,36 +785,25 @@ void AVLTreeVisualizer::animateLoadFile() {
         if (!line.empty() && line.back() == '\r') {
             line.pop_back();
         }
-        std::cout << "Read line: '" << line << "'" << std::endl;
         if (!line.empty()) {
             hasContent = true;
             std::istringstream iss(line);
             std::string token;
             while (iss >> token) {
-                std::cout << "Read token: " << token << std::endl;
                 try {
                     int value = std::stoi(token);
-                    std::cout << "Inserting: " << value << std::endl;
                     tree.insert(tree.root, value);
                     numberCount++;
                 } catch (const std::invalid_argument&) {
-                    std::cout << "Invalid number: " << token << std::endl;
                     continue;
                 } catch (const std::out_of_range&) {
-                    std::cout << "Out of range: " << token << std::endl;
                     continue;
                 }
             }
-        } else {
-            std::cout << "Empty line encountered" << std::endl;
         }
     }
 
     file.close();
-
-    std::cout << "Tree after loading: ";
-    tree.printInOrder();
-    std::cout << std::endl;
 
     if (numberCount > 0) {
         AVLTree treeReplica(tree);
@@ -652,28 +856,48 @@ void AVLTreeVisualizer::animateNext() {
 std::string AVLTreeVisualizer::getPseudocode() {
     std::stringstream pseudocode;
     if (currentOperation == "insert") {
-        pseudocode << "Pseudocode for Insert Operation:\n"
-                   << "1. Start at the root.\n"
-                   << "2. Compare the value with the current node.\n"
-                   << "3. If the value is smaller, move left; if larger, move right.\n"
-                   << "4. Insert the value when a leaf node is found.\n"
-                   << "5. Rebalance the tree if needed.\n";
+        pseudocode << "Node* insert(Node* root, int value) {\n"
+                   << "  Node* curr = root;\n"
+                   << "  while (curr != nullptr) {\n"
+                   << "    if (value < curr->data)\n"
+                   << "      curr = curr->left;\n"
+                   << "    else if (value > curr->data)\n"
+                   << "      curr = curr->right;\n"
+                   << "    else return curr; // Duplicate\n"
+                   << "  }\n"
+                   << "  curr = new Node(value);\n"
+                   << "  rebalance(root);\n"
+                   << "  return curr;\n"
+                   << "}";
     } else if (currentOperation == "delete") {
-        pseudocode << "Pseudocode for Delete Operation:\n"
-                   << "1. Find the node to delete.\n"
-                   << "2. If it has one or no child, replace it with its child or null.\n"
-                   << "3. If it has two children, find the inorder successor.\n"
-                   << "4. Replace the node with its inorder successor.\n"
-                   << "5. Rebalance the tree if needed.\n";
+        pseudocode << "Node* remove(Node* root, int value) {\n"
+                   << "  Node* curr = root;\n"
+                   << "  while (curr != nullptr) {\n"
+                   << "    if (value < curr->data)\n"
+                   << "      curr = curr->left;\n"
+                   << "    else if (value > curr->data)\n"
+                   << "      curr = curr->right;\n"
+                   << "    else break; // Found\n"
+                   << "  }\n"
+                   << "  if (curr == nullptr) return root;\n"
+                   << "  root = deleteNode(curr);\n"
+                   << "  rebalance(root);\n"
+                   << "  return root;\n"
+                   << "}";
     } else if (currentOperation == "search") {
-        pseudocode << "Pseudocode for Search Operation:\n"
-                   << "1. Start at the root.\n"
-                   << "2. Compare the value with the current node.\n"
-                   << "3. If the value is smaller, move left; if larger, move right.\n"
-                   << "4. Return the node if the value is found.\n"
-                   << "5. If not found, return null.\n";
+        pseudocode << "Node* search(Node* root, int value) {\n"
+                   << "  Node* curr = root;\n"
+                   << "  while (curr != nullptr) {\n"
+                   << "    if (value < curr->data)\n"
+                   << "      curr = curr->left;\n"
+                   << "    else if (value > curr->data)\n"
+                   << "      curr = curr->right;\n"
+                   << "    else return curr; // Found\n"
+                   << "  }\n"
+                   << "  return nullptr; // Not found\n"
+                   << "}";
     } else {
-        pseudocode << "No operation selected.\n";
+        pseudocode << "No operation selected;";
     }
     return pseudocode.str();
 }

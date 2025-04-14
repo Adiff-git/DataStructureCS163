@@ -25,8 +25,8 @@ AVLTreeVisualizer::AVLTreeVisualizer()
       loadFileButtonRect{430.0f, 700.0f, 80.0f, 30.0f},
       rewindButtonRect{700.0f, 700.0f, 40.0f, 30.0f},
       previousButtonRect{760.0f, 700.0f, 40.0f, 30.0f},
-      playPauseButtonRect{820.0f, 700.0f, 40.0f, 30.0f},
-      nextButtonRect{880.0f, 700.0f, 40.0f, 30.0f},
+      playPauseButtonRect{820.0f, 700.0f, 60.0f, 30.0f},
+      nextButtonRect{890.0f, 700.0f, 40.0f, 30.0f},
       fastForwardButtonRect{940.0f, 700.0f, 40.0f, 30.0f},
       randomButtonRect{210.0f, 430.0f, 30.0f, 30.0f},
       speedBar{700.0f, 670.0f, 280.0f, 20.0f},
@@ -166,7 +166,7 @@ void AVLTreeVisualizer::handleInput() {
                     tree.remove(tree.root, operationValue);
                     AVLTree treeReplica(tree);
                     treeUndoState.push(treeReplica);
-                    notificationMessage = std::to_string(operationValue) + " Deleted";
+                    notificationMessage = "Node " + std::to_string(operationValue) + " Deleted";
                 }
                 currentState = SHOWING_RESULT;
             } else if (currentOperation == "search") {
@@ -329,7 +329,7 @@ void AVLTreeVisualizer::stepForward() {
         tree.remove(tree.root, operationValue);
         AVLTree treeReplica(tree);
         treeUndoState.push(treeReplica);
-        notificationMessage = std::to_string(operationValue) + " Deleted";
+        notificationMessage = "Node " + std::to_string(operationValue) + " Deleted";
         currentState = SHOWING_RESULT;
         resultTimer = 0.0f;
         stateTimer = 0.0f;
@@ -408,7 +408,7 @@ void AVLTreeVisualizer::updateAnimation(float deltaTime) {
                 tree.remove(tree.root, operationValue);
                 AVLTree treeReplica(tree);
                 treeUndoState.push(treeReplica);
-                notificationMessage = std::to_string(operationValue) + " Deleted";
+                notificationMessage = "Node " + std::to_string(operationValue) + " Deleted";
                 currentState = SHOWING_RESULT;
                 resultTimer = 0.0f;
                 stateTimer = 0.0f;
@@ -489,25 +489,24 @@ void AVLTreeVisualizer::drawTree(Node* node, float x, float y, float offset, con
     }
 
     DrawCircle(x, y, NODE_RADIUS, nodeColor);
-    // Add black edge to the node
     DrawCircleLines(x, y, NODE_RADIUS, BLACK);
     std::string valueStr = std::to_string(node->data);
     DrawText(valueStr.c_str(), x - MeasureText(valueStr.c_str(), 20) / 2, y - 10, 20, BLACK);
 
     if (node->left) {
         float leftX = tree.getSubtreeWidth(node->left->right);
-        float hypotenus = sqrt(60.0f * 60.0f + leftX * leftX);
-        float startLineX = x - NODE_RADIUS * leftX / hypotenus;
-        float startLineY = y + NODE_RADIUS * 60.0f / hypotenus;
+        float hypotenuse = sqrt(60.0f * 60.0f + leftX * leftX);
+        float startLineX = x - NODE_RADIUS * leftX / hypotenuse;
+        float startLineY = y + NODE_RADIUS * 60.0f / hypotenuse;
         DrawLine(startLineX, startLineY, x - leftX, y + 60, BLACK);
         drawTree(node->left, x - leftX, y + 60, offset / 2, highlight);
     }
 
     if (node->right) {
         float rightX = tree.getSubtreeWidth(node->right->left);
-        float hypotenus = sqrt(60.0f * 60.0f + rightX * rightX);
-        float startLineX = x + NODE_RADIUS * rightX / hypotenus;
-        float startLineY = y + NODE_RADIUS * 60.0f / hypotenus;
+        float hypotenuse = sqrt(60.0f * 60.0f + rightX * rightX);
+        float startLineX = x + NODE_RADIUS * rightX / hypotenuse;
+        float startLineY = y + NODE_RADIUS * 60.0f / hypotenuse;
         DrawLine(startLineX, startLineY, x + rightX, y + 60, BLACK);
         drawTree(node->right, x + rightX, y + 60, offset / 2, highlight);
     }
@@ -516,7 +515,6 @@ void AVLTreeVisualizer::drawTree(Node* node, float x, float y, float offset, con
 void AVLTreeVisualizer::draw() {
     std::set<Node*> highlightNodes(currentPath.begin(), currentPath.begin() + pathIndex);
 
-    // Change background color to white
     ClearBackground(WHITE);
 
     // Draw pseudocode first to calculate its width
@@ -538,13 +536,13 @@ void AVLTreeVisualizer::draw() {
         if (lineWidth > maxLineWidth) maxLineWidth = lineWidth;
     }
 
-    // Calculate the offset to shift the title and tree to the right
+    // Calculate the offset to shift the title and tree further to the right
     float pseudoCodeRightEdge = 10.0f + maxLineWidth + 10; // Right edge of pseudocode background
-    float offset = pseudoCodeRightEdge + 20.0f; // Add a 20-pixel buffer
+    float offset = pseudoCodeRightEdge + 300.0f; // Increased buffer to 300 for more space
 
     // Draw title with offset
     int titleSize = MeasureText("AVL Tree Visualizer", 30);
-    float titleX = offset; // Start at the offset instead of centering
+    float titleX = offset;
     float titleY = 37.0f;
     DrawText("AVL Tree Visualizer", titleX, titleY, 30, BLACK);
 
@@ -594,7 +592,7 @@ void AVLTreeVisualizer::draw() {
 
     // Draw tree with offset
     if (tree.root) {
-        drawTree(tree.root, offset, 120, 200, highlightNodes); // Use offset instead of GetScreenWidth() / 2
+        drawTree(tree.root, offset, 120, 200, highlightNodes);
     }
 
     // Draw notification
@@ -610,14 +608,14 @@ void AVLTreeVisualizer::draw() {
             displayMessage = truncatedMessage + "...";
             messageSize = MeasureText(displayMessage.c_str(), 20);
         }
-        float yPos = 640.0f;
+        float yPos = 740.0f;
         float xPos = (GetScreenWidth() - messageSize) / 2.0f;
         Rectangle bgRect = { xPos - 5.0f, yPos - 5.0f, static_cast<float>(messageSize + 10), 25.0f };
         DrawRectangleRec(bgRect, Fade(LIGHTGRAY, 0.8f));
         DrawText(displayMessage.c_str(), xPos, yPos, 20, BLACK);
     }
 
-    // Draw pseudocode (unchanged)
+    // Draw pseudocode
     Rectangle pseudoCodeBgRect = { 10.0f - 5, pseudoCodeTopY - 5, (float)maxLineWidth + 10, (float)(lineCount * lineHeight) + 10 };
     DrawRectangleRec(pseudoCodeBgRect, Fade(LIGHTGRAY, 0.8f));
 

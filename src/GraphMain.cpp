@@ -24,7 +24,7 @@ void DrawButtonUI(const char* text, Rectangle button, Font font, Color tint, Col
     DrawRectangleRec(button, finalTint);
     DrawRectangleLinesEx(button, 1, BLACK); // Viền đen
     Vector2 textSize = MeasureTextEx(font, text, 20, 1);
-    DrawTextEx(font, text, { button.x + (button.width - textSize.x) / 2, button.y + (button.height - textSize.y) / 2 }, 20, 1, textColor);
+    DrawTextEx(font, text, { button.x + (button.width - textSize.x) / 2, button.y + (button.height - textSize.y) / 2 }, 20, 1, BLACK);
 }
 
 
@@ -40,19 +40,36 @@ void DrawMainControlsUI(const UIState& state) {
 }
 
 void DrawCreateModeUI(const UIState& state) {
+    // Draw label and input for nodes (N)
     DrawText("N:", state.nodesInputRect.x - 25, state.nodesInputRect.y + 5, 20, WHITE);
     DrawRectangleRec(state.nodesInputRect, LIGHTGRAY);
     DrawButtonUI("", state.nodesInputRect, GetFontDefault(), LIGHTGRAY); // Nút giả để có viền
     DrawText(state.numNodesStr.c_str(), state.nodesInputRect.x + 5, state.nodesInputRect.y + 5, 20, BLACK);
     if (state.nodesFocused && ((int)(state.cursorTimer * 2.5f) % 2 == 0)) // Tăng tốc độ nháy
         DrawText("|", state.nodesInputRect.x + 5 + MeasureText(state.numNodesStr.c_str(), 20), state.nodesInputRect.y + 5, 20, BLACK);
+    
+    // Draw question mark button for nodes
+    Rectangle nodesQuestionButton = { state.nodesInputRect.x + state.nodesInputRect.width + 5, state.nodesInputRect.y, 30, 30 };
+    DrawRectangleRounded(nodesQuestionButton, 0.3f, 8, CheckCollisionPointRec(GetMousePosition(), nodesQuestionButton) ? SKYBLUE : LIGHTGRAY);
+    DrawRectangleRoundedLines(nodesQuestionButton, 0.3f, 8, DARKGRAY);
+    DrawText("?", nodesQuestionButton.x + 8, nodesQuestionButton.y + 2, 24, BLACK);
 
+    // Draw label and input for edges (E)
     DrawText("E:", state.edgesInputRect.x - 25, state.edgesInputRect.y + 5, 20, WHITE);
     DrawRectangleRec(state.edgesInputRect, LIGHTGRAY);
-     DrawButtonUI("", state.edgesInputRect, GetFontDefault(), LIGHTGRAY);
+    DrawButtonUI("", state.edgesInputRect, GetFontDefault(), LIGHTGRAY);
     DrawText(state.numEdgesStr.c_str(), state.edgesInputRect.x + 5, state.edgesInputRect.y + 5, 20, BLACK);
     if (state.edgesFocused && ((int)(state.cursorTimer * 2.5f) % 2 == 0))
         DrawText("|", state.edgesInputRect.x + 5 + MeasureText(state.numEdgesStr.c_str(), 20), state.edgesInputRect.y + 5, 20, BLACK);
+    
+    // Draw question mark button for edges
+    Rectangle edgesQuestionButton = { state.edgesInputRect.x + state.edgesInputRect.width + 5, state.edgesInputRect.y, 30, 30 };
+    DrawRectangleRounded(edgesQuestionButton, 0.3f, 8, CheckCollisionPointRec(GetMousePosition(), edgesQuestionButton) ? SKYBLUE : LIGHTGRAY);
+    DrawRectangleRoundedLines(edgesQuestionButton, 0.3f, 8, DARKGRAY);
+    DrawText("?", edgesQuestionButton.x + 8, edgesQuestionButton.y + 2, 24, BLACK);
+
+    // Draw OK button next to the edges question mark button
+    DrawButtonUI("OK", state.okButton, GetFontDefault(), CheckCollisionPointRec(GetMousePosition(), state.okButton) ? SKYBLUE : LIGHTGRAY);
 }
 
 void DrawExampleButtonsUI(const UIState& state) {

@@ -76,7 +76,9 @@ struct UIState {
     float editPanelX;       // Vị trí panel edit
     float editPanelWidth;
 
-    // (Có thể thêm constructor hoặc hàm init nếu muốn)
+    Rectangle nodesQuestionButton;
+    Rectangle edgesQuestionButton;
+    Rectangle okButton;
 };
 
 

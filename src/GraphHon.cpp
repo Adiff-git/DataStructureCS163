@@ -949,6 +949,38 @@ void Slider::setValue(float actualValue) {
          editBuffer = ss.str();
     }
 }
+void DrawButton(const char* text, Rectangle button, Font font, const char* buttonMessage)
+{
+    DrawRectangleLines(button.x, button.y, button.width, button.height, BLACK);
+    Vector2 textSize = MeasureTextEx(font, text, 20, 1); 
+    DrawTextEx(font, text, { button.x + button.width / 2 - textSize.x / 2, button.y + button.height / 2 - textSize.y / 2 }, 20, 1, BLACK); 
+}
+void DrawMainControls(
+    const Rectangle& createButton, const Rectangle& randomButton, const Rectangle& exampleButton, const Rectangle& fileButton, const Rectangle& editButton,
+    const Rectangle& mstButton,
+    bool isCreating, bool isShowingExamplesActive,
+    bool isFileActive, bool isEditingGraph, bool showMSTMenu
+    // Thêm bool isShowingRandomGraph nếu cần
+) {
+    DrawRectangleRec(createButton, isCreating ? ORANGE : WHITE);
+    DrawButton("Create", createButton, GetFontDefault(), "Create"); // Hoặc (isCreating ? ORANGE : WHITE)
+
+    DrawRectangleRec(randomButton, WHITE); // Hoặc (isShowingRandomGraph ? ORANGE : WHITE)
+    DrawButton("Random", randomButton, GetFontDefault(), "Random"); // Hoặc (isShowingRandomGraph ? ORANGE : WHITE)
+
+    DrawRectangleRec(exampleButton, isShowingExamplesActive ? ORANGE : WHITE);
+    DrawButton("Examples", exampleButton, GetFontDefault(), "Examples"); // Hoặc (isShowingExamplesActive ? ORANGE : WHITE)
+
+    DrawRectangleRec(fileButton, isFileActive ? ORANGE : WHITE);
+    DrawButton("File", fileButton, GetFontDefault(), "File"); // Hoặc (isFileActive ? ORANGE : WHITE)
+
+    DrawRectangleRec(editButton, isEditingGraph ? ORANGE : WHITE);
+    DrawButton("Edit", editButton, GetFontDefault(), "Edit"); // Hoặc (isEditingGraph ? ORANGE : WHITE)
+
+    DrawRectangleRec(mstButton, showMSTMenu ? ORANGE : WHITE);
+    DrawButton("MST", mstButton, GetFontDefault(), "MST"); // Hoặc (showMSTMenu ? ORANGE : WHITE)
+}
+
 void RunGraphApp() {
     // --- Di chuyển TẤT CẢ biến toàn cục vào đây ---
     const int screenWidth = 1600;
@@ -956,8 +988,8 @@ void RunGraphApp() {
 
     // State Variables
     bool isCreating = false; bool isRandomizing = false; bool isShowingExamples = false;
-    bool isCreatingActive = false; bool isRandomizingActive = false; bool isShowingExamplesActive = false;
-    bool isInputActive = false; bool isFileActive = false; bool graphDrawn = false;
+    bool isCreatingActive = false; bool isRandomizingActive = false; bool isShowingExamplesActive = false; 
+    bool isFileActive = false; bool graphDrawn = false;
     std::vector<Edge> edges; std::vector<Vector2> nodePositions; Camera2D graphCamera = { 0 };
     std::string numNodesStr = ""; std::string numEdgesStr = ""; std::string matrixInput = "";
     std::string weightInputBuffer = ""; bool nodesFocused = false; bool edgesFocused = false;
@@ -1017,8 +1049,7 @@ void RunGraphApp() {
      Rectangle createButton = {leftPadding, buttonY, buttonWidth, buttonHeight};
      Rectangle randomButton = {createButton.x + createButton.width + buttonSpacing, buttonY, buttonWidth, buttonHeight};
      Rectangle exampleButton = {randomButton.x + randomButton.width + buttonSpacing, buttonY, buttonWidth, buttonHeight};
-     Rectangle inputButton = {exampleButton.x + exampleButton.width + buttonSpacing, buttonY, buttonWidth, buttonHeight};
-     Rectangle fileButton = {inputButton.x + inputButton.width + buttonSpacing, buttonY, buttonWidth, buttonHeight};
+     Rectangle fileButton = {exampleButton.x + exampleButton.width + buttonSpacing, buttonY, buttonWidth, buttonHeight};
      Rectangle editButton = {fileButton.x + fileButton.width + buttonSpacing, buttonY, buttonWidth, buttonHeight};
      Rectangle mstButton = {editButton.x + editButton.width + buttonSpacing, buttonY, buttonWidth, buttonHeight};
      // Create Mode Inputs
@@ -1029,11 +1060,6 @@ void RunGraphApp() {
      Rectangle c6Button = { k5Button.x + k5Button.width + 10, 10, 60, 30 };
      Rectangle p4Button = { c6Button.x + c6Button.width + 10, 10, 60, 30 };
      Rectangle s7Button = { p4Button.x + p4Button.width + 10, 10, 60, 30 };
-     // Matrix Input Window Elements
-     Rectangle inputWindowRect = {screenWidth / 4.0f, screenHeight / 4.0f, screenWidth / 2.0f, screenHeight / 2.0f};
-     Rectangle matrixInputAreaRect = {inputWindowRect.x + 10, inputWindowRect.y + 40, inputWindowRect.width - 20, inputWindowRect.height - 90};
-     Rectangle submitMatrixButton = {inputWindowRect.x + 10, inputWindowRect.y + inputWindowRect.height - 40, 80, 30};
-     Rectangle closeMatrixButton = {submitMatrixButton.x + submitMatrixButton.width + 10, submitMatrixButton.y, 80, 30};
  
      // MST Menu Elements
      float mstMenuWidth = screenWidth * 0.85f;
@@ -1076,7 +1102,8 @@ void RunGraphApp() {
      graphCamera.offset = { (float)screenWidth / 2.0f, (float)screenHeight / 2.0f };
      graphCamera.rotation = 0.0f;
      graphCamera.zoom = 1.0f;
-
+    
+     
      while (!WindowShouldClose()) {
         // --- Input Handling & State Updates ---
         Vector2 mousePos = GetMousePosition();
@@ -1125,7 +1152,6 @@ void RunGraphApp() {
                  isCreatingActive = false;
                  isRandomizingActive = false;
                  isShowingExamplesActive = false;
-                 isInputActive = false;
                  isFileActive = false;
              
                  // Reset Editing state
@@ -1189,7 +1215,6 @@ void RunGraphApp() {
                  isCreatingActive = false;
                  isRandomizingActive = false;
                  isShowingExamplesActive = false;
-                 isInputActive = false;
                  isFileActive = false;
              
                  // Reset Editing state
@@ -1261,7 +1286,6 @@ void RunGraphApp() {
                  isCreatingActive = false;
                  isRandomizingActive = false;
                  isShowingExamplesActive = false;
-                 isInputActive = false;
                  isFileActive = false;
              
                  // Reset Editing state
@@ -1274,61 +1298,6 @@ void RunGraphApp() {
                  showExampleButtons = !showExampleButtons; // Toggle visibility
                  isShowingExamplesActive = showExampleButtons;
                  isCreating = false;
-             }
-             else if (CheckCollisionPointRec(mousePos, inputButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                 clickedOnUI = true;
-                 // ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
-                 isCreating = false;
-                 isRandomizing = false;
-                 isShowingExamples = false;
-                 showMatrixInput = false;
-                 // graphDrawn = false; // Reset graphDrawn ONLY if appropriate for all calls
-             
-                 // Reset input fields
-                 numNodesStr = "";
-                 numEdgesStr = "";
-                 matrixInput = ""; // Reset matrix input field
-                 nodesFocused = false;
-                 edgesFocused = false;
-                 matrixInputFocused = false; // Add this
-             
-                 // Reset UI states
-                 showMSTMenu = false;
-                 isEditingGraph = false;
-                 currentTool = EditTool::TOOL_NONE;
-                 showExampleButtons = false; // Add this
-             
-                 // Reset error messages and flags
-                 showFileError = false;
-                 fileErrorMessage = "";
-                 showError = false; // General/Create error
-                 errorMessage = "";
-                 showMSTError = false;
-                 mstErrorMessage = "";
-                 errorMessageInput = ""; // Add this
-             
-                 // Reset Activity Flags
-                 isCreatingActive = false;
-                 isRandomizingActive = false;
-                 isShowingExamplesActive = false;
-                 isInputActive = false;
-                 isFileActive = false;
-             
-                 // Reset Editing state
-                 selectedNodeIndex = -1;
-                 selectedEdgeIndex = -1;
-                 isDraggingNode = false;
-                 isEditingWeight = false;
-                 weightInputBuffer = ""; 
-                 edges.clear(); nodePositions.clear(); // Clear graph data
-                 showMatrixInput = true;
-                 matrixInput = ""; // Clear previous input
-                 errorMessageInput = ""; // Clear errors
-                 matrixInputFocused = true; // Focus the input area
-                 cursorRow = 0; cursorColumn = 0;
-                 isInputActive = true;
-                 isCreating = false;
-                 showExampleButtons = false;
              }
              else if (CheckCollisionPointRec(mousePos, fileButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                  clickedOnUI = true;
@@ -1366,7 +1335,6 @@ void RunGraphApp() {
                  isCreatingActive = false;
                  isRandomizingActive = false;
                  isShowingExamplesActive = false;
-                 isInputActive = false;
                  isFileActive = false;
              
                  // Reset Editing state
@@ -1404,8 +1372,6 @@ void RunGraphApp() {
                  } else {
                     isFileActive = false; // Reset flag
                  }
-                // isFileActive = false; // Reset flag
-                 // --- End TinyFileDialog ---
              }
               else if (CheckCollisionPointRec(mousePos, editButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                   clickedOnUI = true;
@@ -1446,7 +1412,6 @@ void RunGraphApp() {
                       isCreatingActive = false;
                       isRandomizingActive = false;
                       isShowingExamplesActive = false;
-                      isInputActive = false;
                       isFileActive = false;
                   
                       // Reset Editing state
@@ -1500,7 +1465,6 @@ void RunGraphApp() {
                       isCreatingActive = false;
                       isRandomizingActive = false;
                       isShowingExamplesActive = false;
-                      isInputActive = false;
                       isFileActive = false;
                   
                       // Reset Editing state
@@ -1554,7 +1518,6 @@ void RunGraphApp() {
                      isCreatingActive = false;
                      isRandomizingActive = false;
                      isShowingExamplesActive = false;
-                     isInputActive = false;
                      isFileActive = false;
                  
                      // Reset Editing state
@@ -1607,7 +1570,6 @@ void RunGraphApp() {
                      isCreatingActive = false;
                      isRandomizingActive = false;
                      isShowingExamplesActive = false;
-                     isInputActive = false;
                      isFileActive = false;
                  
                      // Reset Editing state
@@ -1724,196 +1686,6 @@ void RunGraphApp() {
              }
          }
 
-        // Check Matrix Input Window (if visible)
-         if (showMatrixInput && !clickedOnUI) {
-             // Check interactions within the input window (buttons, text area)
-             if (CheckCollisionPointRec(mousePos, inputWindowRect)) {
-                 clickedOnUI = true; // Click inside window is UI interaction
-
-                 if (CheckCollisionPointRec(mousePos, matrixInputAreaRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                     matrixInputFocused = true;
-                     // TODO: Calculate cursorRow/Col based on click position (more complex)
-                 } else if (CheckCollisionPointRec(mousePos, submitMatrixButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                     std::vector<std::vector<int>> adjMatrix;
-                     int nodesFromFile = 0;
-                     errorMessageInput = ValidateMatrixInput(matrixInput, adjMatrix, nodesFromFile);
-                     if (errorMessageInput.empty()) {
-                         // Validation success -> Create graph
-                          LoadGraphFromFile("temp_matrix_string", edges, nodePositions, screenWidth, screenHeight, errorMessageInput); // Use LoadGraph logic slightly adapted
-
-                          // Re-use LoadGraphFromFile logic by simulating file read
-                         std::string loadError; // Temporary error string for LoadGraph logic
-                         std::vector<Edge> tempEdges;
-                         std::vector<Vector2> tempNodePos;
-
-                          // --- Re-implement core LoadGraph logic here directly ---
-                          // (Since we already validated and have the matrix)
-                          edges.clear();
-                          nodePositions.clear();
-                          outErrorMessage = ""; // Use the local error message
-
-                          int numNodes = adjMatrix.size(); // Already validated
-
-                          // Create edge list from validated matrix
-                          for (int i = 0; i < numNodes; ++i) {
-                              for (int j = i + 1; j < numNodes; ++j) {
-                                  int weight = adjMatrix[i][j];
-                                  if (weight != 0) {
-                                      if (weight <= 0) weight = 1; // Default weight
-                                      edges.push_back({ i + 1, j + 1, weight });
-                                  }
-                              }
-                          }
-
-                          // Check connectivity
-                          if (numNodes > 1 && !isGraphConnected(edges, numNodes)) {
-                              errorMessageInput = "Warning: Input matrix results in a disconnected graph.";
-                              // Decide if this prevents graph drawing - for now, allow it but show warning
-                          }
-
-                          // Position nodes
-                          if (numNodes > 0) {
-                              float layoutRadius = std::min(screenWidth, screenHeight) / 3.0f;
-                              positionNodesInCircle(nodePositions, numNodes, screenWidth / 2.0f, screenHeight / 2.0f, layoutRadius);
-                          }
-                         // --- End re-implemented logic ---
-
-
-                         if (errorMessageInput.find("Error") == std::string::npos) { // Check if only warnings occurred
-                             graphDrawn = true;
-                             showMatrixInput = false; // Close window on success
-                             matrixInputFocused = false;
-                             isInputActive = false;
-                             if (!nodePositions.empty()) {
-                                 UpdateGraphCamera(graphCamera, nodePositions, 20.0f, screenWidth, screenHeight, 0.0f, 0.0f);
-                             }
-                         } else {
-                             // Error occurred during graph creation (e.g., connectivity if strict)
-                             graphDrawn = false;
-                             edges.clear();
-                             nodePositions.clear();
-                         }
-
-                     }
-                     // else: errorMessageInput already contains the validation error
-                 } else if (CheckCollisionPointRec(mousePos, closeMatrixButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                     showMatrixInput = false;
-                     matrixInputFocused = false;
-                     isInputActive = false;
-                     errorMessageInput = ""; // Clear errors on close
-                 }
-
-                 // Handle text input if focused
-                 if (matrixInputFocused) {
-                     int key = GetKeyPressed(); // Use GetKeyPressed for navigation keys
-                      int charKey = GetCharPressed(); // Use GetCharPressed for printable chars
-
-                     // Printable characters
-                     while (charKey > 0) {
-                         if ((charKey >= 32 && charKey <= 126) || charKey == '\n') { // Allow basic chars + newline
-                             matrixInput.insert(GetCursorIndex(matrixInput, cursorRow, cursorColumn), 1, (char)charKey);
-                             if (charKey == '\n') {
-                                 cursorRow++;
-                                 cursorColumn = 0;
-                             } else {
-                                 cursorColumn++;
-                             }
-                         }
-                          charKey = GetCharPressed(); // Process next char in queue
-                     }
-
-
-                     // Special keys
-                     if (IsKeyPressed(KEY_BACKSPACE)) {
-                         int delIndex = GetCursorIndex(matrixInput, cursorRow, cursorColumn);
-                         if (delIndex > 0) {
-                             if (matrixInput[delIndex - 1] == '\n') {
-                                 // Move cursor to end of previous line
-                                 cursorRow--;
-                                 cursorColumn = GetColFromIndex(matrixInput, delIndex-1); // Col of char before \n
-                             } else {
-                                 cursorColumn--;
-                             }
-                             matrixInput.erase(delIndex - 1, 1);
-                         }
-                     } else if (IsKeyPressed(KEY_DELETE)) {
-                          int delIndex = GetCursorIndex(matrixInput, cursorRow, cursorColumn);
-                          if (delIndex < matrixInput.length()) {
-                              matrixInput.erase(delIndex, 1);
-                              // Cursor position doesn't change relative to surrounding text
-                          }
-                     } else if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_KP_ENTER)) {
-                         matrixInput.insert(GetCursorIndex(matrixInput, cursorRow, cursorColumn), 1, '\n');
-                         cursorRow++;
-                         cursorColumn = 0;
-                     } else if (IsKeyPressed(KEY_LEFT)) {
-                         if (cursorColumn > 0) cursorColumn--;
-                         else if (cursorRow > 0) {
-                             cursorRow--;
-                             cursorColumn = GetColFromIndex(matrixInput, GetCursorIndex(matrixInput, cursorRow, INT_MAX)); // Go to end of prev line
-                         }
-                     } else if (IsKeyPressed(KEY_RIGHT)) {
-                         int currentIndex = GetCursorIndex(matrixInput, cursorRow, cursorColumn);
-                         if (currentIndex < matrixInput.length()) {
-                             if (matrixInput[currentIndex] == '\n') {
-                                 cursorRow++;
-                                 cursorColumn = 0;
-                             } else {
-                                 cursorColumn++;
-                             }
-                         }
-                     } else if (IsKeyPressed(KEY_UP)) {
-                         if (cursorRow > 0) {
-                             cursorRow--;
-                             // Try to maintain column, clamped by new line length
-                             cursorColumn = std::min(cursorColumn, GetColFromIndex(matrixInput, GetCursorIndex(matrixInput, cursorRow, INT_MAX)));
-                         }
-                     } else if (IsKeyPressed(KEY_DOWN)) {
-                          // Check if next row exists
-                          bool nextRowExists = false;
-                          int currentIdx = GetCursorIndex(matrixInput, cursorRow, cursorColumn);
-                          for (int i = currentIdx; i < matrixInput.length(); ++i) {
-                              if (matrixInput[i] == '\n') {
-                                  // Found the end of the current line, check if there's more text
-                                  if (i + 1 < matrixInput.length()) {
-                                       nextRowExists = true;
-                                  }
-                                  break; // Stop searching after first newline
-                              }
-                          }
-                           // Also true if currently on the last line with no trailing newline
-                           if (!nextRowExists && currentIdx == matrixInput.length()) {
-                                // Check if the last char wasn't newline
-                               if (!matrixInput.empty() && matrixInput.back() != '\n') nextRowExists = false; // No row below
-                               else if (matrixInput.empty()) nextRowExists = false; // No row below
-                               else { // Need to check if there's a line *after* the current one
-                                     int lineCount = 0;
-                                     for(char c : matrixInput) if (c == '\n') lineCount++;
-                                     if (cursorRow < lineCount) nextRowExists = true;
-                               }
-
-                           }
-
-
-                         if (nextRowExists) { // Only move down if next row logically exists
-                             cursorRow++;
-                             // Try to maintain column, clamped by new line length
-                             cursorColumn = std::min(cursorColumn, GetColFromIndex(matrixInput, GetCursorIndex(matrixInput, cursorRow, INT_MAX)));
-                         }
-                     }
-                     // Clamp cursor position just in case
-                     int endIndex = GetCursorIndex(matrixInput, cursorRow, INT_MAX);
-                     cursorColumn = std::min(cursorColumn, GetColFromIndex(matrixInput, endIndex));
-
-                 } // end if matrixInputFocused
-
-             } else if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                 // Clicked outside the matrix input window while it was open
-                 matrixInputFocused = false; // Lose focus
-             }
-         } // end if showMatrixInput
-
-        // Check MST Menu Interactions (if visible)
          if (showMSTMenu && !clickedOnUI) {
              if (CheckCollisionPointRec(mousePos, mstMenuRect)) {
                  clickedOnUI = true; // Interactions inside MST menu are UI
@@ -2101,7 +1873,6 @@ void RunGraphApp() {
 
              // --- Handle Graph Interactions (if not clicking Edit UI) ---
              if (!clickedOnUI) { // Only process graph clicks if no UI was clicked
-                  // Handle Weight Input Box Logic
                  if (isEditingWeight) {
                      int key = GetCharPressed();
                      if (key >= '0' && key <= '9' && weightInputBuffer.length() < 5) weightInputBuffer += (char)key;
@@ -2225,7 +1996,7 @@ void RunGraphApp() {
                                  }
                                  break;
                              case EditTool::TOOL_EDIT_WEIGHT:
-                                 if (clickedEdgeIdx != -1) {
+                                 if (clickedEdgeIdx != -1 || clickedNodeIdx ==-1) {
                                      isEditingWeight = true;
                                      selectedEdgeIndex = clickedEdgeIdx;
                                      weightInputBuffer = std::to_string(edges[clickedEdgeIdx].weight);
@@ -2409,50 +2180,44 @@ void RunGraphApp() {
          } // End drawing main graph
 
         // --- Draw UI Panels (Outside 2D Mode) ---
-
-        // Draw Left Panel Background
-        //DrawRectangle(0, 0, 120, screenHeight, Fade(BLACK, 0.5f));
-        // Draw Left Panel Buttons
-        DrawRectangleRec(createButton, isCreating ? ORANGE : WHITE); DrawText("Create", createButton.x + 10, createButton.y + 7, 20, BLACK);
-        DrawRectangleRec(randomButton, WHITE); DrawText("Random", randomButton.x + 10, randomButton.y + 7, 20, BLACK);
-        DrawRectangleRec(exampleButton, isShowingExamplesActive ? ORANGE : WHITE); DrawText("Examples", exampleButton.x + 10, exampleButton.y + 7, 20, BLACK);
-        DrawRectangleRec(inputButton, isInputActive ? ORANGE : WHITE); DrawText("Input", inputButton.x + 10, inputButton.y + 7, 20, BLACK);
-        DrawRectangleRec(fileButton, isFileActive ? ORANGE : WHITE); DrawText("File", fileButton.x + 10, fileButton.y + 7, 20, BLACK);
-        DrawRectangleRec(editButton, isEditingGraph ? ORANGE : WHITE); DrawText("Edit", editButton.x + 10, editButton.y + 7, 20, BLACK);
-        DrawRectangleRec(mstButton, showMSTMenu ? ORANGE : WHITE); DrawText("MST", mstButton.x + 10, mstButton.y + 7, 20, BLACK);
-
+        DrawMainControls(
+            createButton, randomButton, exampleButton, fileButton, editButton, mstButton,
+            isCreating, isShowingExamplesActive, isFileActive, isEditingGraph, showMSTMenu
+        );
         // Draw Create Input Fields (if active)
          if (isCreating) {
              DrawText("N:", nodesInputRect.x - 25, nodesInputRect.y + 5, 20, WHITE);
              DrawRectangleRec(nodesInputRect, LIGHTGRAY);
+             DrawButton("", nodesInputRect, GetFontDefault(), "");
              DrawText(numNodesStr.c_str(), nodesInputRect.x + 5, nodesInputRect.y + 5, 20, BLACK);
              if (nodesFocused && ((int)(GetTime()*2.0f)%2 == 0)) DrawText("|", nodesInputRect.x + 5 + MeasureText(numNodesStr.c_str(), 20), nodesInputRect.y + 5, 20, BLACK); // Cursor
 
              DrawText("E:", edgesInputRect.x - 25, edgesInputRect.y + 5, 20, WHITE);
              DrawRectangleRec(edgesInputRect, LIGHTGRAY);
+             DrawButton("", edgesInputRect, GetFontDefault(), "");
              DrawText(numEdgesStr.c_str(), edgesInputRect.x + 5, edgesInputRect.y + 5, 20, BLACK);
               if (edgesFocused && ((int)(GetTime()*2.0f)%2 == 0)) DrawText("|", edgesInputRect.x + 5 + MeasureText(numEdgesStr.c_str(), 20), edgesInputRect.y + 5, 20, BLACK); // Cursor
          }
 
         // Draw Example Buttons (if active)
          if (showExampleButtons) {
-             DrawRectangleRec(k5Button, WHITE); DrawText("K5", k5Button.x + 15, k5Button.y + 7, 20, BLACK);
-             DrawRectangleRec(c6Button, WHITE); DrawText("C6", c6Button.x + 15, c6Button.y + 7, 20, BLACK);
-             DrawRectangleRec(p4Button, WHITE); DrawText("P4", p4Button.x + 15, p4Button.y + 7, 20, BLACK);
-             DrawRectangleRec(s7Button, WHITE); DrawText("S7", s7Button.x + 15, s7Button.y + 7, 20, BLACK);
+             DrawRectangleRec(k5Button, WHITE); DrawButton("K5", k5Button, GetFontDefault(), "K5");
+             DrawRectangleRec(c6Button, WHITE); DrawButton("C6", c6Button, GetFontDefault(), "C6");
+             DrawRectangleRec(p4Button, WHITE); DrawButton("P4", p4Button, GetFontDefault(), "P4");
+             DrawRectangleRec(s7Button, WHITE); DrawButton("S7", s7Button, GetFontDefault(), "S7");
          }
 
         // Draw Edit Panel (if active)
          if (isEditingGraph) {
              DrawRectangle(editPanelX, 0, editPanelWidth, screenHeight, Fade(BLACK, 0.7f)); // Panel background
              // Draw buttons with highlight for current tool
-             DrawRectangleRec(addVertexButtonRect, (currentTool == EditTool::TOOL_ADD_VERTEX) ? ORANGE : LIGHTGRAY); DrawText("Add Vertex", addVertexButtonRect.x + 10, addVertexButtonRect.y + 7, 20, BLACK);
-             DrawRectangleRec(addEdgeButtonRect, (currentTool == EditTool::TOOL_ADD_EDGE_START || currentTool == EditTool::TOOL_ADD_EDGE_END) ? ORANGE : LIGHTGRAY); DrawText("Add Edge", addEdgeButtonRect.x + 10, addEdgeButtonRect.y + 7, 20, BLACK);
-             DrawRectangleRec(editWeightButtonRect, (currentTool == EditTool::TOOL_EDIT_WEIGHT) ? ORANGE : LIGHTGRAY); DrawText("Edit Weight", editWeightButtonRect.x + 10, editWeightButtonRect.y + 7, 20, BLACK);
-             DrawRectangleRec(moveNodeButtonRect, (currentTool == EditTool::TOOL_MOVE_VERTEX) ? ORANGE : LIGHTGRAY); DrawText("Move Node", moveNodeButtonRect.x+10, moveNodeButtonRect.y+7, 20, BLACK);
-             DrawRectangleRec(deleteVertexButtonRect, (currentTool == EditTool::TOOL_DELETE_VERTEX) ? ORANGE : LIGHTGRAY); DrawText("Del Vertex", deleteVertexButtonRect.x+10, deleteVertexButtonRect.y+7, 20, BLACK); // Shorter text
-             DrawRectangleRec(deleteEdgeButtonRect, (currentTool == EditTool::TOOL_DELETE_EDGE) ? ORANGE : LIGHTGRAY); DrawText("Delete Edge", deleteEdgeButtonRect.x+10, deleteEdgeButtonRect.y+7, 20, BLACK);
-             DrawRectangleRec(doneButtonRect, RAYWHITE); DrawText("Done", doneButtonRect.x + 30, doneButtonRect.y + 7, 20, BLACK);
+             DrawRectangleRec(addVertexButtonRect, (currentTool == EditTool::TOOL_ADD_VERTEX) ? ORANGE : LIGHTGRAY); DrawButton("Add Vertex", addVertexButtonRect, GetFontDefault(), "Add Vertex");
+             DrawRectangleRec(addEdgeButtonRect, (currentTool == EditTool::TOOL_ADD_EDGE_START || currentTool == EditTool::TOOL_ADD_EDGE_END) ? ORANGE : LIGHTGRAY); DrawButton("Add Edge", addEdgeButtonRect, GetFontDefault(), "Add Edge");
+             DrawRectangleRec(editWeightButtonRect, (currentTool == EditTool::TOOL_EDIT_WEIGHT) ? ORANGE : LIGHTGRAY); DrawButton("Edit Weight", editWeightButtonRect, GetFontDefault(), "Edit Weight");
+             DrawRectangleRec(moveNodeButtonRect, (currentTool == EditTool::TOOL_MOVE_VERTEX) ? ORANGE : LIGHTGRAY); DrawButton("Move Node", moveNodeButtonRect, GetFontDefault(), "Move Node");
+             DrawRectangleRec(deleteVertexButtonRect, (currentTool == EditTool::TOOL_DELETE_VERTEX) ? ORANGE : LIGHTGRAY); DrawButton("Delete Vertex", deleteVertexButtonRect, GetFontDefault(), "Delete Vertex");
+             DrawRectangleRec(deleteEdgeButtonRect, (currentTool == EditTool::TOOL_DELETE_EDGE) ? ORANGE : LIGHTGRAY); DrawButton("Delete Edge", deleteEdgeButtonRect, GetFontDefault(), "Delete Edge");
+             DrawRectangleRec(doneButtonRect, RAYWHITE); DrawButton("Done", doneButtonRect, GetFontDefault(), "Done");
 
              // Draw Weight Input Box (if active) - draw last to be on top
              if (isEditingWeight) {
@@ -2482,33 +2247,6 @@ void RunGraphApp() {
 
 
         // Draw Matrix Input Window (if active) - Draw last to be on top of graph
-         if (showMatrixInput) {
-             DrawRectangleRec(inputWindowRect, LIGHTGRAY);
-             DrawRectangleLinesEx(inputWindowRect, 2, BLACK); // Border
-             DrawText("Input Adjacency Matrix (Nodes on first line)", inputWindowRect.x + 10, inputWindowRect.y + 10, 20, BLACK);
-
-             // Input Area
-             DrawRectangleRec(matrixInputAreaRect, WHITE);
-             DrawRectangleLinesEx(matrixInputAreaRect, 1, BLACK);
-             // Draw the text within the input area (handle scrolling if text exceeds bounds - complex)
-             DrawText(matrixInput.c_str(), matrixInputAreaRect.x + 5, matrixInputAreaRect.y + 5, 20, BLACK);
-
-             // Draw blinking cursor for matrix input
-             if (matrixInputFocused && cursorTimer < 0.4f) { // Adjust blink timing
-                  Vector2 cursorPos = GetCursorScreenPos(matrixInput, cursorRow, cursorColumn, matrixInputAreaRect, 20);
-                 DrawLineV(cursorPos, {cursorPos.x, cursorPos.y + 20}, BLACK); // Draw cursor line
-             }
-
-
-             // Buttons
-             DrawRectangleRec(submitMatrixButton, WHITE); DrawText("Submit", submitMatrixButton.x + 10, submitMatrixButton.y + 7, 20, BLACK);
-             DrawRectangleRec(closeMatrixButton, WHITE); DrawText("Close", closeMatrixButton.x + 10, closeMatrixButton.y + 7, 20, BLACK);
-
-             // Draw Matrix Input Error Message (if any)
-             if (!errorMessageInput.empty()) {
-                  DrawText(errorMessageInput.c_str(), inputWindowRect.x + 10, inputWindowRect.y + inputWindowRect.height - 65, 18, RED); // Position error above buttons
-             }
-         }
 
         // Draw MST Menu (if active) - Draw last to be on top
          if (showMSTMenu) {
@@ -2713,9 +2451,9 @@ void RunGraphApp() {
                      drawNode(mstDrawNodePositions[i], i + 1, nodeColor, 15.0f); // Smaller nodes in MST view
                     }
              }
-             DrawRectangleRec(primButton, WHITE); DrawText("Prim", primButton.x + 10, primButton.y + 7, 20, BLACK);
-             DrawRectangleRec(kruskalButton, WHITE); DrawText("Kruskal", kruskalButton.x + 10, kruskalButton.y + 7, 20, BLACK);
-             DrawRectangleRec(backButton, WHITE); DrawText("Back", backButton.x + 10, backButton.y + 7, 20, BLACK);
+             DrawRectangleRec(primButton, usePrim ? ORANGE: WHITE); DrawButton("Prim", primButton, GetFontDefault(), "Prim"); 
+             DrawRectangleRec(kruskalButton, useKruskal ? ORANGE : WHITE);  DrawButton("Kruskal", kruskalButton, GetFontDefault(), "Kruskal"); 
+             DrawRectangleRec(backButton, WHITE); DrawButton("Back", backButton, GetFontDefault(), "Back");
         
          } // end if showMSTMenu
          if (showMSTError) {

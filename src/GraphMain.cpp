@@ -11,17 +11,20 @@ void DrawButtonUI(const char* text, Rectangle button, Font font, Color tint, Col
     Color finalTint = tint;
     // Ví dụ thêm hiệu ứng hover đơn giản
     if (CheckCollisionPointRec(GetMousePosition(), button)) {
-         // Làm màu sáng hơn một chút khi hover, nhưng không phải màu trắng hoàn toàn nếu tint không phải trắng
-         if (tint.r != 255 || tint.g != 255 || tint.b != 255) {
-             finalTint.r = (unsigned char)std::min(255, tint.r + 30);
-             finalTint.g = (unsigned char)std::min(255, tint.g + 30);
-             finalTint.b = (unsigned char)std::min(255, tint.b + 30);
-         } else {
-             finalTint = LIGHTGRAY; // Nếu tint là trắng, hover thành xám nhạt
-         }
+        //  // Làm màu sáng hơn một chút khi hover, nhưng không phải màu trắng hoàn toàn nếu tint không phải trắng
+        //  if (tint.r != 255 || tint.g != 255 || tint.b != 255) {
+        //      finalTint.r = (unsigned char)std::min(255, tint.r + 30);
+        //      finalTint.g = (unsigned char)std::min(255, tint.g + 30);
+        //      finalTint.b = (unsigned char)std::min(255, tint.b + 30);
+        //  } else {
+        //      finalTint = LIGHTGRAY; // Nếu tint là trắng, hover thành xám nhạt
+        //  }
+        DrawRectangleRec(button, DARKGRAY);
     }
-
-    DrawRectangleRec(button, finalTint);
+    else
+    {
+        DrawRectangleRec(button, LIGHTGRAY);
+    }
     DrawRectangleLinesEx(button, 1, BLACK); // Viền đen
     Vector2 textSize = MeasureTextEx(font, text, 20, 1);
     DrawTextEx(font, text, { button.x + (button.width - textSize.x) / 2, button.y + (button.height - textSize.y) / 2 }, 20, 1, BLACK);

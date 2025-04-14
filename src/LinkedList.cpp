@@ -1,1237 +1,2123 @@
 #include "LinkedList.h"
 #include "Button.h"
-#include "Utils.h"
-#include <sstream>
-#include <fstream> // Thêm header này
+#include <vector>
 #include <string>
+#include <algorithm>
+#include <sstream>
+#include <iomanip>
 
-LinkedList::LinkedList(int width, int height) 
-    : head(nullptr), isPaused(true), skipStep(false), speed(1.0f), 
-      activeFunction(0), activeLine(0), scrollOffset(0.0f), notification(""), 
-      screenWidth(width), screenHeight(height), foundNode(nullptr), currentStepIndex(-1) {
-    operationStates.clear();
-    operationHistory = std::deque<ListState>();
+
+static char* ftc(float v) { 
+    std::ostringstream ss;
+    ss << std::fixed << std::setprecision(2) << v / 2;
+    std::string str = "x" + ss.str();
+    char* cstr = new char[str.length() + 1];
+    strcpy(cstr, str.c_str());
+    return cstr;
 }
-void LinkedList::Clear() {
-    while (head) {
-        Node* temp = head;
-        head = head->next;
+
+LinkedList::LinkedList() : head(nullptr), selectedNode(nullptr), selectedValue(0) {
+    pathfile[0] = '\0';
+    fileLoaded = false;
+    showUploadPrompt = false;
+    prevHead = nullptr;
+    operation_type = -1;
+}
+
+LinkedList::~LinkedList() {
+    // Giải phóng danh sách chính
+    ListNode* current = head;
+    while (current) {
+        ListNode* temp = current;
+        current = current->next;
         delete temp;
     }
-    operationStates.clear();
-    currentStepIndex = -1;
-}
-
-std::string LinkedList::GetNotification() const {
-    return notification;
-}
-
-void LinkedList::SetNotification(const std::string& msg) {
-    notification = msg;
-}
-
-void LinkedList::ClearList() {
-    Clear();
-}
-
-void LinkedList::EnqueueOperation(int type, int value1, int value2) {
-    operationQueue.push(Operation(type, value1, value2));
-}
-
-void LinkedList::EnqueueOperationWithValues(int type, const std::vector<int>& values) {
-    operationQueue.push(Operation(type, 0, 0));
-    opState.initValues = values;
-    opState.initCount = values.size();
-}
-
-void LinkedList::ProcessOperations() {
-    if (activeFunction != 0 || operationQueue.empty()) return;
-    
-    foundNode = nullptr;
-    Operation op = operationQueue.front();
-    operationQueue.pop();
-    activeFunction = op.type;
-    activeLine = 1;
-    opState.step = 1;
-    opState.traversalIndex = 0;
-
-    // Save the state before the operation starts
-    ListState preState;
-    Node* current = head;
+    // Giải phóng danh sách trước đó
+    current = prevHead;
     while (current) {
-        preState.values.push_back(current->value);
-        preState.positions.push_back(current->position);
-        preState.isActive.push_back(current->isActive);
-        preState.alphas.push_back(current->alpha);
-        preState.targetPositions.push_back(current->targetPosition);
-        preState.animationProgresses.push_back(current->animationProgress);
-        preState.animationTypes.push_back(current->animationType);
+        ListNode* temp = current;
         current = current->next;
-    }
-    preState.activeFunction = activeFunction;
-    preState.activeLine = activeLine;
-    preState.opState = opState;
-    operationHistory.push_back(preState);
-
-    // Clear operationStates for the new operation
-    operationStates.clear();
-    currentStepIndex = -1;
-
-    // Save the initial state of the operation
-    SaveState();
-
-    switch (op.type) {
-        case 1: // Initialize
-            opState.initCount = op.value1; 
-            opState.initIndex = 0; 
-            Clear(); 
-            opState.current = nullptr;
-            if (!opState.initValues.empty()) {
-                opState.initCount = opState.initValues.size();
-            }
-            break;
-        case 2: // Add Head
-            opState.newNode = new Node(op.value1); 
-            break;
-        case 3: // Add Index
-            opState.newNode = new Node(op.value2);
-            opState.addIndex = op.value1;
-            opState.current = head;
-            break;
-        case 4: // Add Tail
-            opState.newNode = new Node(op.value1); 
-            break;
-        case 5: // Delete
-            opState.deleteValue = op.value1;
-            opState.current = head; 
-            break;
-        case 6: // Search
-            opState.searchValue = op.value1;
-            opState.current = head; 
-            opState.searchResult = false; 
-            break;
-        case 7: // Update
-            opState.updateOld = op.value1; 
-            opState.updateNew = op.value2; 
-            opState.current = head; 
-            break;
+        delete temp;
     }
 }
 
-void LinkedList::UpdateOperations() {
-    if (activeFunction == 0 || isPaused) return;
-
-    bool isAnimating = false;
-    Node* current = head;
+void LinkedList::saveCurrentList() {
+    // Giải phóng danh sách trước đó nếu có
+    ListNode* current = prevHead;
     while (current) {
-        if (current->animationType != 0) {
-            isAnimating = true;
-            break;
-        }
+        ListNode* temp = current;
         current = current->next;
+        delete temp;
     }
+    prevHead = nullptr;
 
-    if (isAnimating || opState.delayTimer > 0) return;
-
-    SaveState();
-
-    switch (activeFunction) {
-        case 1: UpdateInitialize(); break;
-        case 2:
-        case 3:
-        case 4:
-            UpdateAdd(); break;
-        case 5: UpdateDelete(); break;
-        case 6: UpdateSearch(); break;
-        case 7: UpdateUpdate(); break;
+    // Sao chép danh sách hiện tại vào prevHead
+    if (!head) return;
+    ListNode* currentHead = head;
+    prevHead = new ListNode(currentHead->value);
+    ListNode* currentPrev = prevHead;
+    while (currentHead->next) {
+        currentHead = currentHead->next;
+        currentPrev->next = new ListNode(currentHead->value);
+        currentPrev = currentPrev->next;
     }
 }
 
-void LinkedList::UpdateAnimation() {
-    if (isPaused) return;
-
-    if (opState.delayTimer > 0) {
-        opState.delayTimer -= GetFrameTime();
-        if (opState.delayTimer < 0) opState.delayTimer = 0;
-    }
-
-    Node* current = head;
-    bool hasAnimation = false;
-    while (current) {
-        if (current->animationType != 0) {
-            hasAnimation = true;
-            current->animationProgress += speed / 60.0f;
-            if (current->animationProgress >= 1.0f || skipStep) {
-                current->animationProgress = 1.0f;
-                switch (current->animationType) {
-                    case 1: current->isActive = false; break;
-                    case 2: 
-                        current->position = current->targetPosition; 
-                        current->alpha = 1.0f; 
-                        break;
-                    case 3: current->alpha = 0.0f; break;
-                    case 4: current->position = current->targetPosition; break;
-                    case 5: break;
-                }
-                current->animationType = 0;
-            } else {
-                float t = EaseInOutQuad(current->animationProgress);
-                switch (current->animationType) {
-                    case 1:
-                        if (current->animationProgress < 0.5f) {
-                            current->isActive = true;
-                        } else {
-                            current->isActive = false;
-                        }
-                        break;
-                    case 2:
-                        current->position.x = Lerp(current->position.x, current->targetPosition.x, t); // Thêm chuyển động x
-                        current->position.y = Lerp(current->position.y, current->targetPosition.y, t);
-                        current->alpha = t; // Tăng dần độ rõ
-                        break;
-                    case 3:
-                        current->alpha = 1.0f - t;
-                        break;
-                    case 4:
-                        current->position.x = Lerp(current->position.x, current->targetPosition.x, t);
-                        break;
-                    case 5: break;
-                }
-            }
-        }
-        current = current->next;
-    }
-
-    if (skipStep) {
-        SkipToEnd();
-        skipStep = false;
-    }
+Vector2 LinkedList::calNodeCenter(int idx) {
+    float radius = nodeWidth / 2;
+    return {listPosX + (nodeWidth + nodeSpaceX) * idx + radius, listPosY + nodeHeight / 2};
 }
 
-void LinkedList::Draw() {
-    Node* current = head;
-    while (current) {
-        Vector2 adjustedPos = {current->position.x + scrollOffset, current->position.y};
-        DrawNode(current, adjustedPos);
-        if (current->next) {
-            Vector2 nextPos = {current->next->position.x + scrollOffset, current->next->position.y};
-            if (current->animationType == 5) {
-                float t = current->animationProgress;
-                Vector2 midPoint = {adjustedPos.x + (nextPos.x - adjustedPos.x) * t, adjustedPos.y};
-                DrawLineEx(adjustedPos, midPoint, 2, BLACK);
-                if (t >= 1.0f) {
-                    Vector2 dir = Vector2NormalizeCustom(Vector2SubtractCustom(nextPos, adjustedPos));
-                    Vector2 arrow1 = {nextPos.x - NODE_SIZE / 2 - 10 * dir.x + 5 * dir.y, nextPos.y - 10 * dir.y - 5 * dir.x};
-                    Vector2 arrow2 = {nextPos.x - NODE_SIZE / 2 - 10 * dir.x - 5 * dir.y, nextPos.y - 10 * dir.y + 5 * dir.x};
-                    DrawLineEx({nextPos.x - NODE_SIZE / 2, nextPos.y}, arrow1, 2, BLACK);
-                    DrawLineEx({nextPos.x - NODE_SIZE / 2, nextPos.y}, arrow2, 2, BLACK);
-                }
-            } else {
-                DrawArrow(adjustedPos, nextPos);
-            }
-        }
-        current = current->next;
-    }
-}
 
-void LinkedList::DrawCodeBlock() {
-    if (activeFunction == 0) return;
 
-    const char* codeLines[7][7] = {
-        // Initialize
-        {"Initialize:", "1. Clear List", "2. Add Random Node", "", "", "", ""},
-        // Add Head
-        {"Add Head(value):", "1. Node* newNode = new Node(value)", "2. newNode->next = head", "3. head = newNode", "", "", ""},
-        // Add Index
-        {"Add Index(value):", "1. Node* newNode = new Node(value)", "2. while (!cur && cur->val != value)", "3.     cur = cur->next", "4. prev = prev->next", "5. if (cur) newNode->next = cur", "6. prev->next = newNode"},
-        // Add Tail
-        {"Add Tail(value):", "1. if (!head) head = new Node(value)", "2. while (cur->next)", "3.     cur = cur->next", "4. cur->next = new Node(value)", "", ""},
-        // Delete
-        {"Delete(value):", "1. while (cur->next &&", "2.     cur->next->val != value)", "3.     cur = cur->next", "4. if (cur->next)", "5.     Node* tmp = cur->next", "6.     cur->next = cur->next->next; delete tmp"},
-        // Search
-        {"Search(value):", "1. while (cur && cur->val != value)", "2.     cur = cur->next", "3. if (cur) return true", "4. return false", "", ""},
-        // Update
-        {"Update(old, new):", "1. while (cur && cur->val != old)", "2.     cur = cur->next", "3. if (cur) cur->val = new", "", "", ""}
+Rectangle LinkedList::calEdgeArea(int idx) { // tính toán dduongg nối
+    return {
+        listPosX + (nodeWidth + nodeSpaceX) * idx - nodeSpaceX,
+        listPosY + nodeHeight / 2,
+        nodeSpaceX,
+        lineWidth
     };
+}
 
-    int numLines = 0;
-    for (int i = 0; i < 7; i++) {
-        if (codeLines[activeFunction - 1][i][0] != '\0') numLines++;
-    }
+Vector2 LinkedList::calEdgeCenter(int idx) {
+    float x = listPosX + (nodeWidth + nodeSpaceX) * idx - nodeSpaceX + nodeSpaceX / 2;
+    float y = listPosY + nodeHeight / 2;
+    return {x, y};
+}
 
-    float y = screenHeight - 200;
-    float x = screenWidth - 450; // Điều chỉnh vị trí x để khung không bị che khuất
-    float lineHeight = 30;
-    float padding = 10;
-    float frameWidth = 450; // Tăng chiều rộng khung để chứa dòng dài nhất
-    float frameHeight = numLines * lineHeight + 2 * padding;
-    DrawRectangle(x - padding, y - padding, frameWidth, frameHeight, SKYBLUE);
+void LinkedList::drawList() {
+    ListNode* current = head;
+    int idx = 0;
+    float radius = nodeWidth / 2;;
 
-    for (int i = 0; i < 7; i++) {
-        if (codeLines[activeFunction - 1][i][0] != '\0') {
-            Color textColor = (i == activeLine) ? YELLOW : BLACK;
-            DrawText(codeLines[activeFunction - 1][i], x, y, 20, textColor);
-            y += lineHeight;
+    if (!current) {
+        Vector2 nullCenter = calNodeCenter(0);
+        float dx = GetMousePosition().x - nullCenter.x;
+        float dy = GetMousePosition().y - nullCenter.y;
+        bool isHovered = (dx * dx + dy * dy) <= (radius * radius);
+        if (isHovered && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            selectedNode = nullptr;
         }
-    }
-}
-
-void LinkedList::LoadFromFile(const char* filename) {
-    Clear();
-    std::ifstream file(filename);
-    if (!file.is_open()) {
-        SetNotification("Failed to open file: " + std::string(filename));
+        DrawCircleV(nullCenter, radius, isHovered ? GRAY : LIGHTGRAY);
+        DrawCircleLines(nullCenter.x, nullCenter.y, radius, BLACK);
+        Vector2 textSize = MeasureTextEx(GetFontDefault(), "NULL", 20, 1);
+        DrawTextEx(GetFontDefault(), "NULL", {nullCenter.x - textSize.x / 2, nullCenter.y - textSize.y / 2}, 20, 1, BLACK);
         return;
     }
-
-    std::string line;
-    std::vector<int> values;
-    while (std::getline(file, line)) {
-        std::stringstream ss(line);
-        int value;
-        while (ss >> value) values.push_back(value);
-    }
-    file.close();
-
-    if (!values.empty()) {
-        EnqueueOperationWithValues(1, values);
-    } else {
-        Clear();
-        SetNotification("File is empty or contains no valid numbers.");
-    }
-}
-
-void LinkedList::NextStep() {
-    // Kiểm tra nếu đã ở bước cuối cùng
-    if (currentStepIndex >= static_cast<int>(operationStates.size()) - 1) {
-        SetNotification("No next steps available.");
-        return;
-    }
-
-    // Tăng chỉ số bước và tải trạng thái tiếp theo
-    currentStepIndex++;
-    LoadState(operationStates[currentStepIndex]);
-    SetNotification("Advanced to step " + std::to_string(currentStepIndex + 1) + ".");
-}
-
-void LinkedList::PreviousStep() {
-    // Kiểm tra nếu đã ở bước đầu tiên
-    if (currentStepIndex <= 0) {
-        SetNotification("No previous steps available.");
-        return;
-    }
-
-    // Giảm chỉ số bước và tải trạng thái trước đó
-    currentStepIndex--;
-    LoadState(operationStates[currentStepIndex]);
-    SetNotification("Reverted to step " + std::to_string(currentStepIndex + 1) + ".");
-}
-
-void LinkedList::SkipToEnd() {
-    if (activeFunction == 0) {
-        SetNotification("No operation in progress.");
-        return;
-    }
-
-    // Complete all animations instantly
-    Node* current = head;
+    
     while (current) {
-        if (current->animationType != 0) {
-            current->animationProgress = 1.0f;
-            switch (current->animationType) {
-                case 1: current->isActive = false; break;
-                case 2: 
-                    current->position = current->targetPosition; 
-                    current->alpha = 1.0f; 
-                    break;
-                case 3: current->alpha = 0.0f; break;
-                case 4: current->position = current->targetPosition; break;
-                case 5: break;
-            }
-            current->animationType = 0;
+        Vector2 nodeCenter = calNodeCenter(idx);
+        float dx = GetMousePosition().x - nodeCenter.x;
+        float dy = GetMousePosition().y - nodeCenter.y;
+        bool isHovered = (dx * dx + dy * dy) <= (radius * radius);
+        if (isHovered && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            selectedNode = current;
+            selectedValue = current->value;
+            selectedNodeArea = {nodeCenter.x - radius, nodeCenter.y - radius, nodeWidth, nodeHeight};
         }
+        bool isSelected = (selectedNode == current);
+        DrawCircleV(nodeCenter, radius, isSelected ? BLUE : (isHovered ? GRAY : LIGHTGRAY));
+        DrawCircleLines(nodeCenter.x, nodeCenter.y, radius, BLACK);
+        Vector2 textSize = MeasureTextEx(GetFontDefault(), TextFormat("%d", current->value), 20, 1);
+        DrawTextEx(GetFontDefault(), TextFormat("%d", current->value), {nodeCenter.x - textSize.x / 2, nodeCenter.y - textSize.y / 2}, 20, 1, BLACK);
+        
+        if (current->next) {
+            Rectangle edgeRect = calEdgeArea(idx + 1);
+            DrawRectangleRec(edgeRect, BLACK);
+        }
+        
         current = current->next;
+        idx++;
     }
-
-    // Execute the operation to completion
-    switch (activeFunction) {
-        case 1: SkipInitialize(); break;
-        case 2: SkipAdd(); break;
-        case 3: SkipDelete(); break;
-        case 4: SkipSearch(); break;
-        case 5: SkipUpdate(); break;
+    
+    Vector2 nullCenter = calNodeCenter(idx);
+    float dxNull = GetMousePosition().x - nullCenter.x;
+    float dyNull = GetMousePosition().y - nullCenter.y;
+    bool isHoveredNull = (dxNull * dxNull + dyNull * dyNull) <= (radius * radius);
+    if (isHoveredNull && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        selectedNode = nullptr;
     }
-
-    // Save the final state
-    SaveState();
-    currentStepIndex = operationStates.size() - 1;
-    SetNotification("Operation completed.");
+    DrawCircleV(nullCenter, radius, isHoveredNull ? GRAY : LIGHTGRAY);
+    DrawCircleLines(nullCenter.x, nullCenter.y, radius, BLACK);
+    Vector2 textSize = MeasureTextEx(GetFontDefault(), "NULL", 20, 1);
+    DrawTextEx(GetFontDefault(), "NULL", {nullCenter.x - textSize.x / 2, nullCenter.y - textSize.y / 2}, 20, 1, BLACK);
 }
 
-void LinkedList::SetPaused(bool paused) { isPaused = paused; }
-bool LinkedList::IsPaused() const { return isPaused; }
-void LinkedList::SkipCurrentStep() { skipStep = true; }
-void LinkedList::SetSpeed(float newSpeed) { speed = newSpeed; }
-float LinkedList::GetSpeed() const { return speed; }
+void LinkedList::drawPrevList() {
+    ListNode* current = prevHead;
+    int idx = 0;
+    float radius = nodeWidth / 2;;
 
-void LinkedList::UpdateScroll(float screenWidth, float screenHeight) {
-    Node* current = head;
-    float maxX = 0;
-    while (current) {
-        maxX = (current->position.x > maxX) ? current->position.x : maxX;
-        current = current->next;
-    }
-    float maxScroll = maxX - screenWidth + 200;
-    if (maxScroll < 0) maxScroll = 0;
-    scrollOffset = -UpdateSlider({50, screenHeight - 100, 200, 20}, 0, maxScroll, -scrollOffset);
-}
-
-float LinkedList::GetScrollOffset() const { return scrollOffset; }
-
-void LinkedList::UpdateInitialize() {
-    if (opState.step == 1) {
-        activeLine = 1; // Highlight "Clear List"
-        Clear();
-        opState.delayTimer = 0.5f;
-        opState.step = 2;
-        SaveState();
-    } else if (opState.step >= 2) { // Steps 2+: Add nodes
-        activeLine = 2; // Highlight "Add Random Node"
-        if (opState.initIndex < opState.initCount) {
-            Node* newNode;
-            if (opState.initValues.empty()) {
-                newNode = new Node(GetRandomValue(1, 99));
-            } else {
-                newNode = new Node(opState.initValues[opState.initIndex]);
-            }
-            if (!head) {
-                newNode->position = {200, 100};
-                newNode->targetPosition = {200, 300};
-                newNode->alpha = 0.0f;
-                newNode->animationType = 2;
-                newNode->animationProgress = 0.0f;
-                head = newNode;
-                opState.current = head;
-            } else {
-                Node* current = head;
-                while (current->next) current = current->next;
-                newNode->position = {current->position.x + SPACING, 100};
-                newNode->targetPosition = {current->position.x + SPACING, 300};
-                newNode->alpha = 0.0f;
-                newNode->animationType = 2;
-                newNode->animationProgress = 0.0f;
-                current->next = newNode;
-                current->animationType = 5;
-                current->animationProgress = 0.0f;
-                opState.current = newNode;
-            }
-            opState.initIndex++;
-            opState.delayTimer = 0.5f;
-            opState.step++;
-            SaveState();
-        } else {
-            notification = "Initialized " + std::to_string(opState.initCount) + " nodes.";
-            ResetOperation();
-            SaveState();
+    if (!current) {
+        Vector2 nullCenter = calNodeCenter(0);
+        float dx = GetMousePosition().x - nullCenter.x;
+        float dy = GetMousePosition().y - nullCenter.y;
+        bool isHovered = (dx * dx + dy * dy) <= (radius * radius);
+        if (isHovered && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            selectedNode = nullptr;
         }
-    }
-}
-
-void LinkedList::SkipInitialize() {
-    if (activeFunction != 1) return;
-
-    while (opState.initIndex < opState.initCount) {
-        Node* newNode;
-        if (opState.initValues.empty()) {
-            newNode = new Node(GetRandomValue(1, 99));
-        } else {
-            newNode = new Node(opState.initValues[opState.initIndex]);
-        }
-        if (!head) {
-            newNode->position = {200, 300};
-            newNode->targetPosition = {200, 300};
-            newNode->alpha = 1.0f;
-            head = newNode;
-        } else {
-            Node* current = head;
-            while (current->next) current = current->next;
-            newNode->position = {current->position.x + SPACING, 300};
-            newNode->targetPosition = {current->position.x + SPACING, 300};
-            newNode->alpha = 1.0f;
-            current->next = newNode;
-        }
-        opState.initIndex++;
-    }
-    notification = "Initialized " + std::to_string(opState.initCount) + " nodes.";
-    ResetOperation();
-}
-
-void LinkedList::UpdateAdd() {
-    if (activeFunction == 2) { // Add Head
-        if (opState.step == 1) {
-            activeLine = 1; // Highlight "Node* newNode = new Node(value)"
-            opState.newNode->position = {200, 100};
-            opState.newNode->alpha = 0.0f;
-            opState.newNode->animationType = 2;
-            opState.newNode->animationProgress = 0.0f;
-            opState.newNode->targetPosition = {200, 300};
-            opState.delayTimer = 0.5f;
-            opState.step = 2;
-            SaveState();
-        } else if (opState.step == 2) {
-            activeLine = 2; // Highlight "newNode->next = head"
-            if (head) {
-                opState.newNode->next = head;
-                head->animationType = 5;
-                head->animationProgress = 0.0f;
-            }
-            opState.delayTimer = 0.5f;
-            opState.step = 3;
-            SaveState();
-        } else if (opState.step == 3) {
-            activeLine = 3; // Highlight "head = newNode"
-            head = opState.newNode;
-            RealignNodes();
-            notification = "Added node with value " + std::to_string(opState.newNode->value) + " at head.";
-            opState.newNode = nullptr;
-            ResetOperation();
-            SaveState();
-        }
-    } else if (activeFunction == 3) { // Add Index
-        if (opState.step == 1) {
-            activeLine = 1; // Highlight "Node* newNode = new Node(value)"
-            if (!head) {
-                if (opState.addIndex == 0) {
-                    opState.newNode->position = {200, 100};
-                    opState.newNode->alpha = 0.0f;
-                    opState.newNode->targetPosition = {200, 300};
-                    opState.newNode->animationType = 2;
-                    opState.newNode->animationProgress = 0.0f;
-                    head = opState.newNode;
-                    notification = "Added node with value " + std::to_string(opState.newNode->value) + " at index 0.";
-                    opState.newNode = nullptr;
-                    ResetOperation();
-                    SaveState();
-                } else {
-                    notification = "List is empty. Cannot add at index " + std::to_string(opState.addIndex) + ".";
-                    delete opState.newNode;
-                    opState.newNode = nullptr;
-                    ResetOperation();
-                    SaveState();
-                }
-                return;
-            }
-
-            if (opState.addIndex == 0) {
-                activeFunction = 2;
-                opState.step = 1;
-                UpdateAdd();
-                return;
-            }
-
-            opState.newNode->position = {200, 100};
-            opState.newNode->alpha = 0.0f;
-            opState.newNode->animationType = 2;
-            opState.newNode->animationProgress = 0.0f;
-            opState.delayTimer = 0.5f;
-            opState.step = 2;
-            SaveState();
-        } else if (opState.step == 2) {
-            activeLine = 2; // Highlight "while (!cur && cur->val != value)"
-            if (opState.traversalIndex == 0) {
-                opState.current = head;
-            }
-            if (opState.traversalIndex < opState.addIndex) {
-                activeLine = 3; // Highlight "cur = cur->next"
-                if (opState.current) {
-                    opState.current->animationType = 1;
-                    opState.current->animationProgress = 0.0f;
-                    opState.current = opState.current->next;
-                    opState.traversalIndex++;
-                    opState.delayTimer = 0.5f;
-                    SaveState();
-                } else {
-                    notification = "Index " + std::to_string(opState.addIndex) + " out of bounds.";
-                    delete opState.newNode;
-                    opState.newNode = nullptr;
-                    ResetOperation();
-                    SaveState();
-                }
-            } else {
-                opState.step = 3;
-                SaveState();
-            }
-        } else if (opState.step == 3) {
-            activeLine = 4; // Highlight "prev = prev->next"
-            Node* prev = head;
-            for (int i = 0; i < opState.addIndex - 1 && prev && prev->next; i++) {
-                prev = prev->next;
-            }
-            if (prev) {
-                opState.newNode->targetPosition = {prev->position.x + SPACING, 300};
-                opState.step = 4;
-                opState.delayTimer = 0.5f;
-                SaveState();
-            } else {
-                notification = "Index " + std::to_string(opState.addIndex) + " out of bounds.";
-                delete opState.newNode;
-                opState.newNode = nullptr;
-                ResetOperation();
-                SaveState();
-            }
-        } else if (opState.step == 4) {
-            activeLine = 5; // Highlight "if (cur) newNode->next = cur"
-            Node* prev = head;
-            for (int i = 0; i < opState.addIndex - 1 && prev && prev->next; i++) {
-                prev = prev->next;
-            }
-            if (prev) {
-                opState.newNode->next = prev->next;
-                opState.delayTimer = 0.5f;
-                opState.step = 5;
-                SaveState();
-            }
-        } else if (opState.step == 5) {
-            activeLine = 6; // Highlight "prev->next = newNode"
-            Node* prev = head;
-            for (int i = 0; i < opState.addIndex - 1 && prev && prev->next; i++) {
-                prev = prev->next;
-            }
-            if (prev) {
-                prev->next = opState.newNode;
-                prev->animationType = 5;
-                prev->animationProgress = 0.0f;
-                RealignNodes();
-                notification = "Added node with value " + std::to_string(opState.newNode->value) + " at index " + std::to_string(opState.addIndex) + ".";
-                opState.newNode = nullptr;
-                ResetOperation();
-                SaveState();
-            }
-        }
-    } else if (activeFunction == 4) { // Add Tail
-        if (opState.step == 1) {
-            activeLine = 1; // Highlight "if (!head) head = new Node(value)"
-            if (!head) {
-                opState.newNode->position = {200, 100};
-                opState.newNode->alpha = 0.0f;
-                opState.newNode->targetPosition = {200, 300};
-                opState.newNode->animationType = 2;
-                opState.newNode->animationProgress = 0.0f;
-                head = opState.newNode;
-                notification = "Added node with value " + std::to_string(opState.newNode->value) + " at tail.";
-                opState.newNode = nullptr;
-                ResetOperation();
-                SaveState();
-            } else {
-                opState.current = head;
-                opState.traversalIndex = 0;
-                opState.step = 2;
-                opState.delayTimer = 0.5f;
-                SaveState();
-            }
-        } else if (opState.step >= 2) { // Steps 2+: Traverse nodes until the end
-            activeLine = 2; // Highlight "while (cur->next)"
-            if (opState.current && opState.current->next) {
-                activeLine = 3; // Highlight "cur = cur->next"
-                opState.current->animationType = 1;
-                opState.current->animationProgress = 0.0f;
-                opState.current = opState.current->next;
-                opState.traversalIndex++;
-                opState.delayTimer = 0.5f;
-                opState.step++;
-                SaveState();
-            } else {
-                activeLine = 4; // Highlight "cur->next = new Node(value)"
-                if (opState.current) {
-                    opState.newNode->position = {opState.current->position.x + SPACING, 100};
-                    opState.newNode->alpha = 0.0f;
-                    opState.newNode->targetPosition = {opState.current->position.x + SPACING, 300};
-                    opState.newNode->animationType = 2;
-                    opState.newNode->animationProgress = 0.0f;
-                    opState.current->next = opState.newNode;
-                    opState.current->animationType = 5;
-                    opState.current->animationProgress = 0.0f;
-                    notification = "Added node with value " + std::to_string(opState.newNode->value) + " at tail.";
-                    opState.newNode = nullptr;
-                    ResetOperation();
-                    SaveState();
-                }
-            }
-        }
-    }
-}
-
-void LinkedList::UpdateDelete() {
-    if (opState.step == 1) {
-        activeLine = 1; // Highlight "while (cur->next &&"
-        if (!head) {
-            activeLine = 1;
-            notification = "List is empty. Cannot delete.";
-            ResetOperation();
-            SaveState();
-            return;
-        }
-        if (head->value == opState.deleteValue) {
-            opState.step = 5;
-            opState.delayTimer = 1.0f;
-            SaveState();
-            return;
-        }
-
-        if (!opState.current) opState.current = head;
-        opState.traversalIndex = 0;
-        activeLine = 2;
-        if (opState.current && opState.current->next && opState.current->next->value != opState.deleteValue) {
-            activeLine = 3;
-            opState.current->animationType = 1;
-            opState.current->animationProgress = 0.0f;
-            opState.current = opState.current->next;
-            opState.traversalIndex++;
-            opState.delayTimer = 1.0f;
-            opState.step = 2;
-            SaveState();
-        } else {
-            opState.step = 4;
-            opState.delayTimer = 1.0f;
-            SaveState();
-        }
-    } else if (opState.step >= 2 && opState.step <= 3) { // Steps 2-3: Traverse nodes
-        activeLine = 2;
-        if (opState.current && opState.current->next && opState.current->next->value != opState.deleteValue) {
-            activeLine = 3;
-            opState.current->animationType = 1;
-            opState.current->animationProgress = 0.0f;
-            opState.current = opState.current->next;
-            opState.traversalIndex++;
-            opState.delayTimer = 1.0f;
-            opState.step++;
-            SaveState();
-        } else {
-            opState.step = 4;
-            opState.delayTimer = 1.0f;
-            SaveState();
-        }
-    } else if (opState.step == 4) {
-        activeLine = 4;
-        if (opState.current && opState.current->next) {
-            opState.step = 5;
-            opState.delayTimer = 1.0f;
-            SaveState();
-        } else {
-            activeLine = 4;
-            notification = "Value " + std::to_string(opState.deleteValue) + " not found.";
-            ResetOperation();
-            SaveState();
-        }
-    } else if (opState.step == 5) {
-        activeLine = 5;
-        if (opState.current) {
-            Node* temp = opState.current->next;
-            temp->animationType = 3;
-            temp->animationProgress = 0.0f;
-            opState.delayTimer = 1.0f;
-            opState.step = 6;
-            SaveState();
-        } else if (head->value == opState.deleteValue) {
-            Node* temp = head;
-            temp->animationType = 3;
-            temp->animationProgress = 0.0f;
-            head = head->next;
-            delete temp;
-            RealignNodes();
-            notification = "Deleted node with value " + std::to_string(opState.deleteValue) + ".";
-            ResetOperation();
-            SaveState();
-        }
-    } else if (opState.step == 6) {
-        activeLine = 6;
-        if (head->value == opState.deleteValue) {
-            Node* temp = head;
-            temp->animationType = 3;
-            temp->animationProgress = 0.0f;
-            head = head->next;
-            delete temp;
-        } else if (opState.current) {
-            Node* temp = opState.current->next;
-            opState.current->next = temp->next;
-            delete temp;
-        }
-        RealignNodes();
-        notification = "Deleted node with value " + std::to_string(opState.deleteValue) + ".";
-        ResetOperation();
-        SaveState();
-    }
-}
-
-void LinkedList::UpdateSearch() {
-    if (opState.step == 1) {
-        activeLine = 1;
-        if (opState.current) {
-            opState.current->animationType = 1;
-            opState.current->animationProgress = 0.0f;
-            if (opState.current->value == opState.searchValue) {
-                opState.step = 4;
-                opState.delayTimer = 0.5f;
-                SaveState();
-            } else {
-                activeLine = 2;
-                opState.current = opState.current->next;
-                opState.traversalIndex++;
-                opState.delayTimer = 0.5f;
-                opState.step = 2;
-                SaveState();
-                if (!opState.current) {
-                    opState.step = 5;
-                    SaveState();
-                }
-            }
-        } else {
-            activeLine = 1;
-            opState.searchResult = false;
-            notification = "List is empty. Cannot search.";
-            ResetOperation();
-            SaveState();
-        }
-    } else if (opState.step >= 2 && opState.step <= 3) { // Steps 2-3: Traverse nodes
-        activeLine = 1;
-        if (opState.current) {
-            opState.current->animationType = 1;
-            opState.current->animationProgress = 0.0f;
-            if (opState.current->value == opState.searchValue) {
-                opState.step = 4;
-                opState.delayTimer = 0.5f;
-                SaveState();
-            } else {
-                activeLine = 2;
-                opState.current = opState.current->next;
-                opState.traversalIndex++;
-                opState.delayTimer = 0.5f;
-                opState.step++;
-                SaveState();
-                if (!opState.current) {
-                    opState.step = 5;
-                    SaveState();
-                }
-            }
-        }
-    } else if (opState.step == 4) {
-        activeLine = 3;
-        opState.searchResult = true;
-        foundNode = opState.current;
-        notification = "Found value " + std::to_string(opState.searchValue) + ".";
-        ResetOperation();
-        SaveState();
-    } else if (opState.step == 5) {
-        activeLine = 4;
-        opState.searchResult = false;
-        notification = "Value " + std::to_string(opState.searchValue) + " not found.";
-        ResetOperation();
-        SaveState();
-    }
-}
-
-void LinkedList::UpdateUpdate() {
-    if (opState.step == 1) {
-        activeLine = 1;
-        if (opState.current) {
-            opState.current->animationType = 1;
-            opState.current->animationProgress = 0.0f;
-            if (opState.current->value == opState.updateOld) {
-                opState.step = 4;
-                opState.delayTimer = 0.5f;
-                SaveState();
-            } else {
-                activeLine = 2;
-                opState.current = opState.current->next;
-                opState.traversalIndex++;
-                opState.delayTimer = 0.5f;
-                opState.step = 2;
-                SaveState();
-                if (!opState.current) {
-                    activeLine = 2;
-                    notification = "Value " + std::to_string(opState.updateOld) + " not found.";
-                    ResetOperation();
-                    SaveState();
-                }
-            }
-        } else {
-            activeLine = 1;
-            notification = "List is empty. Cannot update.";
-            ResetOperation();
-            SaveState();
-        }
-    } else if (opState.step >= 2 && opState.step <= 3) { // Steps 2-3: Traverse nodes
-        activeLine = 1;
-        if (opState.current) {
-            opState.current->animationType = 1;
-            opState.current->animationProgress = 0.0f;
-            if (opState.current->value == opState.updateOld) {
-                opState.step = 4;
-                opState.delayTimer = 0.5f;
-                SaveState();
-            } else {
-                activeLine = 2;
-                opState.current = opState.current->next;
-                opState.traversalIndex++;
-                opState.delayTimer = 0.5f;
-                opState.step++;
-                SaveState();
-                if (!opState.current) {
-                    activeLine = 2;
-                    notification = "Value " + std::to_string(opState.updateOld) + " not found.";
-                    ResetOperation();
-                    SaveState();
-                }
-            }
-        }
-    } else if (opState.step == 4) {
-        activeLine = 3;
-        if (opState.current) {
-            opState.current->animationType = 3;
-            opState.current->animationProgress = 0.0f;
-            opState.delayTimer = 1.0f;
-            opState.step = 5;
-            SaveState();
-        }
-    } else if (opState.step == 5) {
-        activeLine = 3;
-        if (opState.current && opState.current->animationType == 0) {
-            Node* newNode = new Node(opState.updateNew);
-            newNode->position = {opState.current->position.x, 100};
-            newNode->alpha = 0.0f;
-            newNode->targetPosition = opState.current->position;
-            newNode->animationType = 2;
-            newNode->animationProgress = 0.0f;
-
-            if (opState.current == head) {
-                newNode->next = head->next;
-                head = newNode;
-            } else {
-                Node* prev = head;
-                while (prev && prev->next != opState.current) {
-                    prev = prev->next;
-                }
-                if (prev) {
-                    newNode->next = opState.current->next;
-                    prev->next = newNode;
-                    prev->animationType = 5;
-                    prev->animationProgress = 0.0f;
-                }
-            }
-
-            Node* temp = opState.current;
-            delete temp;
-
-            opState.current = newNode;
-            opState.step = 6;
-            opState.delayTimer = 0.5f;
-            SaveState();
-        }
-    } else if (opState.step == 6) {
-        activeLine = 3;
-        if (opState.current && opState.current->animationType == 0) {
-            notification = "Updated value from " + std::to_string(opState.updateOld) + " to " + std::to_string(opState.updateNew) + ".";
-            ResetOperation();
-            SaveState();
-        }
-    }
-}
-void LinkedList::SkipAdd() {
-    if (activeFunction == 2) { // Add Head
-        opState.newNode->position = {200, 300};
-        opState.newNode->targetPosition = {200, 300};
-        opState.newNode->alpha = 1.0f; // Hiển thị ngay
-        opState.newNode->next = head;
-        head = opState.newNode;
-        RealignNodesImmediate();
-        notification = "Added node with value " + std::to_string(opState.newNode->value) + " at head.";
-        opState.newNode = nullptr;
-        ResetOperation();
-    } else if (activeFunction == 3) { // Add Index
-        if (!head && opState.addIndex == 0) {
-            opState.newNode->position = {200, 300};
-            opState.newNode->alpha = 1.0f;
-            head = opState.newNode;
-            notification = "Added node with value " + std::to_string(opState.newNode->value) + " at index 0.";
-            opState.newNode = nullptr;
-            ResetOperation();
-            return;
-        }
-
-        Node* prev = head;
-        for (int i = 0; i < opState.addIndex - 1 && prev; i++) {
-            prev = prev->next;
-        }
-        if (prev) {
-            opState.newNode->position = {prev->position.x + SPACING, 300};
-            opState.newNode->alpha = 1.0f;
-            opState.newNode->next = prev->next;
-            prev->next = opState.newNode;
-            RealignNodesImmediate();
-            notification = "Added node with value " + std::to_string(opState.newNode->value) + " at index " + std::to_string(opState.addIndex) + ".";
-        } else {
-            notification = "Index " + std::to_string(opState.addIndex) + " out of bounds.";
-            delete opState.newNode;
-        }
-        opState.newNode = nullptr;
-        ResetOperation();
-    } else if (activeFunction == 4) { // Add Tail
-        if (!head) {
-            opState.newNode->position = {200, 300};
-            opState.newNode->alpha = 1.0f;
-            head = opState.newNode;
-        } else {
-            Node* current = head;
-            while (current->next) current = current->next;
-            opState.newNode->position = {current->position.x + SPACING, 300};
-            opState.newNode->alpha = 1.0f;
-            current->next = opState.newNode;
-        }
-        notification = "Added node with value " + std::to_string(opState.newNode->value) + " at tail.";
-        opState.newNode = nullptr;
-        ResetOperation();
-    }
-}
-
-void LinkedList::SkipDelete() {
-    if (activeFunction != 3) return;
-
-    if (!head) {
-        notification = "List is empty. Cannot delete.";
-        ResetOperation();
+        DrawCircleV(nullCenter, radius, isHovered ? GRAY : LIGHTGRAY);
+        DrawCircleLines(nullCenter.x, nullCenter.y, radius, BLACK);
+        Vector2 textSize = MeasureTextEx(GetFontDefault(), "NULL", 20, 1);
+        DrawTextEx(GetFontDefault(), "NULL", {nullCenter.x - textSize.x / 2, nullCenter.y - textSize.y / 2}, 20, 1, BLACK);
         return;
     }
+    
+    while (current) {
+        Vector2 nodeCenter = calNodeCenter(idx);
+        float dx = GetMousePosition().x - nodeCenter.x;
+        float dy = GetMousePosition().y - nodeCenter.y;
+        bool isHovered = (dx * dx + dy * dy) <= (radius * radius);
+        if (isHovered && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            selectedNode = current;
+            selectedValue = current->value;
+            selectedNodeArea = {nodeCenter.x - radius, nodeCenter.y - radius, nodeWidth, nodeHeight};
+        }
+        bool isSelected = (selectedNode == current);
+        DrawCircleV(nodeCenter, radius, isSelected ? BLUE : (isHovered ? GRAY : LIGHTGRAY));
+        DrawCircleLines(nodeCenter.x, nodeCenter.y, radius, BLACK);
+        Vector2 textSize = MeasureTextEx(GetFontDefault(), TextFormat("%d", current->value), 20, 1);
+        DrawTextEx(GetFontDefault(), TextFormat("%d", current->value), {nodeCenter.x - textSize.x / 2, nodeCenter.y - textSize.y / 2}, 20, 1, BLACK);
+        
+        if (current->next) {
+            Rectangle edgeRect = calEdgeArea(idx + 1);
+            DrawRectangleRec(edgeRect, BLACK);
+        }
+        
+        current = current->next;
+        idx++;
+    }
+    
+    Vector2 nullCenter = calNodeCenter(idx);
+    float dxNull = GetMousePosition().x - nullCenter.x;
+    float dyNull = GetMousePosition().y - nullCenter.y;
+    bool isHoveredNull = (dxNull * dxNull + dyNull * dyNull) <= (radius * radius);
+    if (isHoveredNull && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        selectedNode = nullptr;
+    }
+    DrawCircleV(nullCenter, radius, isHoveredNull ? GRAY : LIGHTGRAY);
+    DrawCircleLines(nullCenter.x, nullCenter.y, radius, BLACK);
+    Vector2 textSize = MeasureTextEx(GetFontDefault(), "NULL", 20, 1);
+    DrawTextEx(GetFontDefault(), "NULL", {nullCenter.x - textSize.x / 2, nullCenter.y - textSize.y / 2}, 20, 1, BLACK);
+}
 
-    if (head->value == opState.deleteValue) {
-        Node* temp = head;
+void LinkedList::Init(int n) {
+    saveCurrentList();
+    while (head) {
+        ListNode* temp = head;
         head = head->next;
         delete temp;
-        RealignNodesImmediate();
-        notification = "Deleted node with value " + std::to_string(opState.deleteValue) + ".";
-        ResetOperation();
-        return;
     }
+    
+    initDescriptions.clear();
+    initCodeIndex.clear();
+    initPaths1.clear();
+    initPaths2.clear();
+    
+    initDescriptions.push_back("Clearing list");
+    initCodeIndex.push_back(0);
+    initPaths1.push_back({});
+    initPaths2.push_back({});
 
-    Node* current = head;
-    while (current->next) {
-        current->animationType = 0;
-        current->animationProgress = 0.0f;
-        current->isActive = false;
-        if (current->next->value == opState.deleteValue) {
-            Node* temp = current->next;
-            current->next = temp->next;
-            delete temp;
-            RealignNodesImmediate();
-            notification = "Deleted node with value " + std::to_string(opState.deleteValue) + ".";
-            ResetOperation();
-            return;
-        }
-        current = current->next;
-    }
-
-    notification = "Value " + std::to_string(opState.deleteValue) + " not found.";
-    ResetOperation();
-}
-
-void LinkedList::SkipSearch() {
-    if (activeFunction != 4) return;
-
-    if (!opState.current) {
-        opState.searchResult = false;
-        notification = "List is empty. Cannot search.";
-        ResetOperation();
-        return;
-    }
-
-    Node* current = opState.current;
-    while (current) {
-        current->animationType = 0;
-        current->animationProgress = 0.0f;
-        current->isActive = false;
-        if (current->value == opState.searchValue) {
-            opState.searchResult = true;
-            foundNode = current;
-            notification = "Found value " + std::to_string(opState.searchValue) + ".";
-            ResetOperation();
-            return;
-        }
-        current = current->next;
-        opState.traversalIndex++;
-    }
-
-    opState.searchResult = false;
-    notification = "Value " + std::to_string(opState.searchValue) + " not found.";
-    ResetOperation();
-}
-
-void LinkedList::SkipUpdate() {
-    if (activeFunction != 5) return;
-
-    if (!opState.current) {
-        notification = "List is empty. Cannot update.";
-        ResetOperation();
-        return;
-    }
-
-    Node* current = opState.current;
-    while (current) {
-        current->animationType = 0;
-        current->animationProgress = 0.0f;
-        current->isActive = false;
-        if (current->value == opState.updateOld) {
-            current->value = opState.updateNew;
-            notification = "Updated value from " + std::to_string(opState.updateOld) + " to " + std::to_string(opState.updateNew) + ".";
-            ResetOperation();
-            return;
-        }
-        current = current->next;
-        opState.traversalIndex++;
-    }
-
-    notification = "Value " + std::to_string(opState.updateOld) + " not found.";
-    ResetOperation();
-}
-
-void LinkedList::DrawNode(Node* node, Vector2 adjustedPos) {
-    Color color = (node == foundNode) ? RED : (node->isActive ? YELLOW : WHITE);
-    color.a = (unsigned char)(node->alpha * 255);
-    DrawCircleV(adjustedPos, NODE_SIZE / 2, color);
-    DrawCircleLines(adjustedPos.x, adjustedPos.y, NODE_SIZE / 2, BLACK);
-    std::string text = std::to_string(node->value);
-    Color textColor = BLACK;
-    textColor.a = (unsigned char)(node->alpha * 255);
-    DrawText(text.c_str(), adjustedPos.x - MeasureText(text.c_str(), 20) / 2, adjustedPos.y - 10, 20, textColor);
-}
-
-void LinkedList::DrawArrow(Vector2 start, Vector2 end) {
-    DrawLineEx(start, {end.x - NODE_SIZE / 2, end.y}, 2, BLACK);
-    Vector2 dir = Vector2NormalizeCustom(Vector2SubtractCustom(end, start));
-    Vector2 arrow1 = {end.x - NODE_SIZE / 2 - 10 * dir.x + 5 * dir.y, end.y - 10 * dir.y - 5 * dir.x};
-    Vector2 arrow2 = {end.x - NODE_SIZE / 2 - 10 * dir.x - 5 * dir.y, end.y - 10 * dir.y + 5 * dir.x};
-    DrawLineEx({end.x - NODE_SIZE / 2, end.y}, arrow1, 2, BLACK);
-    DrawLineEx({end.x - NODE_SIZE / 2, end.y}, arrow2, 2, BLACK);
-}
-
-void LinkedList::RealignNodes() {
-    Node* current = head;
-    float x = 200;
-    while (current) {
-        current->targetPosition = {x, 300};
-        if (current->animationType != 2) { // Không ghi đè nếu đang drop
-            current->animationType = 4; // Realign
-            current->animationProgress = 0.0f;
-        }
-        x += SPACING;
-        current = current->next;
-    }
-}
-
-void LinkedList::RealignNodesImmediate() {
-    Node* current = head;
-    float x = 200;
-    while (current) {
-        current->targetPosition = {x, 300};
-        current->position = current->targetPosition;
-        current->animationType = 0;
-        current->animationProgress = 0.0f;
-        x += SPACING;
-        current = current->next;
-    }
-}
-
-void LinkedList::SaveState() {
-    ListState state;
-    Node* current = head;
-
-    // Lưu trạng thái của các nút
-    while (current) {
-        state.values.push_back(current->value);
-        state.positions.push_back(current->position);
-        state.isActive.push_back(current->isActive);
-        state.alphas.push_back(current->alpha);
-        state.targetPositions.push_back(current->targetPosition);
-        state.animationProgresses.push_back(current->animationProgress);
-        state.animationTypes.push_back(current->animationType);
-        current = current->next;
-    }
-
-    // Lưu trạng thái hoạt động
-    state.activeFunction = activeFunction;
-    state.activeLine = activeLine;
-    state.opState = opState;
-
-    // Thêm trạng thái vào danh sách và cập nhật chỉ số bước
-    operationStates.push_back(state);
-    currentStepIndex = operationStates.size() - 1;
-
-}
-
-void LinkedList::LoadState(const ListState& state) {
-    size_t size = state.values.size();
-    if (state.positions.size() != size || state.isActive.size() != size ||
-        state.alphas.size() != size || state.targetPositions.size() != size ||
-        state.animationProgresses.size() != size || state.animationTypes.size() != size) {
-        SetNotification("Error: Corrupted state detected. Cannot load state.");
-        Clear();
-        return;
-    }
-
-    Clear();
-    Node* current = nullptr;
-    for (size_t i = 0; i < size; i++) {
-        Node* newNode = new Node(state.values[i]);
-        newNode->position = state.positions[i];
-        newNode->isActive = state.isActive[i];
-        newNode->alpha = state.alphas[i];
-        newNode->targetPosition = state.targetPositions[i];
-        newNode->animationProgress = state.animationProgresses[i];
-        newNode->animationType = state.animationTypes[i];
+    // Tạo danh sách ngay lập tức mà không qua animation
+    ListNode* curr = nullptr;
+    for (int i = 0; i < n; i++) {
+        int value = rand() % 100;
+        ListNode* newNode = new ListNode(value);
         if (!head) {
             head = newNode;
-            current = head;
+            curr = head;
         } else {
-            current->next = newNode;
-            current = newNode;
+            curr->next = newNode;
+            curr = curr->next;
         }
     }
+    
+    initDescriptions.push_back("Initialization complete with " + std::to_string(n) + " nodes");
+    initCodeIndex.push_back(2);
+    initPaths1.push_back({});
+    initPaths2.push_back({});
+    
+    curStep = 0;
+    totalStep = initCodeIndex.size();
+    doneAnimation = true; // Đánh dấu animation đã hoàn tất để hiển thị danh sách ngay
+    operation_type = 6; // Init
+    selectedNode = nullptr;
+}
 
-    activeFunction = state.activeFunction;
-    activeLine = state.activeLine;
-    opState = state.opState;
+void LinkedList::AddHead(int value) {
+    selectedNode = nullptr;
+    saveCurrentList();
+    
+    addHeadDescriptions.clear();
+    addHeadCodeIndex.clear();
+    addHeadPaths1.clear();
+    addHeadPaths2.clear();
+    
+    addHeadDescriptions.push_back("Begin adding value " + std::to_string(value) + " to head");
+    addHeadCodeIndex.push_back(0);
+    addHeadPaths1.push_back({});
+    addHeadPaths2.push_back({});
+    
+    ListNode* newNode = new ListNode(value);
+    addHeadDescriptions.push_back("Create new node with value: " + std::to_string(value));
+    addHeadCodeIndex.push_back(0);
+    addHeadPaths1.push_back({});
+    addHeadPaths2.push_back({std::make_tuple(calNodeCenter(0), GREEN)});
+    
+    newNode->next = head;
+    addHeadDescriptions.push_back("Set newNode->next to head");
+    addHeadCodeIndex.push_back(1);
+    addHeadPaths1.push_back({std::make_tuple(calNodeCenter(0), GREEN)});
+    addHeadPaths2.push_back({std::make_tuple(calEdgeCenter(1), GREEN)});
+    
+    head = newNode;
+    addHeadDescriptions.push_back("Set head to newNode");
+    addHeadCodeIndex.push_back(2);
+    addHeadPaths1.push_back({std::make_tuple(calNodeCenter(0), GREEN)});
+    addHeadPaths2.push_back({});
+    
+    addHeadDescriptions.push_back("Done!");
+    addHeadCodeIndex.push_back(2);
+    addHeadPaths1.push_back({});
+    addHeadPaths2.push_back({});
+    
+    curStep = 0;
+    totalStep = addHeadCodeIndex.size();
+    doneAnimation = false;
+    operation_type = 1; // AddHead
+}
 
-    opState.current = nullptr;
-    opState.newNode = nullptr;
-    foundNode = nullptr;
-
-    if (opState.traversalIndex > 0) {
-        current = head;
-        int index = 0;
-        while (current && index < opState.traversalIndex) {
-            current = current->next;
-            index++;
-        }
-        opState.current = current;
+void LinkedList::AddIndex(int value, int index) {
+    selectedNode = nullptr;
+    saveCurrentList();
+    
+    addIndexDescriptions.clear();
+    addIndexCodeIndex.clear();
+    addIndexPaths1.clear();
+    addIndexPaths2.clear();
+    
+    addIndexDescriptions.push_back("Begin adding value " + std::to_string(value) + " at index " + std::to_string(index));
+    addIndexCodeIndex.push_back(0);
+    addIndexPaths1.push_back({});
+    addIndexPaths2.push_back({});
+    
+    ListNode* newNode = new ListNode(value);
+    addIndexDescriptions.push_back("Create new node with value: " + std::to_string(value));
+    addIndexCodeIndex.push_back(0);
+    addIndexPaths1.push_back({});
+    addIndexPaths2.push_back({std::make_tuple(calNodeCenter(index), GREEN)});
+    
+    if (!head || index <= 0) {
+        newNode->next = head;
+        head = newNode;
+        addIndexDescriptions.push_back("Index <= 0 or empty list, add to head");
+        addIndexCodeIndex.push_back(1);
+        addIndexPaths1.push_back({std::make_tuple(calNodeCenter(0), GREEN)});
+        addIndexPaths2.push_back({std::make_tuple(calEdgeCenter(1), GREEN)});
+        
+        addIndexDescriptions.push_back("Done!");
+        addIndexCodeIndex.push_back(4);
+        addIndexPaths1.push_back({});
+        addIndexPaths2.push_back({});
+        
+        curStep = 0;
+        totalStep = addIndexCodeIndex.size();
+        doneAnimation = false;
+        operation_type = 2; // AddIndex
+        return;
     }
+    
+    ListNode* curr = head;
+    ListNode* prev = nullptr;
+    int idx = 0;
+    
+    addIndexDescriptions.push_back("Traverse to index " + std::to_string(index));
+    addIndexCodeIndex.push_back(1);
+    addIndexPaths1.push_back({});
+    addIndexPaths2.push_back({std::make_tuple(calNodeCenter(0), BLUE)});
+    
+    while (curr && idx < index) {
+        addIndexDescriptions.push_back("Move to next node");
+        addIndexCodeIndex.push_back(1);
+        addIndexPaths1.push_back({std::make_tuple(calNodeCenter(idx), BLUE)});
+        addIndexPaths2.push_back({std::make_tuple(calNodeCenter(idx + 1), BLUE)});
+        
+        prev = curr;
+        curr = curr->next;
+        idx++;
+    }
+    
+    if (!curr) {
+        // Nếu vượt quá danh sách, chèn vào cuối
+        if (prev) {
+            prev->next = newNode;
+            addIndexDescriptions.push_back("Index exceeds list, append to end");
+            addIndexCodeIndex.push_back(4);
+            addIndexPaths1.push_back({std::make_tuple(calNodeCenter(idx - 1), BLUE)});
+            addIndexPaths2.push_back({std::make_tuple(calNodeCenter(idx), GREEN)});
+        } else {
+            head = newNode;
+            addIndexDescriptions.push_back("Empty list, set head");
+            addIndexCodeIndex.push_back(4);
+            addIndexPaths1.push_back({});
+            addIndexPaths2.push_back({std::make_tuple(calNodeCenter(0), GREEN)});
+        }
+    } else {
+        newNode->next = curr;
+        if (prev) {
+            prev->next = newNode;
+            addIndexDescriptions.push_back("Insert at index " + std::to_string(index));
+            addIndexCodeIndex.push_back(3);
+            addIndexPaths1.push_back({std::make_tuple(calNodeCenter(idx - 1), BLUE)});
+            addIndexPaths2.push_back({std::make_tuple(calNodeCenter(idx), GREEN)});
+            
+            addIndexDescriptions.push_back("Link previous to new node");
+            addIndexCodeIndex.push_back(4);
+            addIndexPaths1.push_back({std::make_tuple(calNodeCenter(idx - 1), BLUE), std::make_tuple(calNodeCenter(idx), GREEN)});
+            addIndexPaths2.push_back({std::make_tuple(calEdgeCenter(idx), GREEN)});
+        } else {
+            head = newNode;
+            addIndexDescriptions.push_back("Insert at head");
+            addIndexCodeIndex.push_back(4);
+            addIndexPaths1.push_back({std::make_tuple(calNodeCenter(0), GREEN)});
+            addIndexPaths2.push_back({std::make_tuple(calEdgeCenter(1), GREEN)});
+        }
+    }
+    
+    addIndexDescriptions.push_back("Done!");
+    addIndexCodeIndex.push_back(4);
+    addIndexPaths1.push_back({});
+    addIndexPaths2.push_back({});
+    
+    curStep = 0;
+    totalStep = addIndexCodeIndex.size();
+    doneAnimation = false;
+    operation_type = 2; // AddIndex
+}
 
-    if (state.activeFunction == 6 && opState.searchResult) {
-        current = head;
-        while (current) {
-            if (current->value == opState.searchValue) {
-                foundNode = current;
-                break;
+void LinkedList::AddTail(int value) {
+    selectedNode = nullptr;
+    saveCurrentList();
+    
+    addTailDescriptions.clear();
+    addTailCodeIndex.clear();
+    addTailPaths1.clear();
+    addTailPaths2.clear();
+    
+    addTailDescriptions.push_back("Begin adding value " + std::to_string(value) + " to tail");
+    addTailCodeIndex.push_back(0);
+    addTailPaths1.push_back({});
+    addTailPaths2.push_back({});
+    
+    ListNode* newNode = new ListNode(value);
+    addTailDescriptions.push_back("Create new node with value: " + std::to_string(value));
+    addTailCodeIndex.push_back(0);
+    addTailPaths1.push_back({});
+    
+    if (!head) {
+        head = newNode;
+        addTailDescriptions.push_back("Empty list, set head to new node");
+        addTailCodeIndex.push_back(0);
+        addTailPaths1.push_back({});
+        addTailPaths2.push_back({std::make_tuple(calNodeCenter(0), GREEN)});
+        
+        addTailDescriptions.push_back("Done!");
+        addTailCodeIndex.push_back(2);
+        addTailPaths1.push_back({});
+        addTailPaths2.push_back({});
+        
+        curStep = 0;
+        totalStep = addTailCodeIndex.size();
+        doneAnimation = false;
+        operation_type = 3; // AddTail
+        return;
+    }
+    
+    ListNode* curr = head;
+    int idx = 0;
+    addTailDescriptions.push_back("Traverse to tail");
+    addTailCodeIndex.push_back(1);
+    addTailPaths1.push_back({});
+    addTailPaths2.push_back({std::make_tuple(calNodeCenter(0), BLUE)});
+    
+    while (curr->next) {
+        curr = curr->next;
+        idx++;
+        addTailDescriptions.push_back("Move to next node");
+        addTailCodeIndex.push_back(1);
+        addTailPaths1.push_back({std::make_tuple(calNodeCenter(idx - 1), BLUE)});
+        addTailPaths2.push_back({std::make_tuple(calNodeCenter(idx), BLUE)});
+    }
+    
+    curr->next = newNode;
+    addTailDescriptions.push_back("Append new node to tail");
+    addTailCodeIndex.push_back(2);
+    addTailPaths1.push_back({std::make_tuple(calNodeCenter(idx), BLUE)});
+    addTailPaths2.push_back({std::make_tuple(calNodeCenter(idx + 1), GREEN)});
+    
+    addTailDescriptions.push_back("Done!");
+    addTailCodeIndex.push_back(2);
+    addTailPaths1.push_back({});
+    addTailPaths2.push_back({});
+    
+    curStep = 0;
+    totalStep = addTailCodeIndex.size();
+    doneAnimation = false;
+    operation_type = 3; // AddTail
+}
+
+void LinkedList::Delete(int value) {
+    selectedNode = nullptr;
+    saveCurrentList();
+    
+    deleteDescriptions.clear();
+    deleteCodeIndex.clear();
+    deletePaths1.clear();
+    deletePaths2.clear();
+    
+    deleteDescriptions.push_back("Begin deleting value: " + std::to_string(value));
+    deleteCodeIndex.push_back(0);
+    deletePaths1.push_back({});
+    deletePaths2.push_back({});
+    
+    if (!head) {
+        deleteDescriptions.push_back("List is empty");
+        deleteCodeIndex.push_back(0);
+        deletePaths1.push_back({});
+        deletePaths2.push_back({std::make_tuple(calNodeCenter(0), RED)});
+        
+        deleteDescriptions.push_back("Done!");
+        deleteCodeIndex.push_back(3);
+        deletePaths1.push_back({});
+        deletePaths2.push_back({});
+        
+        curStep = 0;
+        totalStep = deleteCodeIndex.size();
+        operation_type = 4; // Delete
+        doneAnimation = false;
+        return;
+    }
+    
+    if (head->value == value) {
+        ListNode* temp = head;
+        head = head->next;
+        deleteDescriptions.push_back("Value found at head, update head");
+        deleteCodeIndex.push_back(1);
+        deletePaths1.push_back({std::make_tuple(calNodeCenter(0), GREEN)});
+        deletePaths2.push_back({std::make_tuple(calNodeCenter(1), BLUE)});
+        
+        delete temp;
+        deleteDescriptions.push_back("Delete head node");
+        deleteCodeIndex.push_back(3);
+        deletePaths1.push_back({std::make_tuple(calNodeCenter(1), BLUE)});
+        deletePaths2.push_back({std::make_tuple(calNodeCenter(0), WHITE)});
+        
+        deleteDescriptions.push_back("Done!");
+        deleteCodeIndex.push_back(3);
+        deletePaths1.push_back({});
+        deletePaths2.push_back({});
+        
+        curStep = 0;
+        totalStep = deleteCodeIndex.size();
+        operation_type = 4; // Delete
+        doneAnimation = false;
+        return;
+    }
+    
+    ListNode* curr = head;
+    int idx = 0;
+    deleteDescriptions.push_back("Traverse to find value");
+    deleteCodeIndex.push_back(0);
+    deletePaths1.push_back({});
+    deletePaths2.push_back({std::make_tuple(calNodeCenter(0), BLUE)});
+    
+    while (curr->next && curr->next->value != value) {
+        curr = curr->next;
+        idx++;
+        deleteDescriptions.push_back("Move to next node");
+        deleteCodeIndex.push_back(0);
+        deletePaths1.push_back({std::make_tuple(calNodeCenter(idx - 1), BLUE)});
+        deletePaths2.push_back({std::make_tuple(calNodeCenter(idx), BLUE)});
+    }
+    
+    if (curr->next) {
+        ListNode* temp = curr->next;
+        curr->next = curr->next->next;
+        deleteDescriptions.push_back("Found value, update next pointer");
+        deleteCodeIndex.push_back(1);
+        deletePaths1.push_back({std::make_tuple(calNodeCenter(idx), BLUE)});
+        deletePaths2.push_back({std::make_tuple(calNodeCenter(idx + 1), GREEN)});
+        
+        deleteDescriptions.push_back("Delete node");
+        deleteCodeIndex.push_back(3);
+        deletePaths1.push_back({std::make_tuple(calNodeCenter(idx), BLUE), std::make_tuple(calNodeCenter(idx + 2), BLUE)});
+        deletePaths2.push_back({std::make_tuple(calNodeCenter(idx + 1), WHITE)});
+        
+        delete temp;
+    } else {
+        deleteDescriptions.push_back("Value not found");
+        deleteCodeIndex.push_back(3);
+        deletePaths1.push_back({std::make_tuple(calNodeCenter(idx), BLUE)});
+        deletePaths2.push_back({std::make_tuple(calNodeCenter(idx + 1), RED)});
+    }
+    
+    deleteDescriptions.push_back("Done!");
+    deleteCodeIndex.push_back(3);
+    deletePaths1.push_back({});
+    deletePaths2.push_back({});
+    
+    curStep = 0;
+    totalStep = deleteCodeIndex.size();
+    operation_type = 4; // Delete
+    doneAnimation = false;
+}
+
+bool LinkedList::Search(int value) {
+    selectedNode = nullptr;
+    saveCurrentList();
+    
+    searchDescriptions.clear();
+    searchCodeIndex.clear();
+    searchPaths1.clear();
+    searchPaths2.clear();
+    
+    searchDescriptions.push_back("Begin searching value: " + std::to_string(value));
+    searchCodeIndex.push_back(0);
+    searchPaths1.push_back({});
+    searchPaths2.push_back({});
+    
+    ListNode* curr = head;
+    int idx = 0;
+    searchDescriptions.push_back("Start at head");
+    searchCodeIndex.push_back(0);
+    searchPaths1.push_back({});
+    searchPaths2.push_back({std::make_tuple(calNodeCenter(0), BLUE)});
+    
+    while (curr && curr->value != value) {
+        curr = curr->next;
+        idx++;
+        searchDescriptions.push_back("Move to next node");
+        searchCodeIndex.push_back(0);
+        searchPaths1.push_back({std::make_tuple(calNodeCenter(idx - 1), BLUE)});
+        searchPaths2.push_back({std::make_tuple(calNodeCenter(idx), BLUE)});
+    }
+    
+    if (curr) {
+        searchDescriptions.push_back("Value found");
+        searchCodeIndex.push_back(1);
+        searchPaths1.push_back({std::make_tuple(calNodeCenter(idx), BLUE)});
+        searchPaths2.push_back({std::make_tuple(calNodeCenter(idx), GREEN)});
+    } else {
+        searchDescriptions.push_back("Value not found");
+        searchCodeIndex.push_back(2);
+        searchPaths1.push_back({std::make_tuple(calNodeCenter(idx), BLUE)});
+        searchPaths2.push_back({std::make_tuple(calNodeCenter(idx), RED)});
+    }
+    
+    searchDescriptions.push_back("Done!");
+    searchCodeIndex.push_back(2);
+    searchPaths1.push_back({});
+    searchPaths2.push_back({});
+    
+    curStep = 0;
+    totalStep = searchCodeIndex.size();
+    doneAnimation = false;
+    operation_type = 5; // Search
+    return curr != nullptr;
+}
+
+void LinkedList::Update(int oldValue, int newValue) {
+    selectedNode = nullptr;
+    saveCurrentList();
+    
+    updateDescriptions.clear();
+    updateCodeIndex.clear();
+    updatePaths1.clear();
+    updatePaths2.clear();
+    
+    updateDescriptions.push_back("Begin updating value " + std::to_string(oldValue) + " to " + std::to_string(newValue));
+    updateCodeIndex.push_back(0);
+    updatePaths1.push_back({});
+    updatePaths2.push_back({});
+    
+    ListNode* curr = head;
+    int idx = 0;
+    updateDescriptions.push_back("Start at head");
+    updateCodeIndex.push_back(0);
+    updatePaths1.push_back({});
+    updatePaths2.push_back({std::make_tuple(calNodeCenter(0), BLUE)});
+    
+    while (curr && curr->value != oldValue) {
+        curr = curr->next;
+        idx++;
+        updateDescriptions.push_back("Move to next node");
+        updateCodeIndex.push_back(0);
+        updatePaths1.push_back({std::make_tuple(calNodeCenter(idx - 1), BLUE)});
+        updatePaths2.push_back({std::make_tuple(calNodeCenter(idx), BLUE)});
+    }
+    
+    if (curr) {
+        curr->value = newValue;
+        updateDescriptions.push_back("Value found, update to " + std::to_string(newValue));
+        updateCodeIndex.push_back(1);
+        updatePaths1.push_back({std::make_tuple(calNodeCenter(idx), BLUE)});
+        updatePaths2.push_back({std::make_tuple(calNodeCenter(idx), GREEN)});
+    } else {
+        updateDescriptions.push_back("Value not found");
+        updateCodeIndex.push_back(1);
+        updatePaths1.push_back({std::make_tuple(calNodeCenter(idx), BLUE)});
+        updatePaths2.push_back({std::make_tuple(calNodeCenter(idx), RED)});
+    }
+    
+    updateDescriptions.push_back("Done!");
+    updateCodeIndex.push_back(1);
+    updatePaths1.push_back({});
+    updatePaths2.push_back({});
+    
+    curStep = 0;
+    totalStep = updateCodeIndex.size();
+    doneAnimation = false;
+    operation_type = 7; // Update
+}
+
+void LinkedList::drawInitializeAnimation() {
+    drawList();
+}
+
+void LinkedList::drawAddHeadAnimation() {
+    if (pause) {
+        delta = 0;
+        return;
+    }
+    if (curStep == totalStep - 1 && totalStep > 0) {
+        doneAnimation = true;
+        return;
+    }
+    drawPrevList();
+    float radius = nodeWidth / 2;;
+    for (int i = 0; i < done; i++) {
+        auto path = addHeadPaths2[curStep][i];
+        Vector2 center = std::get<0>(path);
+        Color color = std::get<1>(path);
+        if (center.y == listPosY + nodeHeight / 2) { // Node
+            DrawCircleV(center, radius, Fade(color, 0.2f));
+            DrawCircleLines(center.x, center.y, radius, color);
+        } else { // Edge
+            DrawRectangle(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, Fade(color, 0.2f));
+            DrawRectangleLines(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, color);
+        }
+    }
+    if (curStep < totalStep - 1 && curStep < addHeadPaths2.size() && done == addHeadPaths2[curStep].size()) {
+        curStep++;
+        done = 0;
+        delta = 0;
+        return;
+    }
+    if (done < addHeadPaths2[curStep].size()) {
+        auto path = addHeadPaths2[curStep][done];
+        Vector2 center = std::get<0>(path);
+        Color color = std::get<1>(path);
+        delta += speed;
+        if (center.y == listPosY + nodeHeight / 2) { // Node
+            float currentRadius = std::min(delta / (2 * radius) * radius, radius);
+            DrawCircleV(center, currentRadius, Fade(color, 0.2f));
+            DrawCircleLines(center.x, center.y, currentRadius, color);
+            if (currentRadius >= radius) {
+                done++;
+                delta = 0;
             }
-            current = current->next;
+        } else { // Edge
+            float currentWidth = std::min(delta, nodeSpaceX);
+            DrawRectangle(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, currentWidth, lineWidth, Fade(color, 0.2f));
+            DrawRectangleLines(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, currentWidth, lineWidth, color);
+            if (currentWidth >= nodeSpaceX) {
+                done++;
+                delta = 0;
+            }
         }
     }
 }
 
-void LinkedList::ResetOperation() {
-    activeFunction = 0;
-    activeLine = 0;
-    opState = OperationState();
-    // Do not clear operationStates or reset currentStepIndex
+void LinkedList::drawAddIndexAnimation() {
+    if (pause) {
+        delta = 0;
+        return;
+    }
+    if (curStep == totalStep - 1 && totalStep > 0) {
+        doneAnimation = true;
+        return;
+    }
+    drawPrevList();
+    float radius = nodeWidth / 2;;
+    for (int i = 0; i < done; i++) {
+        auto path = addIndexPaths2[curStep][i];
+        Vector2 center = std::get<0>(path);
+        Color color = std::get<1>(path);
+        if (center.y == listPosY + nodeHeight / 2) { // Node
+            DrawCircleV(center, radius, Fade(color, 0.2f));
+            DrawCircleLines(center.x, center.y, radius, color);
+        } else { // Edge
+            DrawRectangle(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, Fade(color, 0.2f));
+            DrawRectangleLines(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, color);
+        }
+    }
+    if (curStep < totalStep - 1 && curStep < addIndexPaths2.size() && done == addIndexPaths2[curStep].size()) {
+        curStep++;
+        done = 0;
+        delta = 0;
+        return;
+    }
+    if (done < addIndexPaths2[curStep].size()) {
+        auto path = addIndexPaths2[curStep][done];
+        Vector2 center = std::get<0>(path);
+        Color color = std::get<1>(path);
+        delta += speed;
+        if (center.y == listPosY + nodeHeight / 2) { // Node
+            float currentRadius = std::min(delta / (2 * radius) * radius, radius);
+            DrawCircleV(center, currentRadius, Fade(color, 0.2f));
+            DrawCircleLines(center.x, center.y, currentRadius, color);
+            if (currentRadius >= radius) {
+                done++;
+                delta = 0;
+            }
+        } else { // Edge
+            float currentWidth = std::min(delta, nodeSpaceX);
+            DrawRectangle(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, currentWidth, lineWidth, Fade(color, 0.2f));
+            DrawRectangleLines(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, currentWidth, lineWidth, color);
+            if (currentWidth >= nodeSpaceX) {
+                done++;
+                delta = 0;
+            }
+        }
+    }
 }
 
-float LinkedList::Lerp(float start, float end, float t) {
-    return start + t * (end - start);
+void LinkedList::drawAddTailAnimation() {
+    if (pause) {
+        delta = 0;
+        return;
+    }
+    if (curStep == totalStep - 1 && totalStep > 0) {
+        doneAnimation = true;
+        return;
+    }
+    drawPrevList();
+    float radius = nodeWidth / 2;;
+    for (int i = 0; i < done; i++) {
+        auto path = addTailPaths2[curStep][i];
+        Vector2 center = std::get<0>(path);
+        Color color = std::get<1>(path);
+        if (center.y == listPosY + nodeHeight / 2) { // Node
+            DrawCircleV(center, radius, Fade(color, 0.2f));
+            DrawCircleLines(center.x, center.y, radius, color);
+        } else { // Edge
+            DrawRectangle(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, Fade(color, 0.2f));
+            DrawRectangleLines(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, color);
+        }
+    }
+    if (curStep < totalStep - 1 && curStep < addTailPaths2.size() && done == addTailPaths2[curStep].size()) {
+        curStep++;
+        done = 0;
+        delta = 0;
+        return;
+    }
+    if (done < addTailPaths2[curStep].size()) {
+        auto path = addTailPaths2[curStep][done];
+        Vector2 center = std::get<0>(path);
+        Color color = std::get<1>(path);
+        delta += speed;
+        if (center.y == listPosY + nodeHeight / 2) { // Node
+            float currentRadius = std::min(delta / (2 * radius) * radius, radius);
+            DrawCircleV(center, currentRadius, Fade(color, 0.2f));
+            DrawCircleLines(center.x, center.y, currentRadius, color);
+            if (currentRadius >= radius) {
+                done++;
+                delta = 0;
+            }
+        } else { // Edge
+            float currentWidth = std::min(delta, nodeSpaceX);
+            DrawRectangle(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, currentWidth, lineWidth, Fade(color, 0.2f));
+            DrawRectangleLines(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, currentWidth, lineWidth, color);
+            if (currentWidth >= nodeSpaceX) {
+                done++;
+                delta = 0;
+            }
+        }
+    }
+}
+
+void LinkedList::drawDeleteAnimation() {
+    if (pause) {
+        delta = 0;
+        return;
+    }
+    if (curStep == totalStep - 1 && totalStep > 0) {
+        doneAnimation = true;
+        return;
+    }
+    drawPrevList();
+    float radius = nodeWidth / 2;;
+    for (int i = 0; i < done; i++) {
+        auto path = deletePaths2[curStep][i];
+        Vector2 center = std::get<0>(path);
+        Color color = std::get<1>(path);
+        float fade = (color.r == 255 && color.g == 255 && color.b == 255) ? 1.0f : 0.2f;
+        if (center.y == listPosY + nodeHeight / 2) { // Node
+            DrawCircleV(center, radius, Fade(color, fade));
+            DrawCircleLines(center.x, center.y, radius, color);
+        } else { // Edge
+            DrawRectangle(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, Fade(color, fade));
+            DrawRectangleLines(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, color);
+        }
+    }
+    if (curStep < totalStep - 1 && curStep < deletePaths2.size() && done == deletePaths2[curStep].size()) {
+        curStep++;
+        done = 0;
+        delta = 0;
+        return;
+    }
+    if (done < deletePaths2[curStep].size()) {
+        auto path = deletePaths2[curStep][done];
+        Vector2 center = std::get<0>(path);
+        Color color = std::get<1>(path);
+        float fade = (color.r == 255 && color.g == 255 && color.b == 255) ? 1.0f : 0.2f;
+        delta += speed;
+        if (center.y == listPosY + nodeHeight / 2) { // Node
+            float currentRadius = std::min(delta / (2 * radius) * radius, radius);
+            DrawCircleV(center, currentRadius, Fade(color, fade));
+            DrawCircleLines(center.x, center.y, currentRadius, color);
+            if (currentRadius >= radius) {
+                done++;
+                delta = 0;
+            }
+        } else { // Edge
+            float currentWidth = std::min(delta, nodeSpaceX);
+            DrawRectangle(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, currentWidth, lineWidth, Fade(color, fade));
+            DrawRectangleLines(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, currentWidth, lineWidth, color);
+            if (currentWidth >= nodeSpaceX) {
+                done++;
+                delta = 0;
+            }
+        }
+    }
+}
+
+void LinkedList::drawSearchAnimation() {
+    if (pause) {
+        delta = 0;
+        return;
+    }
+    if (curStep == totalStep - 1 && totalStep > 0) {
+        doneAnimation = true;
+        return;
+    }
+    drawPrevList();
+    float radius = nodeWidth / 2;;
+    for (int i = 0; i < done; i++) {
+        auto path = searchPaths2[curStep][i];
+        Vector2 center = std::get<0>(path);
+        Color color = std::get<1>(path);
+        DrawCircleV(center, radius, Fade(color, 0.2f));
+        DrawCircleLines(center.x, center.y, radius, color);
+    }
+    if (curStep < totalStep - 1 && curStep < searchPaths2.size() && done == searchPaths2[curStep].size()) {
+        curStep++;
+        done = 0;
+        delta = 0;
+        return;
+    }
+    if (done < searchPaths2[curStep].size()) {
+        auto path = searchPaths2[curStep][done];
+        Vector2 center = std::get<0>(path);
+        Color color = std::get<1>(path);
+        delta += speed;
+        float currentRadius = std::min(delta / (2 * radius) * radius, radius);
+        DrawCircleV(center, currentRadius, Fade(color, 0.2f));
+        DrawCircleLines(center.x, center.y, currentRadius, color);
+        if (currentRadius >= radius) {
+            done++;
+            delta = 0;
+        }
+    }
+}
+
+void LinkedList::drawUpdateAnimation() {
+    if (pause) {
+        delta = 0;
+        return;
+    }
+    if (curStep == totalStep - 1 && totalStep > 0) {
+        doneAnimation = true;
+        return;
+    }
+    drawPrevList();
+    float radius = nodeWidth / 2;;
+    for (int i = 0; i < done; i++) {
+        auto path = updatePaths2[curStep][i];
+        Vector2 center = std::get<0>(path);
+        Color color = std::get<1>(path);
+        DrawCircleV(center, radius, Fade(color, 0.2f));
+        DrawCircleLines(center.x, center.y, radius, color);
+    }
+    if (curStep < totalStep - 1 && curStep < updatePaths2.size() && done == updatePaths2[curStep].size()) {
+        curStep++;
+        done = 0;
+        delta = 0;
+        return;
+    }
+    if (done < updatePaths2[curStep].size()) {
+        auto path = updatePaths2[curStep][done];
+        Vector2 center = std::get<0>(path);
+        Color color = std::get<1>(path);
+        delta += speed;
+        float currentRadius = std::min(delta / (2 * radius) * radius, radius);
+        DrawCircleV(center, currentRadius, Fade(color, 0.2f));
+        DrawCircleLines(center.x, center.y, currentRadius, color);
+        if (currentRadius >= radius) {
+            done++;
+            delta = 0;
+        }
+    }
+}
+
+void LinkedList::drawOperationMenu() {
+    static bool showInitializeOption = false;
+    static bool showAddOption = false; // Hiển thị menu con của Add
+    static bool showAddHeadOption = false;
+    static bool showAddIndexOption = false;
+    static bool showAddTailOption = false;
+    static bool showDeleteOption = false;
+    static bool showSearchOption = false;
+    static bool showUpdateOption = false;
+
+    float opPosX = 30;
+    float opPosY = 700;
+    float opWidth = 80;
+    float opHeight = 30;
+
+    static bool initClicked = false, addClicked = false;
+    static bool addHeadClicked = false, addIndexClicked = false, addTailClicked = false;
+    static bool deleteClicked = false, searchClicked = false, updateClicked = false;
+    static const char* initMessage = "", *addMessage = "";
+    static const char* addHeadMessage = "", *addIndexMessage = "", *addTailMessage = "";
+    static const char* deleteMessage = "", *searchMessage = "", *updateMessage = "";
+
+    // Nút Initialize
+    Rectangle initializeButtonPos = {opPosX, opPosY, opWidth, opHeight};
+    if (DrawButton("Init", initializeButtonPos, GetFontDefault(), initClicked, initMessage)) {
+        showInitializeOption = !showInitializeOption;
+        showAddOption = false; // Ẩn menu Add nếu đang mở
+        showAddHeadOption = false;
+        showAddIndexOption = false;
+        showAddTailOption = false;
+        showDeleteOption = false;
+        showSearchOption = false;
+        showUpdateOption = false;
+        initClicked = false;
+    }
+    if (showInitializeOption) {
+        drawInitializeOptions();
+    }
+
+    // Nút Add (hiển thị menu con)
+    Rectangle addButtonPos = {opPosX + (opWidth + 20), opPosY, opWidth, opHeight};
+    if (DrawButton("Add", addButtonPos, GetFontDefault(), addClicked, addMessage)) {
+        showAddOption = !showAddOption;
+        showInitializeOption = false;
+        showAddHeadOption = false;
+        showAddIndexOption = false;
+        showAddTailOption = false;
+        showDeleteOption = false;
+        showSearchOption = false;
+        showUpdateOption = false;
+        addClicked = false;
+    }
+
+    // Menu con của Add
+    if (showAddOption) {
+        float subMenuPosX = opPosX + (opWidth + 20);
+        float subMenuPosY = opPosY - opHeight; // Đặt ngay trên nút Add
+        float subMenuWidth = opWidth;
+        float subMenuHeight = opHeight;
+
+        // Đảm bảo các nút trong menu con không bị chồng lấp và có thể nhận sự kiện click
+        Rectangle addHeadOptionPos = {subMenuPosX, subMenuPosY - opHeight, subMenuWidth, subMenuHeight};
+        Rectangle addIndexOptionPos = {subMenuPosX, subMenuPosY - 2 * opHeight, subMenuWidth, subMenuHeight};
+        Rectangle addTailOptionPos = {subMenuPosX, subMenuPosY - 3 * opHeight, subMenuWidth, subMenuHeight};
+
+        // Kiểm tra và xử lý nút Add Head
+        if (DrawButton("Add Head", addHeadOptionPos, GetFontDefault(), addHeadClicked, addHeadMessage)) {
+            showAddHeadOption = true;
+            showAddIndexOption = false;
+            showAddTailOption = false;
+            showAddOption = false;
+            addHeadClicked = false;
+        }
+
+        // Kiểm tra và xử lý nút Add Index
+        if (DrawButton("Add Index", addIndexOptionPos, GetFontDefault(), addIndexClicked, addIndexMessage)) {
+            showAddIndexOption = true;
+            showAddHeadOption = false;
+            showAddTailOption = false;
+            showAddOption = false;
+            addIndexClicked = false;
+        }
+
+        // Kiểm tra và xử lý nút Add Tail với log
+        if (DrawButton("Add Tail", addTailOptionPos, GetFontDefault(), addTailClicked, addTailMessage)) {
+            showAddTailOption = true;
+            showAddHeadOption = false;
+            showAddIndexOption = false;
+            showAddOption = false;
+            addTailClicked = false;
+        }
+
+        // Đóng menu con nếu click ra ngoài
+        Vector2 mousePoint = GetMousePosition();
+        Rectangle subMenuArea = {subMenuPosX, subMenuPosY - 3 * opHeight, subMenuWidth, 3 * opHeight};
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !CheckCollisionPointRec(mousePoint, subMenuArea) && !CheckCollisionPointRec(mousePoint, addButtonPos)) {
+            showAddOption = false;
+        }
+    }
+
+    // Hiển thị giao diện nhập liệu tương ứng với log
+    if (showAddHeadOption) {
+        drawAddHeadOptions();
+    }
+    if (showAddIndexOption) {
+        drawAddIndexOptions();
+    }
+    if (showAddTailOption) {
+        drawAddTailOptions();
+    }
+
+    // Nút Delete
+    Rectangle deleteButtonPos = {opPosX + 2 * (opWidth + 20), opPosY, opWidth, opHeight};
+    if (DrawButton("Delete", deleteButtonPos, GetFontDefault(), deleteClicked, deleteMessage)) {
+        showDeleteOption = !showDeleteOption;
+        showInitializeOption = false;
+        showAddOption = false;
+        showAddHeadOption = false;
+        showAddIndexOption = false;
+        showAddTailOption = false;
+        showSearchOption = false;
+        showUpdateOption = false;
+        deleteClicked = false;
+    }
+    if (showDeleteOption) {
+        drawDeleteOptions();
+    }
+
+    // Nút Search
+    Rectangle searchButtonPos = {opPosX + 3 * (opWidth + 20), opPosY, opWidth, opHeight};
+    if (DrawButton("Search", searchButtonPos, GetFontDefault(), searchClicked, searchMessage)) {
+        showSearchOption = !showSearchOption;
+        showInitializeOption = false;
+        showAddOption = false;
+        showAddHeadOption = false;
+        showAddIndexOption = false;
+        showAddTailOption = false;
+        showDeleteOption = false;
+        showUpdateOption = false;
+        searchClicked = false;
+    }
+    if (showSearchOption) {
+        drawSearchOptions();
+    }
+
+    // Nút Update
+    Rectangle updateButtonPos = {opPosX + 4 * (opWidth + 20), opPosY, opWidth, opHeight};
+    if (DrawButton("Update", updateButtonPos, GetFontDefault(), updateClicked, updateMessage)) {
+        showUpdateOption = !showUpdateOption;
+        showInitializeOption = false;
+        showAddOption = false;
+        showAddHeadOption = false;
+        showAddIndexOption = false;
+        showAddTailOption = false;
+        showDeleteOption = false;
+        showSearchOption = false;
+        updateClicked = false;
+    }
+    if (showUpdateOption) {
+        drawUpdateOptions();
+    }
+
+    // Đóng các menu nếu click ra ngoài
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        Vector2 mousePoint = GetMousePosition();
+        Rectangle optionPos = {opPosX, 610, 380, 90};
+        if (!CheckCollisionPointRec(mousePoint, optionPos) && !CheckCollisionPointRec(mousePoint, initializeButtonPos)) {
+            showInitializeOption = false;
+        }
+        if (!CheckCollisionPointRec(mousePoint, optionPos) && !CheckCollisionPointRec(mousePoint, deleteButtonPos)) {
+            showDeleteOption = false;
+        }
+        if (!CheckCollisionPointRec(mousePoint, optionPos) && !CheckCollisionPointRec(mousePoint, searchButtonPos)) {
+            showSearchOption = false;
+        }
+        if (!CheckCollisionPointRec(mousePoint, optionPos) && !CheckCollisionPointRec(mousePoint, updateButtonPos)) {
+            showUpdateOption = false;
+        }
+        if (!CheckCollisionPointRec(mousePoint, optionPos)) {
+            showAddHeadOption = false;
+            showAddIndexOption = false;
+            showAddTailOption = false;
+        }
+    }
+}
+
+void LinkedList::drawInitializeOptions() {
+    static int nValue = 0;
+    static char nText[4] = "0";
+    static bool nInputEnabled = false;
+    static int nMax = 20;
+    
+    DrawText("N: ", 20, 610, 20, BLACK);
+    Rectangle nRect = {50, 610, 100, 25};
+    DrawRectangleRec(nRect, WHITE);
+    DrawRectangleLinesEx(nRect, 1, BLACK);
+    if (nInputEnabled) {
+        if (IsKeyPressed(KEY_ENTER)) nInputEnabled = false;
+        int key = GetKeyPressed();
+        if (key >= 48 && key <= 57 && strlen(nText) < 3) {
+            int len = strlen(nText);
+            nText[len] = (char)key;
+            nText[len + 1] = '\0';
+        }
+        if (IsKeyPressed(KEY_BACKSPACE) && strlen(nText) > 0) {
+            nText[strlen(nText) - 1] = '\0';
+        }
+        if (atoi(nText) > nMax) {
+            nText[0] = '2';
+            nText[1] = '0';
+            nText[2] = '\0';
+        }
+    }
+    nValue = atoi(nText);
+    DrawText(nText, nRect.x + 5, nRect.y + 5, 20, BLACK);
+    if (CheckCollisionPointRec(GetMousePosition(), nRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        nInputEnabled = true;
+    }
+    
+    static bool randomClicked = false, uploadClicked = false, okClicked = false;
+    static const char* randomMessage = "", *uploadMessage = "", *okMessage = "";
+    
+    Rectangle nRandomRect = {160, 610, 25, 25};
+    if (DrawButton("?", nRandomRect, GetFontDefault(), randomClicked, randomMessage)) {
+        nValue = GetRandomValue(1, 20);
+        sprintf(nText, "%d", nValue);
+        randomClicked = false;
+    }
+    
+    Rectangle uploadRect = {30, 650, 80, 30};
+    if (DrawButton("Upload", uploadRect, GetFontDefault(), uploadClicked, uploadMessage)) {
+        showUploadPrompt = true;
+        fileLoaded = false;
+        uploadClicked = false;
+    }
+    
+    Rectangle okRect = {350, 650, 40, 30};
+    if (DrawButton("OK", okRect, GetFontDefault(), okClicked, okMessage)) {
+        if (fileLoaded) {
+            std::ifstream fin(pathfile);
+            if (fin.is_open()) {
+                int n;
+                fin >> n;
+                n = std::min(n, 20);
+                while (head) {
+                    ListNode* temp = head;
+                    head = head->next;
+                    delete temp;
+                }
+                for (int i = 0; i < n && !fin.eof(); i++) {
+                    int value;
+                    if (fin >> value) {
+                        AddTail(value); // Sử dụng AddTail
+                    }
+                }
+                fin.close();
+                saveCurrentList();
+                curStep = 0;
+                done = 0;
+                delta = 0;
+                doneStep = true;
+                doneAnimation = false;
+                operation_type = 6; // Init
+            } else {
+                fileLoaded = false;
+                showUploadPrompt = true;
+            }
+        } else {
+            Init(nValue);
+        }
+        showUploadPrompt = false;
+        okClicked = false;
+    }
+    
+    if (showUploadPrompt) {
+        DrawText("Drop a file here", 120, 655, 20, GRAY);
+    }
+}
+
+void LinkedList::drawAddHeadOptions() {
+    static int value = 0;
+    static char valueText[4] = "0";
+    static bool valueInputEnabled = false;
+    static int valueMax = 99;
+    
+    DrawText("V: ", 20, 610, 20, BLACK);
+    Rectangle vRect = {50, 610, 100, 25};
+    DrawRectangleRec(vRect, WHITE);
+    DrawRectangleLinesEx(vRect, 1, BLACK);
+    if (valueInputEnabled) {
+        if (IsKeyPressed(KEY_ENTER)) valueInputEnabled = false;
+        int k = GetKeyPressed();
+        if (k >= 48 && k <= 57 && strlen(valueText) < 3) {
+            int len = strlen(valueText);
+            valueText[len] = (char)k;
+            valueText[len + 1] = '\0';
+        }
+        if (IsKeyPressed(KEY_BACKSPACE) && strlen(valueText) > 0) {
+            valueText[strlen(valueText) - 1] = '\0';
+        }
+        if (atoi(valueText) > valueMax) {
+            valueText[0] = '9';
+            valueText[1] = '9';
+            valueText[2] = '\0';
+        }
+    }
+    value = atoi(valueText);
+    DrawText(valueText, vRect.x + 5, vRect.y + 5, 20, BLACK);
+    if (CheckCollisionPointRec(GetMousePosition(), vRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        valueInputEnabled = true;
+    }
+    
+    static bool randomClicked = false, okClicked = false;
+    static const char* randomMessage = "", *okMessage = "";
+    
+    Rectangle vRandomRect = {160, 610, 25, 25};
+    if (DrawButton("?", vRandomRect, GetFontDefault(), randomClicked, randomMessage)) {
+        value = GetRandomValue(0, 99);
+        sprintf(valueText, "%d", value);
+        randomClicked = false;
+    }
+    
+    Rectangle okRect = {350, 650, 40, 30};
+    if (DrawButton("OK", okRect, GetFontDefault(), okClicked, okMessage)) {
+        pause = true;
+        AddHead(value);
+        done = 0;
+        delta = 0;
+        pause = false;
+        okClicked = false;
+    }
+}
+
+void LinkedList::drawAddIndexOptions() {
+    static int value = 0;
+    static char valueText[4] = "0";
+    static bool valueInputEnabled = false;
+    static int valueMax = 99;
+    
+    static int index = 0;
+    static char indexText[4] = "0";
+    static bool indexInputEnabled = false;
+    static int indexMax = 99;
+    
+    DrawText("V: ", 20, 610, 20, BLACK);
+    Rectangle vRect = {50, 610, 100, 25};
+    DrawRectangleRec(vRect, WHITE);
+    DrawRectangleLinesEx(vRect, 1, BLACK);
+    if (valueInputEnabled) {
+        if (IsKeyPressed(KEY_ENTER)) valueInputEnabled = false;
+        int k = GetKeyPressed();
+        if (k >= 48 && k <= 57 && strlen(valueText) < 3) {
+            int len = strlen(valueText);
+            valueText[len] = (char)k;
+            valueText[len + 1] = '\0';
+        }
+        if (IsKeyPressed(KEY_BACKSPACE) && strlen(valueText) > 0) {
+            valueText[strlen(valueText) - 1] = '\0';
+        }
+        if (atoi(valueText) > valueMax) {
+            valueText[0] = '9';
+            valueText[1] = '9';
+            valueText[2] = '\0';
+        }
+    }
+    value = atoi(valueText);
+    DrawText(valueText, vRect.x + 5, vRect.y + 5, 20, BLACK);
+    if (CheckCollisionPointRec(GetMousePosition(), vRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        valueInputEnabled = true;
+        indexInputEnabled = false;
+    }
+    
+    static bool vRandomClicked = false;
+    static const char* vRandomMessage = "";
+    Rectangle vRandomRect = {160, 610, 25, 25};
+    if (DrawButton("?", vRandomRect, GetFontDefault(), vRandomClicked, vRandomMessage)) {
+        value = GetRandomValue(0, 99);
+        sprintf(valueText, "%d", value);
+        vRandomClicked = false;
+    }
+    
+    DrawText("Idx: ", 200, 610, 20, BLACK);
+    Rectangle idxRect = {230, 610, 100, 25};
+    DrawRectangleRec(idxRect, WHITE);
+    DrawRectangleLinesEx(idxRect, 1, BLACK);
+    if (indexInputEnabled) {
+        if (IsKeyPressed(KEY_ENTER)) indexInputEnabled = false;
+        int k = GetKeyPressed();
+        if (k >= 48 && k <= 57 && strlen(indexText) < 3) {
+            int len = strlen(indexText);
+            indexText[len] = (char)k;
+            indexText[len + 1] = '\0';
+        }
+        if (IsKeyPressed(KEY_BACKSPACE) && strlen(indexText) > 0) {
+            indexText[strlen(indexText) - 1] = '\0';
+        }
+        int listSize = 0;
+        ListNode* temp = head;
+        while (temp) {
+            listSize++;
+            temp = temp->next;
+        }
+        indexMax = listSize;
+        if (atoi(indexText) > indexMax) {
+            sprintf(indexText, "%d", indexMax);
+        }
+    }
+    index = atoi(indexText);
+    DrawText(indexText, idxRect.x + 5, idxRect.y + 5, 20, BLACK);
+    if (CheckCollisionPointRec(GetMousePosition(), idxRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        indexInputEnabled = true;
+        valueInputEnabled = false;
+    }
+    
+    static bool idxRandomClicked = false, okClicked = false;
+    static const char* idxRandomMessage = "", *okMessage = "";
+    
+    Rectangle idxRandomRect = {340, 610, 25, 25};
+    if (DrawButton("?", idxRandomRect, GetFontDefault(), idxRandomClicked, idxRandomMessage)) {
+        int listSize = 0;
+        ListNode* temp = head;
+        while (temp) {
+            listSize++;
+            temp = temp->next;
+        }
+        if (listSize > 0) {
+            index = GetRandomValue(0, listSize);
+        } else {
+            index = 0;
+        }
+        sprintf(indexText, "%d", index);
+        idxRandomClicked = false;
+    }
+    
+    Rectangle okRect = {350, 650, 40, 30};
+    if (DrawButton("OK", okRect, GetFontDefault(), okClicked, okMessage)) {
+        pause = true;
+        AddIndex(value, index);
+        done = 0;
+        delta = 0;
+        pause = false;
+        okClicked = false;
+    }
+}
+
+void LinkedList::drawAddTailOptions() {
+    static int value = 0;
+    static char valueText[4] = "0";
+    static bool valueInputEnabled = false;
+    static int valueMax = 99;
+    
+    DrawText("V: ", 20, 610, 20, BLACK);
+    Rectangle vRect = {50, 610, 100, 25};
+    DrawRectangleRec(vRect, WHITE);
+    DrawRectangleLinesEx(vRect, 1, BLACK);
+    if (valueInputEnabled) {
+        if (IsKeyPressed(KEY_ENTER)) valueInputEnabled = false;
+        int k = GetKeyPressed();
+        if (k >= 48 && k <= 57 && strlen(valueText) < 3) {
+            int len = strlen(valueText);
+            valueText[len] = (char)k;
+            valueText[len + 1] = '\0';
+        }
+        if (IsKeyPressed(KEY_BACKSPACE) && strlen(valueText) > 0) {
+            valueText[strlen(valueText) - 1] = '\0';
+        }
+        if (atoi(valueText) > valueMax) {
+            valueText[0] = '9';
+            valueText[1] = '9';
+            valueText[2] = '\0';
+        }
+    }
+    value = atoi(valueText);
+    DrawText(valueText, vRect.x + 5, vRect.y + 5, 20, BLACK);
+    if (CheckCollisionPointRec(GetMousePosition(), vRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        valueInputEnabled = true;
+    }
+    
+    static bool randomClicked = false, okClicked = false;
+    static const char* randomMessage = "", *okMessage = "";
+    
+    Rectangle vRandomRect = {160, 610, 25, 25};
+    if (DrawButton("?", vRandomRect, GetFontDefault(), randomClicked, randomMessage)) {
+        value = GetRandomValue(0, 99);
+        sprintf(valueText, "%d", value);
+        randomClicked = false;
+    }
+    
+    Rectangle okRect = {350, 650, 40, 30};
+    if (DrawButton("OK", okRect, GetFontDefault(), okClicked, okMessage)) {
+        pause = true;
+        AddTail(value);
+        done = 0;
+        delta = 0;
+        pause = false;
+        okClicked = false;
+    }
+}
+
+void LinkedList::drawDeleteOptions() {
+    static int value = 0;
+    static char valueText[4] = "0";
+    static bool valueInputEnabled = false;
+    static int valueMax = 99;
+    
+    DrawText("V: ", 20, 610, 20, BLACK);
+    Rectangle vRect = {50, 610, 100, 25};
+    DrawRectangleRec(vRect, WHITE);
+    DrawRectangleLinesEx(vRect, 1, BLACK);
+    if (valueInputEnabled) {
+        if (IsKeyPressed(KEY_ENTER)) valueInputEnabled = false;
+        int k = GetKeyPressed();
+        if (k >= 48 && k <= 57 && strlen(valueText) < 3) {
+            int len = strlen(valueText);
+            valueText[len] = (char)k;
+            valueText[len + 1] = '\0';
+        }
+        if (IsKeyPressed(KEY_BACKSPACE) && strlen(valueText) > 0) {
+            valueText[strlen(valueText) - 1] = '\0';
+        }
+        if (atoi(valueText) > valueMax) {
+            valueText[0] = '9';
+            valueText[1] = '9';
+            valueText[2] = '\0';
+        }
+    }
+    value = atoi(valueText);
+    DrawText(valueText, vRect.x + 5, vRect.y + 5, 20, BLACK);
+    if (CheckCollisionPointRec(GetMousePosition(), vRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        valueInputEnabled = true;
+    }
+    
+    static bool randomClicked = false, okClicked = false;
+    static const char* randomMessage = "", *okMessage = "";
+    
+    Rectangle vRandomRect = {160, 610, 25, 25};
+    if (DrawButton("?", vRandomRect, GetFontDefault(), randomClicked, randomMessage)) {
+        value = GetRandomValue(0, 99);
+        sprintf(valueText, "%d", value);
+        randomClicked = false;
+    }
+    
+    Rectangle okRect = {350, 650, 40, 30};
+    if (DrawButton("OK", okRect, GetFontDefault(), okClicked, okMessage)) {
+        pause = true;
+        Delete(value);
+        done = 0;
+        delta = 0;
+        pause = false;
+        okClicked = false;
+    }
+}
+
+void LinkedList::drawSearchOptions() {
+    static int value = 0;
+    static char valueText[4] = "0";
+    static bool valueInputEnabled = false;
+    static int valueMax = 99;
+    
+    DrawText("V: ", 20, 610, 20, BLACK);
+    Rectangle vRect = {50, 610, 100, 25};
+    DrawRectangleRec(vRect, WHITE);
+    DrawRectangleLinesEx(vRect, 1, BLACK);
+    if (valueInputEnabled) {
+        if (IsKeyPressed(KEY_ENTER)) valueInputEnabled = false;
+        int k = GetKeyPressed();
+        if (k >= 48 && k <= 57 && strlen(valueText) < 3) {
+            int len = strlen(valueText);
+            valueText[len] = (char)k;
+            valueText[len + 1] = '\0';
+        }
+        if (IsKeyPressed(KEY_BACKSPACE) && strlen(valueText) > 0) {
+            valueText[strlen(valueText) - 1] = '\0';
+        }
+        if (atoi(valueText) > valueMax) {
+            valueText[0] = '9';
+            valueText[1] = '9';
+            valueText[2] = '\0';
+        }
+    }
+    value = atoi(valueText);
+    DrawText(valueText, vRect.x + 5, vRect.y + 5, 20, BLACK);
+    if (CheckCollisionPointRec(GetMousePosition(), vRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        valueInputEnabled = true;
+    }
+    
+    static bool randomClicked = false, okClicked = false;
+    static const char* randomMessage = "", *okMessage = "";
+    
+    Rectangle vRandomRect = {160, 610, 25, 25};
+    if (DrawButton("?", vRandomRect, GetFontDefault(), randomClicked, randomMessage)) {
+        value = GetRandomValue(0, 99);
+        sprintf(valueText, "%d", value);
+        randomClicked = false;
+    }
+    
+    Rectangle okRect = {350, 650, 40, 30};
+    if (DrawButton("OK", okRect, GetFontDefault(), okClicked, okMessage)) {
+        pause = true;
+        Search(value);
+        done = 0;
+        delta = 0;
+        pause = false;
+        okClicked = false;
+    }
+}
+
+void LinkedList::drawUpdateOptions() {
+    static int oldValue = 0, newValue = 0;
+    static char oldValueText[4] = "0", newValueText[4] = "0";
+    static bool oldValueInputEnabled = false, newValueInputEnabled = false;
+    static int valueMax = 99;
+    
+    DrawText("Old: ", 20, 610, 20, BLACK);
+    Rectangle oldRect = {50, 610, 100, 25};
+    DrawRectangleRec(oldRect, WHITE);
+    DrawRectangleLinesEx(oldRect, 1, BLACK);
+    if (oldValueInputEnabled) {
+        if (IsKeyPressed(KEY_ENTER)) oldValueInputEnabled = false;
+        int k = GetKeyPressed();
+        if (k >= 48 && k <= 57 && strlen(oldValueText) < 3) {
+            int len = strlen(oldValueText);
+            oldValueText[len] = (char)k;
+            oldValueText[len + 1] = '\0';
+        }
+        if (IsKeyPressed(KEY_BACKSPACE) && strlen(oldValueText) > 0) {
+            oldValueText[strlen(oldValueText) - 1] = '\0';
+        }
+        if (atoi(oldValueText) > valueMax) {
+            oldValueText[0] = '9';
+            oldValueText[1] = '9';
+            oldValueText[2] = '\0';
+        }
+    }
+    oldValue = atoi(oldValueText);
+    DrawText(oldValueText, oldRect.x + 5, oldRect.y + 5, 20, BLACK);
+    if (CheckCollisionPointRec(GetMousePosition(), oldRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        oldValueInputEnabled = true;
+        newValueInputEnabled = false;
+    }
+    
+    static bool oldRandomClicked = false;
+    static const char* oldRandomMessage = "";
+    Rectangle oldRandomRect = {160, 610, 25, 25};
+    if (DrawButton("?", oldRandomRect, GetFontDefault(), oldRandomClicked, oldRandomMessage)) {
+        oldValue = GetRandomValue(0, 99);
+        sprintf(oldValueText, "%d", oldValue);
+        oldRandomClicked = false;
+    }
+    
+    DrawText("New: ", 200, 610, 20, BLACK);
+    Rectangle newRect = {230, 610, 100, 25};
+    DrawRectangleRec(newRect, WHITE);
+    DrawRectangleLinesEx(newRect, 1, BLACK);
+    if (newValueInputEnabled) {
+        if (IsKeyPressed(KEY_ENTER)) newValueInputEnabled = false;
+        int k = GetKeyPressed();
+        if (k >= 48 && k <= 57 && strlen(newValueText) < 3) {
+            int len = strlen(newValueText);
+            newValueText[len] = (char)k;
+            newValueText[len + 1] = '\0';
+        }
+        if (IsKeyPressed(KEY_BACKSPACE) && strlen(newValueText) > 0) {
+            newValueText[strlen(newValueText) - 1] = '\0';
+        }
+        if (atoi(newValueText) > valueMax) {
+            newValueText[0] = '9';
+            newValueText[1] = '9';
+            newValueText[2] = '\0';
+        }
+    }
+    newValue = atoi(newValueText);
+    DrawText(newValueText, newRect.x + 5, newRect.y + 5, 20, BLACK);
+    if (CheckCollisionPointRec(GetMousePosition(), newRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        newValueInputEnabled = true;
+        oldValueInputEnabled = false;
+    }
+    
+    static bool newRandomClicked = false, okClicked = false;
+    static const char* newRandomMessage = "", *okMessage = "";
+    
+    Rectangle newRandomRect = {340, 610, 25, 25};
+    if (DrawButton("?", newRandomRect, GetFontDefault(), newRandomClicked, newRandomMessage)) {
+        newValue = GetRandomValue(0, 99);
+        sprintf(newValueText, "%d", newValue);
+        newRandomClicked = false;
+    }
+    
+    Rectangle okRect = {350, 650, 40, 30};
+    if (DrawButton("OK", okRect, GetFontDefault(), okClicked, okMessage)) {
+        pause = true;
+        Update(oldValue, newValue);
+        done = 0;
+        delta = 0;
+        pause = false;
+        okClicked = false;
+    }
+}
+
+void LinkedList::drawNodeDetailMenu() {
+    if (selectedNode) {
+        DrawRectangleRec(selectedNodeArea, Fade(BLUE, 0.2f));
+        
+        static char valueText[4] = "0";
+        static bool vInputEnabled = false;
+        
+        DrawText("Node detail:", 1100, 610, 20, BLACK);
+        DrawText(TextFormat("- Value: %d", selectedNode->value), 1100, 640, 20, BLACK);
+        
+        Rectangle vRect = {1100 + 80, 670, 100, 25};
+        DrawRectangleRec(vRect, WHITE);
+        DrawRectangleLinesEx(vRect, 1, BLACK);
+        if (vInputEnabled) {
+            if (IsKeyPressed(KEY_ENTER)) vInputEnabled = false;
+            int k = GetKeyPressed();
+            if (k >= 48 && k <= 57 && strlen(valueText) < 3) {
+                int len = strlen(valueText);
+                valueText[len] = (char)k;
+                valueText[len + 1] = '\0';
+            }
+            if (IsKeyPressed(KEY_BACKSPACE) && strlen(valueText) > 0) {
+                valueText[strlen(valueText) - 1] = '\0';
+            }
+        }
+        selectedValue = atoi(valueText);
+        DrawText(valueText, vRect.x + 5, vRect.y + 5, 20, BLACK);
+        if (CheckCollisionPointRec(GetMousePosition(), vRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            vInputEnabled = true;
+        }
+        
+        static bool deleteClicked = false, updateClicked = false;
+        static const char* deleteMessage = "", *updateMessage = "";
+        
+        Rectangle deleteRect = {1100, 700, 80, 30};
+        if (DrawButton("Delete", deleteRect, GetFontDefault(), deleteClicked, deleteMessage)) {
+            Delete(selectedNode->value);
+            done = 0;
+            delta = 0;
+            selectedNode = nullptr;
+            deleteClicked = false;
+        }
+        
+        Rectangle updateRect = {1200, 700, 80, 30};
+        if (DrawButton("Update", updateRect, GetFontDefault(), updateClicked, updateMessage)) {
+            Update(selectedNode->value, selectedValue);
+            done = 0;
+            delta = 0;
+            selectedNode = nullptr;
+            updateClicked = false;
+        }
+    }
+}
+
+void LinkedList::drawAnimationMenu() {
+    float buttonWidth = 80;
+    float buttonHeight = 30;
+    float spacing = 20;
+    float sliderWidth = 280;
+    float sliderHeight = 20;
+    float posX = 600;
+    float buttonPosY = 700;
+    
+    static bool firstClicked = false, prevClicked = false, playPauseClicked = false, nextClicked = false, lastClicked = false;
+    static const char* firstMessage = "", *prevMessage = "", *playPauseMessage = "", *nextMessage = "", *lastMessage = "";
+    
+    Rectangle sliderRect = {posX + 100, 670, sliderWidth, sliderHeight};
+    DrawRectangleRec(sliderRect, LIGHTGRAY);
+    float sliderPos = (speed - 1) / 29.0f * sliderWidth;
+    DrawRectangle(posX + 100 + sliderPos, 670, 5, sliderHeight, DARKGRAY);
+    DrawText("Speed", posX + 35, 670, 20, BLACK);
+    char* speedText = ftc(speed);
+    DrawText(speedText, posX + 390, 670, 20, BLACK);
+    delete[] speedText;
+    speed = UpdateSlider(sliderRect, 1.0f, 30.0f, speed);
+    
+    Rectangle firstRect = {posX, buttonPosY, buttonWidth, buttonHeight};
+    if (DrawButton("First", firstRect, GetFontDefault(), firstClicked, firstMessage)) {
+        resetAnimation();
+        pause = true;
+        firstClicked = false;
+    }
+    
+    Rectangle prevRect = {posX + buttonWidth + spacing, buttonPosY, buttonWidth, buttonHeight};
+    if (DrawButton("Prev", prevRect, GetFontDefault(), prevClicked, prevMessage)) {
+        pause = true;
+        if (curStep > 0) {
+            curStep--;
+            done = 0;
+            doneStep = true;
+            doneAnimation = false;
+            delta = 0;
+        }
+        prevClicked = false;
+    }
+    
+    Rectangle playPauseRect = {posX + 2*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight};
+    if (pause) {
+        if (DrawButton("Play", playPauseRect, GetFontDefault(), playPauseClicked, playPauseMessage)) {
+            pause = false;
+            playPauseClicked = false;
+        }
+    } else {
+        if (DrawButton("Pause", playPauseRect, GetFontDefault(), playPauseClicked, playPauseMessage)) {
+            pause = true;
+            playPauseClicked = false;
+        }
+    }
+    
+    Rectangle nextRect = {posX + 3*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight};
+    if (DrawButton("Next", nextRect, GetFontDefault(), nextClicked, nextMessage)) {
+        pause = true;
+        if (curStep < totalStep - 1) {
+            curStep++;
+            done = 0;
+            delta = 0;
+        }
+        nextClicked = false;
+    }
+    
+    Rectangle lastRect = {posX + 4*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight};
+    if (DrawButton("Last", lastRect, GetFontDefault(), lastClicked, lastMessage)) {
+        pause = true;
+        curStep = totalStep - 1;
+        done = 0;
+        delta = 0;
+        lastClicked = false;
+    }
+}
+
+void LinkedList::resetAnimation() {
+    curStep = 0;
+    delta = 0;
+    done = 0;
+    doneStep = false;
+    doneAnimation = false;
+}
+
+void LinkedList::drawInitializeDescription() {
+    DrawText("Initializing:", 500, 610, 20, BLACK);
+    if (initDescriptions.size() > curStep) {
+        DrawText(initDescriptions[curStep].c_str(), 500, 640, 20, BLACK);
+    }
+    int stt = initCodeIndex.size() > curStep ? initCodeIndex[curStep] : 0;
+    for (int i = 0; i < initCodes.size(); i++) {
+        Color c = stt == i ? RED : BLACK;
+        DrawText(initCodes[i].c_str(), codePosX, codePosY + i * codePosSpace, 20, c);
+        if (stt == i) {
+            DrawText(">>", codePosX - 20, codePosY + i * codePosSpace, 20, RED);
+        }
+    }
+    // Không cần hiển thị paths vì không có animation
+}
+
+void LinkedList::drawAddHeadDescription() {
+    DrawText("Adding to Head:", 500, 610, 20, BLACK);
+    if (addHeadDescriptions.size() > curStep) {
+        DrawText(addHeadDescriptions[curStep].c_str(), 500, 640, 20, BLACK);
+    }
+    int stt = addHeadCodeIndex.size() > curStep ? addHeadCodeIndex[curStep] : 0;
+    for (int i = 0; i < addHeadCodes.size(); i++) {
+        Color c = stt == i ? RED : BLACK;
+        DrawText(addHeadCodes[i].c_str(), codePosX, codePosY + i * codePosSpace, 20, c);
+        if (stt == i) {
+            DrawText(">>", codePosX - 20, codePosY + i * codePosSpace, 20, RED);
+        }
+    }
+    float radius = nodeWidth / 2;;
+    if (addHeadPaths1.size() > curStep) {
+        for (size_t i = 0; i < addHeadPaths1[curStep].size(); i++) {
+            Vector2 center = std::get<0>(addHeadPaths1[curStep][i]);
+            Color color = std::get<1>(addHeadPaths1[curStep][i]);
+            if (center.y == listPosY + nodeHeight / 2) { // Node
+                DrawCircleV(center, radius, Fade(color, 0.2f));
+                DrawCircleLines(center.x, center.y, radius, color);
+            } else { // Edge
+                DrawRectangle(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, Fade(color, 0.2f));
+                DrawRectangleLines(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, color);
+            }
+        }
+    }
+    if (pause && addHeadPaths2.size() > curStep) {
+        for (size_t i = 0; i < addHeadPaths2[curStep].size(); i++) {
+            Vector2 center = std::get<0>(addHeadPaths2[curStep][i]);
+            Color color = std::get<1>(addHeadPaths2[curStep][i]);
+            if (center.y == listPosY + nodeHeight / 2) { // Node
+                DrawCircleV(center, radius, Fade(color, 0.2f));
+                DrawCircleLines(center.x, center.y, radius, color);
+            } else { // Edge
+                DrawRectangle(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, Fade(color, 0.2f));
+                DrawRectangleLines(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, color);
+            }
+        }
+    }
+}
+
+void LinkedList::drawAddIndexDescription() {
+    DrawText("Adding at Index:", 500, 610, 20, BLACK);
+    if (addIndexDescriptions.size() > curStep) {
+        DrawText(addIndexDescriptions[curStep].c_str(), 500, 640, 20, BLACK);
+    }
+    int stt = addIndexCodeIndex.size() > curStep ? addIndexCodeIndex[curStep] : 0;
+    for (int i = 0; i < addIndexCodes.size(); i++) {
+        Color c = stt == i ? RED : BLACK;
+        DrawText(addIndexCodes[i].c_str(), codePosX, codePosY + i * codePosSpace, 20, c);
+        if (stt == i) {
+            DrawText(">>", codePosX - 20, codePosY + i * codePosSpace, 20, RED);
+        }
+    }
+    float radius = nodeWidth / 2;;
+    if (addIndexPaths1.size() > curStep) {
+        for (size_t i = 0; i < addIndexPaths1[curStep].size(); i++) {
+            Vector2 center = std::get<0>(addIndexPaths1[curStep][i]);
+            Color color = std::get<1>(addIndexPaths1[curStep][i]);
+            if (center.y == listPosY + nodeHeight / 2) { // Node
+                DrawCircleV(center, radius, Fade(color, 0.2f));
+                DrawCircleLines(center.x, center.y, radius, color);
+            } else { // Edge
+                DrawRectangle(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, Fade(color, 0.2f));
+                DrawRectangleLines(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, color);
+            }
+        }
+    }
+    if (pause && addIndexPaths2.size() > curStep) {
+        for (size_t i = 0; i < addIndexPaths2[curStep].size(); i++) {
+            Vector2 center = std::get<0>(addIndexPaths2[curStep][i]);
+            Color color = std::get<1>(addIndexPaths2[curStep][i]);
+            if (center.y == listPosY + nodeHeight / 2) { // Node
+                DrawCircleV(center, radius, Fade(color, 0.2f));
+                DrawCircleLines(center.x, center.y, radius, color);
+            } else { // Edge
+                DrawRectangle(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, Fade(color, 0.2f));
+                DrawRectangleLines(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, color);
+            }
+        }
+    }
+}
+
+void LinkedList::drawAddTailDescription() {
+    DrawText("Adding to Tail:", 500, 610, 20, BLACK);
+    if (addTailDescriptions.size() > curStep) {
+        DrawText(addTailDescriptions[curStep].c_str(), 500, 640, 20, BLACK);
+    }
+    int stt = addTailCodeIndex.size() > curStep ? addTailCodeIndex[curStep] : 0;
+    for (int i = 0; i < addTailCodes.size(); i++) {
+        Color c = stt == i ? RED : BLACK;
+        DrawText(addTailCodes[i].c_str(), codePosX, codePosY + i * codePosSpace, 20, c);
+        if (stt == i) {
+            DrawText(">>", codePosX - 20, codePosY + i * codePosSpace, 20, RED);
+        }
+    }
+    float radius = nodeWidth / 2;;
+    if (addTailPaths1.size() > curStep) {
+        for (size_t i = 0; i < addTailPaths1[curStep].size(); i++) {
+            Vector2 center = std::get<0>(addTailPaths1[curStep][i]);
+            Color color = std::get<1>(addTailPaths1[curStep][i]);
+            if (center.y == listPosY + nodeHeight / 2) { // Node
+                DrawCircleV(center, radius, Fade(color, 0.2f));
+                DrawCircleLines(center.x, center.y, radius, color);
+            } else { // Edge
+                DrawRectangle(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, Fade(color, 0.2f));
+                DrawRectangleLines(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, color);
+            }
+        }
+    }
+    if (pause && addTailPaths2.size() > curStep) {
+        for (size_t i = 0; i < addTailPaths2[curStep].size(); i++) {
+            Vector2 center = std::get<0>(addTailPaths2[curStep][i]);
+            Color color = std::get<1>(addTailPaths2[curStep][i]);
+            if (center.y == listPosY + nodeHeight / 2) { // Node
+                DrawCircleV(center, radius, Fade(color, 0.2f));
+                DrawCircleLines(center.x, center.y, radius, color);
+            } else { // Edge
+                DrawRectangle(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, Fade(color, 0.2f));
+                DrawRectangleLines(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, color);
+            }
+        }
+    }
+}
+
+void LinkedList::drawDeleteDescription() {
+    DrawText("Deleting:", 500, 610, 20, BLACK);
+    if (deleteDescriptions.size() > curStep) {
+        DrawText(deleteDescriptions[curStep].c_str(), 500, 640, 20, BLACK);
+    }
+    int stt = deleteCodeIndex.size() > curStep ? deleteCodeIndex[curStep] : 0;
+    for (int i = 0; i < deleteCodes.size(); i++) {
+        Color c = stt == i ? RED : BLACK;
+        DrawText(deleteCodes[i].c_str(), codePosX, codePosY + i * codePosSpace, 20, c);
+        if (stt == i) {
+            DrawText(">>", codePosX - 20, codePosY + i * codePosSpace, 20, RED);
+        }
+    }
+    float radius = nodeWidth / 2;;
+    if (deletePaths1.size() > curStep) {
+        for (size_t i = 0; i < deletePaths1[curStep].size(); i++) {
+            Vector2 center = std::get<0>(deletePaths1[curStep][i]);
+            Color color = std::get<1>(deletePaths1[curStep][i]);
+            if (center.y == listPosY + nodeHeight / 2) { // Node
+                DrawCircleV(center, radius, Fade(color, 0.2f));
+                DrawCircleLines(center.x, center.y, radius, color);
+            } else { // Edge
+                DrawRectangle(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, Fade(color, 0.2f));
+                DrawRectangleLines(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, color);
+            }
+        }
+    }
+    if (pause && deletePaths2.size() > curStep) {
+        for (size_t i = 0; i < deletePaths2[curStep].size(); i++) {
+            Vector2 center = std::get<0>(deletePaths2[curStep][i]);
+            Color color = std::get<1>(deletePaths2[curStep][i]);
+            if (center.y == listPosY + nodeHeight / 2) { // Node
+                DrawCircleV(center, radius, Fade(color, 0.2f));
+                DrawCircleLines(center.x, center.y, radius, color);
+            } else { // Edge
+                DrawRectangle(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, Fade(color, 0.2f));
+                DrawRectangleLines(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, color);
+            }
+        }
+    }
+}
+
+void LinkedList::drawSearchDescription() {
+    DrawText("Searching:", 500, 610, 20, BLACK);
+    if (searchDescriptions.size() > curStep) {
+        DrawText(searchDescriptions[curStep].c_str(), 500, 640, 20, BLACK);
+    }
+    int stt = searchCodeIndex.size() > curStep ? searchCodeIndex[curStep] : 0;
+    for (int i = 0; i < searchCodes.size(); i++) {
+        Color c = stt == i ? RED : BLACK;
+        DrawText(searchCodes[i].c_str(), codePosX, codePosY + i * codePosSpace, 20, c);
+        if (stt == i) {
+            DrawText(">>", codePosX - 20, codePosY + i * codePosSpace, 20, RED);
+        }
+    }
+    float radius = nodeWidth / 2;;
+    if (searchPaths1.size() > curStep) {
+        for (size_t i = 0; i < searchPaths1[curStep].size(); i++) {
+            Vector2 center = std::get<0>(searchPaths1[curStep][i]);
+            Color color = std::get<1>(searchPaths1[curStep][i]);
+            DrawCircleV(center, radius, Fade(color, 0.2f));
+            DrawCircleLines(center.x, center.y, radius, color);
+        }
+    }
+    if (pause && searchPaths2.size() > curStep) {
+        for (size_t i = 0; i < searchPaths2[curStep].size(); i++) {
+            Vector2 center = std::get<0>(searchPaths2[curStep][i]);
+            Color color = std::get<1>(searchPaths2[curStep][i]);
+            DrawCircleV(center, radius, Fade(color, 0.2f));
+            DrawCircleLines(center.x, center.y, radius, color);
+        }
+    }
+}
+
+void LinkedList::drawUpdateDescription() {
+    DrawText("Updating:", 500, 610, 20, BLACK);
+    if (updateDescriptions.size() > curStep) {
+        DrawText(updateDescriptions[curStep].c_str(), 500, 640, 20, BLACK);
+    }
+    int stt = updateCodeIndex.size() > curStep ? updateCodeIndex[curStep] : 0;
+    for (int i = 0; i < updateCodes.size(); i++) {
+        Color c = stt == i ? RED : BLACK;
+        DrawText(updateCodes[i].c_str(), codePosX, codePosY + i * codePosSpace, 20, c);
+        if (stt == i) {
+            DrawText(">>", codePosX - 20, codePosY + i * codePosSpace, 20, RED);
+        }
+    }
+    float radius = nodeWidth / 2;;
+    if (updatePaths1.size() > curStep) {
+        for (size_t i = 0; i < updatePaths1[curStep].size(); i++) {
+            Vector2 center = std::get<0>(updatePaths1[curStep][i]);
+            Color color = std::get<1>(updatePaths1[curStep][i]);
+            DrawCircleV(center, radius, Fade(color, 0.2f));
+            DrawCircleLines(center.x, center.y, radius, color);
+        }
+    }
+    if (pause && updatePaths2.size() > curStep) {
+        for (size_t i = 0; i < updatePaths2[curStep].size(); i++) {
+            Vector2 center = std::get<0>(updatePaths2[curStep][i]);
+            Color color = std::get<1>(updatePaths2[curStep][i]);
+            DrawCircleV(center, radius, Fade(color, 0.2f));
+            DrawCircleLines(center.x, center.y, radius, color);
+        }
+    }
+}
+
+void LinkedList::handleFileDrop() {
+    if (showUploadPrompt && IsFileDropped()) {
+        FilePathList droppedFiles = LoadDroppedFiles();
+        if (droppedFiles.count > 0) {
+            TextCopy(pathfile, droppedFiles.paths[0]);
+            fileLoaded = true;
+            showUploadPrompt = false;
+        }
+        UnloadDroppedFiles(droppedFiles);
+    }
+}
+
+void LinkedList::DrawScreen() {
+    ClearBackground(WHITE);
+    DrawTextEx(GetFontDefault(), "Linked List", Vector2{500, 20}, 20, 2, BLACK);
+    drawOperationMenu();
+    drawAnimationMenu();
+    
+    if ((operation_type < 0) || (curStep == totalStep - 1 && totalStep > 0)) {
+        drawList();
+    } else {
+        drawPrevList();
+    }
+    
+    drawNodeDetailMenu();
+    
+    if (operation_type == 1) {
+        drawAddHeadDescription();
+        drawAddHeadAnimation();
+    }
+    if (operation_type == 2) {
+        drawAddIndexDescription();
+        drawAddIndexAnimation();
+    }
+    if (operation_type == 3) {
+        drawAddTailDescription();
+        drawAddTailAnimation();
+    }
+    if (operation_type == 4) {
+        drawDeleteDescription();
+        drawDeleteAnimation();
+    }
+    if (operation_type == 5) {
+        drawSearchDescription();
+        drawSearchAnimation();
+    }
+    if (operation_type == 6) {
+        drawInitializeDescription();
+        drawInitializeAnimation();
+    }
+    if (operation_type == 7) {
+        drawUpdateDescription();
+        drawUpdateAnimation();
+    }
 }

@@ -1,23 +1,23 @@
-#include "SLLmain.h"
+#include "HashTableMain.h"
 #include <stdio.h>
 #include <string>
 #include <random>
 
-SLLmain::SLLmain() : linkedList() {
+HashTableMain::HashTableMain() : hashTable(1) {
     // Do not call InitWindow here; the window is already created by MainInterface
     shouldClose = false;
 }
 
-SLLmain::~SLLmain() {
+HashTableMain::~HashTableMain() {
     // Do not call CloseWindow here; the window will be managed by MainInterface
 }
 
-void SLLmain::Run() {
-    // Run the Linked List visualization in the existing window
-    linkedList.handleFileDrop();
+void HashTableMain::Run() {
+    // Run the Hash Table visualization in the existing window
+    hashTable.handleFileDrop();
     BeginDrawing();
     ClearBackground(RAYWHITE);
-    linkedList.DrawScreen();
+    hashTable.DrawScreen();
 
     // Add a way to return to the main menu (e.g., pressing ESC)
     if (IsKeyPressed(KEY_ESCAPE)) {
@@ -27,6 +27,6 @@ void SLLmain::Run() {
     EndDrawing();
 }
 
-bool SLLmain::ShouldClose() {
+bool HashTableMain::ShouldClose() {
     return shouldClose || WindowShouldClose();
 }

@@ -4,16 +4,19 @@
     <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\Button.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\ControlManager.cpp">
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\HashTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\HashTableMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\LinkedList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\SLLmain.cpp">
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\MainInterFace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\Utils.cpp">
+    <ClCompile Include="D:\Downloads\sproject\DataStructureCS163\src\SLLmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

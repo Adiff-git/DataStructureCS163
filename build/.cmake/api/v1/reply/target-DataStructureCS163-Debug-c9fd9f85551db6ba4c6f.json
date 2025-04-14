@@ -2,10 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "Release/DataStructureCS163.exe"
+			"path" : "Debug/DataStructureCS163.exe"
 		},
 		{
-			"path" : "Release/DataStructureCS163.pdb"
+			"path" : "Debug/DataStructureCS163.pdb"
 		}
 	],
 	"backtrace" : 1,
@@ -62,7 +62,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /O2 /Ob2 /DNDEBUG -MD"
+					"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -MDd"
 				}
 			],
 			"defines" : 
@@ -98,12 +98,16 @@
 				1,
 				2,
 				3,
-				4
+				4,
+				5
 			]
 		}
 	],
 	"dependencies" : 
 	[
+		{
+			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
+		},
 		{
 			"backtrace" : 2,
 			"id" : "raylib::@7d429ebd5d102775094d"
@@ -111,9 +115,6 @@
 		{
 			"backtrace" : 2,
 			"id" : "glfw::@a896dd99b4a5c6eab3d9"
-		},
-		{
-			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
 		}
 	],
 	"id" : "DataStructureCS163::@6890427a1f51a3e7e1df",
@@ -122,16 +123,16 @@
 		"commandFragments" : 
 		[
 			{
-				"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /O2 /Ob2 /DNDEBUG -MD",
+				"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -MDd",
 				"role" : "flags"
 			},
 			{
-				"fragment" : "/machine:x64 /INCREMENTAL:NO /subsystem:console",
+				"fragment" : "/machine:x64 /debug /INCREMENTAL /subsystem:console",
 				"role" : "flags"
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "raylib\\raylib\\Release\\raylib.lib",
+				"fragment" : "raylib\\raylib\\Debug\\raylib.lib",
 				"role" : "libraries"
 			},
 			{
@@ -173,7 +174,8 @@
 				1,
 				2,
 				3,
-				4
+				4,
+				5
 			]
 		}
 	],
@@ -188,7 +190,13 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "src/ControlManager.cpp",
+			"path" : "src/HashTable.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/HashTableMain.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
@@ -200,13 +208,13 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "src/SLLmain.cpp",
+			"path" : "src/MainInterFace.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "src/Utils.cpp",
+			"path" : "src/SLLmain.cpp",
 			"sourceGroupIndex" : 0
 		}
 	],

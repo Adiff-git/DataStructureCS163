@@ -394,85 +394,84 @@ void drawEdgeWeight(Vector2 start, Vector2 end, int weight) {
 }
 // -- Camera Utils --
 void UpdateGraphCamera(Camera2D &camera, const std::vector<Vector2>& nodes, float nodeRadius, int screenWidth, int screenHeight, float uiLeftWidth, float uiRightWidth) {
-    // Default camera state
+    // Define safe area avoiding UI elements
+    float padding = 80.0f; // Increased padding to avoid buttons
+    float bottomUIPadding = 150.0f; // Extra padding for bottom buttons (Create, Random, etc.)
+    float topUIPadding = 80.0f; // Padding for top input fields
+    Rectangle safeArea = {
+        uiLeftWidth + padding,
+        topUIPadding,
+        screenWidth - uiLeftWidth - uiRightWidth - 2 * padding,
+        screenHeight - topUIPadding - bottomUIPadding - padding
+    };
+
+    // Ensure safe area has positive dimensions
+    safeArea.width = std::max(1.0f, safeArea.width);
+    safeArea.height = std::max(1.0f, safeArea.height);
+
+    // Default camera state if no nodes
     Vector2 defaultTarget = { (float)screenWidth / 2.0f, (float)screenHeight / 2.0f };
     Vector2 defaultOffset = { (float)screenWidth / 2.0f, (float)screenHeight / 2.0f };
     float defaultZoom = 1.0f;
 
-   if (nodes.empty()) {
-       camera.target = defaultTarget;
-       camera.offset = defaultOffset;
-       camera.zoom = defaultZoom;
-       return;
-   }
+    if (nodes.empty()) {
+        camera.target = defaultTarget;
+        camera.offset = defaultOffset;
+        camera.zoom = defaultZoom;
+        return;
+    }
 
-   // 1. Define the viewport available for the graph
-   float padding = 50.0f; // Padding around the graph within the viewport
-   Rectangle viewport = {
-       uiLeftWidth + padding,
-       padding,
-       screenWidth - uiLeftWidth - uiRightWidth - 2 * padding,
-       screenHeight - 2 * padding
-   };
+    // Calculate bounding box of nodes
+    Vector2 minBounds = nodes[0];
+    Vector2 maxBounds = nodes[0];
+    for (const auto& nodePos : nodes) {
+        minBounds.x = std::min(minBounds.x, nodePos.x);
+        minBounds.y = std::min(minBounds.y, nodePos.y);
+        maxBounds.x = std::max(maxBounds.x, nodePos.x);
+        maxBounds.y = std::max(maxBounds.y, nodePos.y);
+    }
 
-   // Ensure viewport dimensions are positive
-   viewport.width = std::max(1.0f, viewport.width);
-   viewport.height = std::max(1.0f, viewport.height);
+    // Expand bounds to account for node size
+    minBounds = Vector2SubtractValue(minBounds, nodeRadius * 1.5f);
+    maxBounds = Vector2AddValue(maxBounds, nodeRadius * 1.5f);
 
-   // 2. Calculate the bounding box of the graph nodes
-   Vector2 minBounds = nodes[0];
-   Vector2 maxBounds = nodes[0];
+    float graphWidth = maxBounds.x - minBounds.x;
+    float graphHeight = maxBounds.y - minBounds.y;
 
-   for (const auto& nodePos : nodes) {
-       minBounds.x = std::min(minBounds.x, nodePos.x);
-       minBounds.y = std::min(minBounds.y, nodePos.y);
-       maxBounds.x = std::max(maxBounds.x, nodePos.x);
-       maxBounds.y = std::max(maxBounds.y, nodePos.y);
-   }
+    // Ensure minimum dimensions
+    graphWidth = std::max(graphWidth, nodeRadius * 4.0f);
+    graphHeight = std::max(graphHeight, nodeRadius * 4.0f);
 
-   // Expand bounds by node radius
-   minBounds = Vector2SubtractValue(minBounds, nodeRadius);
-   maxBounds = Vector2AddValue(maxBounds, nodeRadius);
+    // Calculate zoom to fit graph in safe area
+    float targetViewportRatio = 0.9f;
+    float targetWidth = safeArea.width * targetViewportRatio;
+    float targetHeight = safeArea.height * targetViewportRatio;
 
-   float graphWidth = maxBounds.x - minBounds.x;
-   float graphHeight = maxBounds.y - minBounds.y;
+    float zoomX = (graphWidth > 0) ? (targetWidth / graphWidth) : defaultZoom;
+    float zoomY = (graphHeight > 0) ? (targetHeight / graphHeight) : defaultZoom;
+    float zoom = std::min(zoomX, zoomY);
 
-   // Handle cases with zero or very small dimensions
-   if (graphWidth < nodeRadius * 2) graphWidth = nodeRadius * 2;
-   if (graphHeight < nodeRadius * 2) graphHeight = nodeRadius * 2;
+    // Clamp zoom
+    const float minZoom = 0.2f;
+    const float maxZoom = 1.5f;
+    zoom = Clamp(zoom, minZoom, maxZoom);
 
+    // Calculate camera target (center of graph)
+    Vector2 graphCenter = {
+        minBounds.x + graphWidth / 2.0f,
+        minBounds.y + graphHeight / 2.0f
+    };
 
-   // 3. Calculate required zoom level
-   float targetViewportRatio = 0.85f; // How much of the viewport the graph should fill
-   float targetWidth = viewport.width * targetViewportRatio;
-   float targetHeight = viewport.height * targetViewportRatio;
+    // Calculate camera offset (center of safe area)
+    Vector2 safeAreaCenter = {
+        safeArea.x + safeArea.width / 2.0f,
+        safeArea.y + safeArea.height / 2.0f
+    };
 
-   float zoomX = (graphWidth > 0) ? (targetWidth / graphWidth) : defaultZoom;
-   float zoomY = (graphHeight > 0) ? (targetHeight / graphHeight) : defaultZoom;
-   float zoom = std::min(zoomX, zoomY);
-
-   // Apply zoom limits
-   const float minZoom = 0.1f;
-   const float maxZoom = 2.0f; // Allow slightly more zoom in
-   zoom = Clamp(zoom, minZoom, maxZoom);
-
-
-   // 4. Calculate camera target (center of the graph's bounding box)
-   Vector2 graphCenter = {
-       minBounds.x + graphWidth / 2.0f,
-       minBounds.y + graphHeight / 2.0f
-   };
-
-   // 5. Calculate camera offset (center of the viewport)
-   Vector2 viewportCenter = {
-       viewport.x + viewport.width / 2.0f,
-       viewport.y + viewport.height / 2.0f
-   };
-
-   // 6. Update the camera
-   camera.target = graphCenter;
-   camera.offset = viewportCenter;
-   camera.zoom = zoom;
+    // Update camera
+    camera.target = graphCenter;
+    camera.offset = safeAreaCenter;
+    camera.zoom = zoom;
 }
 
 // -- Input/Text Utils --
@@ -977,25 +976,28 @@ void RunGraphApp() {
 
     // Pseudo-code vectors
     std::vector<std::string> primPseudocode = {
-        "1. MST = {}; Visited = {start_node}; PQ = {}",
-        "2. Add edges from start_node to PQ",
-        "3. while PQ not empty and MST size < N-1:",
-        "4.   edge(u, v), weight = PQ.extract_min()",
-        "5.   if v in Visited: continue",
-        "6.   Add edge(u, v) to MST",        // <-- Dòng tương ứng khi thêm cạnh thành công
-        "7.   Visited.add(v)",
-        "8.   for each edge(v, w) to unvisited w:",
-        "9.     Add edge(v, w) to PQ"
+        "Prim's Algorithm:",
+        "1. Initialize MST = {}, Visited = {node 1}, PQ = {}",
+        "2. Add all edges from node 1 to PQ",
+        "3. While PQ not empty and MST size < N-1:",
+        "4.   Extract edge(u, v) with min weight from PQ",
+        "5.   If v already in Visited: skip edge",
+        "6.   Add edge(u, v) to MST",
+        "7.   Add v to Visited",
+        "8.   Add all edges from v to unvisited nodes to PQ",
+        "9. Return MST"
     };
     std::vector<std::string> kruskalPseudocode = {
-        "1. MST = {}",
-        "2. Init DSU for N nodes",
-        "3. Sort all edges E by weight",
-        "4. for each edge(u, v) in sorted E:",
-        "5.   if findSet(u) != findSet(v):", // <-- Dòng tương ứng khi kiểm tra và thấy hợp lệ
-        "6.     Add edge(u, v) to MST",     // <-- Dòng tương ứng khi thêm cạnh thành công
-        "7.     unionSets(u, v)",
-        "8.     if MST size == N-1: break"
+        "Kruskal's Algorithm:",
+        "1. Initialize MST = {}",
+        "2. Initialize DSU for N nodes",
+        "3. Sort all edges by weight",
+        "4. For each edge(u, v) in sorted order:",
+        "5.   If findSet(u) != findSet(v):",
+        "6.     Add edge(u, v) to MST",
+        "7.     Union sets of u and v",
+        "8.     If MST size == N-1: break",
+        "9. Return MST"
     };
     int currentHighlightLine = -1; // Index của dòng mã giả cần highlight (-1 là không có)
 
@@ -1014,18 +1016,20 @@ void RunGraphApp() {
     Rectangle pseudocodeHScrollHandleRect = { 0 };// Horizontal scrollbar handle
     bool showPseudocodeVScrollbar = false;     // Flag to show V-Scrollbar
     bool showPseudocodeHScrollbar = false;     // Flag to show H-Scrollbar
+    Rectangle pseudocodeViewRect = { 0 };
     // -------------------------------------------------
     
     InitWindow(screenWidth, screenHeight, "Graph MST Visualizer");
     SetTargetFPS(60);
      // Left Panel Buttons
-     const float buttonWidth = 100.0f;
+     const float buttonWidth = 80.0f;
      const float buttonHeight = 30.0f;
      const float bottomPadding = 10.0f; // Khoảng cách từ cạnh dưới màn hình
-     const float leftPadding = 10.0f;   // Khoảng cách từ cạnh trái màn hình
+     const float leftPadding = 30.0f;   // Khoảng cách từ cạnh trái màn hình
      const float buttonSpacing = 10.0f; // Khoảng cách giữa các nút
-     const float buttonY = screenHeight - buttonHeight - bottomPadding;
+     const float buttonY = 700.0f;
      // Định nghĩa vị trí các nút theo hàng ngang từ trái sang phải
+     // 30 , 700, 80, 30
      Rectangle createButton = {leftPadding, buttonY, buttonWidth, buttonHeight};
      Rectangle randomButton = {createButton.x + createButton.width + buttonSpacing, buttonY, buttonWidth, buttonHeight};
      Rectangle exampleButton = {randomButton.x + randomButton.width + buttonSpacing, buttonY, buttonWidth, buttonHeight};
@@ -1077,13 +1081,14 @@ void RunGraphApp() {
      Rectangle weightInputRect = {0, 0, 60, 25}; // Position calculated dynamically
  
  
-     // Initialize Camera
      graphCamera.target = { (float)screenWidth / 2.0f, (float)screenHeight / 2.0f };
      graphCamera.offset = { (float)screenWidth / 2.0f, (float)screenHeight / 2.0f };
      graphCamera.rotation = 0.0f;
      graphCamera.zoom = 1.0f;
-    
-     
+
+     // UI dimensions
+     const float uiLeftWidth = 120.0f; // Left panel with buttons
+     const float uiRightWidth = 130.0f; // Right edit panel
      while (!WindowShouldClose()) {
         // --- Input Handling & State Updates ---
         Vector2 mousePos = GetMousePosition();
@@ -1210,11 +1215,11 @@ void RunGraphApp() {
 
                  generateRandomGraph(edges, r_numNodes, r_numEdges);
                  if (r_numNodes > 0) {
-                     float layoutRadius = std::min(screenWidth, screenHeight) / 3.0f;
-                     positionNodesInCircle(nodePositions, r_numNodes, screenWidth / 2.0f, screenHeight / 2.0f, layoutRadius);
-                     graphDrawn = true;
-                     UpdateGraphCamera(graphCamera, nodePositions, 20.0f, screenWidth, screenHeight, 0.0f, 0.0f); // Update camera for new graph
-                 }
+                    float layoutRadius = std::min(screenWidth - uiLeftWidth - uiRightWidth, screenHeight - 230.0f) / 3.0f; // Adjusted for UI
+                    positionNodesInCircle(nodePositions, r_numNodes, screenWidth / 2.0f, screenHeight / 2.0f, layoutRadius);
+                    graphDrawn = true;
+                    UpdateGraphCamera(graphCamera, nodePositions, 20.0f, screenWidth, screenHeight, uiLeftWidth, uiRightWidth);
+                }
                  isRandomizing = false; // Reset flag after generation
                  showMatrixInput = false;
                  matrixInput = ""; // Reset matrix input field
@@ -1592,10 +1597,42 @@ void RunGraphApp() {
              };
 
 
-             if (CheckCollisionPointRec(mousePos, k5Button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) generateAndUpdate(5, generateCompleteGraph);
-             else if (CheckCollisionPointRec(mousePos, c6Button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) generateAndUpdate(6, generateCycleGraph);
-             else if (CheckCollisionPointRec(mousePos, p4Button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) generatePathAndUpdate(4); // Use path layout version
-             else if (CheckCollisionPointRec(mousePos, s7Button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) generateAndUpdate(7, generateStarGraph);
+             if (CheckCollisionPointRec(mousePos, k5Button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) 
+             {
+                generateAndUpdate(5, generateCompleteGraph);
+                nodePositions.resize(5);
+                float layoutRadius = std::min(screenWidth - uiLeftWidth - uiRightWidth, screenHeight - 230.0f) / 3.0f;
+                positionNodesInCircle(nodePositions, 5, screenWidth / 2.0f, screenHeight / 2.0f, layoutRadius);
+                graphDrawn = true;
+                UpdateGraphCamera(graphCamera, nodePositions, 20.0f, screenWidth, screenHeight, uiLeftWidth, uiRightWidth);
+             }
+             else if (CheckCollisionPointRec(mousePos, c6Button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) 
+             {
+                generateAndUpdate(6, generateCycleGraph);
+                nodePositions.resize(6);
+                float layoutRadius = std::min(screenWidth - uiLeftWidth - uiRightWidth, screenHeight - 230.0f) / 3.0f;
+                positionNodesInCircle(nodePositions, 6, screenWidth / 2.0f, screenHeight / 2.0f, layoutRadius);
+                graphDrawn = true;
+                UpdateGraphCamera(graphCamera, nodePositions, 20.0f, screenWidth, screenHeight, uiLeftWidth, uiRightWidth);
+             }
+             else if (CheckCollisionPointRec(mousePos, p4Button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) 
+             {
+                generatePathAndUpdate(4); // Use path layout version
+                nodePositions.resize(4);
+                float layoutRadius = std::min(screenWidth - uiLeftWidth - uiRightWidth, screenHeight - 230.0f) / 3.0f;
+                positionNodesInCircle(nodePositions, 4, screenWidth / 2.0f, screenHeight / 2.0f, layoutRadius);
+                graphDrawn = true;
+                UpdateGraphCamera(graphCamera, nodePositions, 20.0f, screenWidth, screenHeight, uiLeftWidth, uiRightWidth);
+             }
+             else if (CheckCollisionPointRec(mousePos, s7Button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+             {
+               generateAndUpdate(7, generateStarGraph);
+               nodePositions.resize(7);
+               float layoutRadius = std::min(screenWidth - uiLeftWidth - uiRightWidth, screenHeight - 230.0f) / 3.0f;
+               positionNodesInCircle(nodePositions, 5, screenWidth / 2.0f, screenHeight / 2.0f, layoutRadius);
+               graphDrawn = true;
+               UpdateGraphCamera(graphCamera, nodePositions, 20.0f, screenWidth, screenHeight, uiLeftWidth, uiRightWidth);
+             } 
          }
 
         // Check Create Mode Inputs (if active)
@@ -1619,7 +1656,6 @@ void RunGraphApp() {
                  if (key >= '0' && key <= '9' && numEdgesStr.length() < 5) numEdgesStr += (char)key;
                  if (IsKeyPressed(KEY_BACKSPACE) && !numEdgesStr.empty()) numEdgesStr.pop_back();
              }
-
              if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_KP_ENTER)) {
                  clickedOnUI = true; // Treat enter as UI interaction
                  int numNodes = 0, numEdges = -1;
@@ -1646,15 +1682,14 @@ void RunGraphApp() {
                               nodePositions.clear();
                               graphDrawn = false;
                          } else {
-                             // Success
                              nodePositions.resize(numNodes);
-                             float layoutRadius = std::min(screenWidth, screenHeight) / 3.0f;
+                             float layoutRadius = std::min(screenWidth - uiLeftWidth - uiRightWidth, screenHeight - 230.0f) / 3.0f;
                              positionNodesInCircle(nodePositions, numNodes, screenWidth / 2.0f, screenHeight / 2.0f, layoutRadius);
                              graphDrawn = true;
                              isCreating = false; // Exit create mode
                              isCreatingActive = false;
                              showError = false;
-                             UpdateGraphCamera(graphCamera, nodePositions, 20.0f, screenWidth, screenHeight, 0.0f, 0.0f);
+                             UpdateGraphCamera(graphCamera, nodePositions, 20.0f, screenWidth, screenHeight, uiLeftWidth, uiRightWidth);
                          }
                      }
                  } catch (const std::exception& e) {
@@ -1663,144 +1698,189 @@ void RunGraphApp() {
              }
          }
 
-         if (showMSTMenu&& !clickedOnUI) {
-             if (CheckCollisionPointRec(mousePos, mstMenuRect)) {
-                 clickedOnUI = true; // Interactions inside MST menu are UI
-                 speedSlider.update(); // Update slider logic
-                 // Handle slider value editing click
-                 Rectangle sliderValueRect = { speedSlider.rect.x + speedSlider.rect.width + 10, speedSlider.rect.y, 60, 16 };
-                 if (!speedSlider.isEditing() && CheckCollisionPointRec(mousePos, sliderValueRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                     speedSlider.startEditing();
-                 }
-                  // Stop slider editing if clicking outside slider or pressing Enter
-                 if (speedSlider.isEditing() && (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_KP_ENTER) || (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !speedSlider.isHovered() && !CheckCollisionPointRec(mousePos, sliderValueRect)))) {
-                     speedSlider.stopEditing();
-                 }
+        //  if (showMSTMenu) {
+        //      if (CheckCollisionPointRec(mousePos, mstMenuRect)) {
+        //          Vector2 screenMousePos = GetMousePosition();
+        //          clickedOnUI = true; // Interactions inside MST menu are UI
+        //          speedSlider.update(); // Update slider logic
+        //          // Handle slider value editing click
+        //          Rectangle sliderValueRect = { speedSlider.rect.x + speedSlider.rect.width + 10, speedSlider.rect.y, 60, 16 };
+        //          if (!speedSlider.isEditing() && CheckCollisionPointRec(mousePos, sliderValueRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        //              speedSlider.startEditing();
+        //          }
+        //           // Stop slider editing if clicking outside slider or pressing Enter
+        //          if (speedSlider.isEditing() && (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_KP_ENTER) || (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !speedSlider.isHovered() && !CheckCollisionPointRec(mousePos, sliderValueRect)))) {
+        //              speedSlider.stopEditing();
+        //          }
 
+        //          if (showPseudocodeVScrollbar && !isDraggingHScrollbar) {
+        //             if (!isDraggingVScrollbar && CheckCollisionPointRec(mousePos, pseudocodeVScrollHandleRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        //                 isDraggingVScrollbar = true;
+        //                 scrollbarMouseOffsetY = mousePos.y - pseudocodeVScrollHandleRect.y;
+        //             }
+        //             if (showPseudocodeVScrollbar && !isDraggingHScrollbar) {
+        //                 if (!isDraggingVScrollbar && CheckCollisionPointRec(screenMousePos, pseudocodeVScrollHandleRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        //                     isDraggingVScrollbar = true;
+        //                     scrollbarMouseOffsetY = screenMousePos.y - pseudocodeVScrollHandleRect.y;
+        //                 }
+        //                 if (isDraggingVScrollbar && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+        //                     float trackHeight = pseudocodeVScrollbarRect.height - pseudocodeVScrollHandleRect.height;
+        //                     float scrollMax = mstPseudocodeTotalHeight - pseudocodeViewRect.height;
+        //                     float newHandleY = screenMousePos.y - scrollbarMouseOffsetY;
+        //                     newHandleY = Clamp(newHandleY, pseudocodeVScrollbarRect.y, pseudocodeVScrollbarRect.y + trackHeight);
+        //                     float scrollRatio = scrollMax > 0 ? (newHandleY - pseudocodeVScrollbarRect.y) / trackHeight : 0.0f;
+        //                     mstPseudocodeScrollY = scrollRatio * scrollMax;
+        //                     mstPseudocodeScrollY = Clamp(mstPseudocodeScrollY, 0.0f, scrollMax);
+        //                 }
+        //                 if (isDraggingVScrollbar && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+        //                     isDraggingVScrollbar = false;
+        //                 }
+        //             }
+        
+        //             // Xử lý kéo thanh cuộn ngang
+        //             if (showPseudocodeHScrollbar && !isDraggingVScrollbar) {
+        //                 if (!isDraggingHScrollbar && CheckCollisionPointRec(screenMousePos, pseudocodeHScrollHandleRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        //                     isDraggingHScrollbar = true;
+        //                     scrollbarMouseOffsetX = screenMousePos.x - pseudocodeHScrollHandleRect.x;
+        //                 }
+        //                 if (isDraggingHScrollbar && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+        //                     float trackWidth = pseudocodeHScrollbarRect.width - pseudocodeHScrollHandleRect.width;
+        //                     float scrollMax = mstPseudocodeMaxWidth - pseudocodeViewRect.height;
+        //                     float newHandleX = screenMousePos.x - scrollbarMouseOffsetX;
+        //                     newHandleX = Clamp(newHandleX, pseudocodeHScrollbarRect.x, pseudocodeHScrollbarRect.x + trackWidth);
+        //                     float scrollRatio = scrollMax > 0 ? (newHandleX - pseudocodeHScrollbarRect.x) / trackWidth : 0.0f;
+        //                     mstPseudocodeScrollX = scrollRatio * scrollMax;
+        //                     mstPseudocodeScrollX = Clamp(mstPseudocodeScrollX, 0.0f, scrollMax);
+        //                 }
+        //                 if (isDraggingHScrollbar && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+        //                     isDraggingHScrollbar = false;
+        //                 }
+        //             }
 
-                 // Check Button Clicks
-                 if (CheckCollisionPointRec(mousePos, primButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                     if (!nodePositions.empty()) {
-                         mstEdges = calculatePrimMST(edges, nodePositions.size());
-                         if (mstEdges.size() < nodePositions.size() - 1 && nodePositions.size() > 1) {
-                            mstErrorMessage = "MST not found (graph might be disconnected).";
-                            showMSTError = true;
-                            usePrim = false; useKruskal = false; mstEdges.clear();
-                         } else {
-                            usePrim = true; useKruskal = false; showMSTError = false;
-                            mstEdgesDrawn.assign(mstEdges.size(), false);
-                            mstNodesDrawn.assign(nodePositions.size(), false);
-                            mstEdgeIndex = 0; mstDrawTimer = 0.0f; mstDoneDrawing = false;
-                            totalMSTWeight = 0; showWeightInfo = true; isMSTDrawingPaused = false;
-                         }
-                         currentHighlightLine = 0; // Highlight dòng khởi tạo đầu tiên
-                         if (showMSTError) currentHighlightLine = -1; // Bỏ highlight nếu có lỗi
-                     }
-                 } else if (CheckCollisionPointRec(mousePos, kruskalButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                     if (!nodePositions.empty()) {
-                         mstEdges = calculateKruskalMST(edges, nodePositions.size());
-                         if (mstEdges.size() < nodePositions.size() - 1 && nodePositions.size() > 1) {
-                            mstErrorMessage = "MST not found (graph might be disconnected).";
-                            showMSTError = true;
-                            usePrim = false; useKruskal = false; mstEdges.clear();
-                         } else {
-                            usePrim = false; useKruskal = true; showMSTError = false;
-                            mstEdgesDrawn.assign(mstEdges.size(), false);
-                             mstNodesDrawn.assign(nodePositions.size(), false);
-                            mstEdgeIndex = 0; mstDrawTimer = 0.0f; mstDoneDrawing = false;
-                            totalMSTWeight = 0; showWeightInfo = true; isMSTDrawingPaused = false;
-                         }
-                         currentHighlightLine = 0; // Highlight dòng khởi tạo đầu tiên
-                         if (showMSTError) currentHighlightLine = -1; // Bỏ highlight nếu có lỗi
-                     }
-                 } else if (CheckCollisionPointRec(mousePos, backButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                     showMSTMenu = false; // Exit MST menu
-                     showMSTError = false; // Clear error on exit
-                     currentHighlightLine = -1; // Reset highlight
-                 } else if (showWeightInfo && CheckCollisionPointRec(mousePos, pauseResumeButton)) { // Dùng pauseResumeButton mới
-                    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                        isMSTDrawingPaused = !isMSTDrawingPaused;
-                    }
-                 }
-                 else if (showWeightInfo && CheckCollisionPointRec(mousePos, prevStepButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                    if (mstEdgeIndex > 0) { // Chỉ lùi lại nếu có bước trước đó
-                        isMSTDrawingPaused = true; // Tạm dừng khi nhấn Prev
-                        mstDoneDrawing = false;   // Chắc chắn không phải đã xong
-                        mstEdgeIndex--;           // Lùi chỉ số cạnh
-                        mstEdgesDrawn[mstEdgeIndex] = false; // Bỏ đánh dấu cạnh này
-                        totalMSTWeight -= mstEdges[mstEdgeIndex].weight; // Trừ trọng số
+        //         }
+        //          // Check Button Clicks
+        //          if (CheckCollisionPointRec(mousePos, primButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        //             if (!nodePositions.empty()) {
+        //                 mstEdges = calculatePrimMST(edges, nodePositions.size());
+        //                 if (mstEdges.size() < nodePositions.size() - 1 && nodePositions.size() > 1) {
+        //                     mstErrorMessage = "MST not found (graph might be disconnected).";
+        //                     showMSTError = true;
+        //                     usePrim = false; useKruskal = false; mstEdges.clear();
+        //                     currentHighlightLine = -1;
+        //                 } else {
+        //                     usePrim = true; useKruskal = false; showMSTError = false;
+        //                     mstEdgesDrawn.assign(mstEdges.size(), false);
+        //                     mstNodesDrawn.assign(nodePositions.size(), false);
+        //                     mstEdgeIndex = 0; mstDrawTimer = 0.0f; mstDoneDrawing = false;
+        //                     totalMSTWeight = 0; showWeightInfo = true; isMSTDrawingPaused = false;
+        //                     currentHighlightLine = 1; // Bắt đầu với bước khởi tạo
+        //                 }
+        //             }
+        //         } else if (CheckCollisionPointRec(mousePos, kruskalButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        //             if (!nodePositions.empty()) {
+        //                 mstEdges = calculateKruskalMST(edges, nodePositions.size());
+        //                 if (mstEdges.size() < nodePositions.size() - 1 && nodePositions.size() > 1) {
+        //                     mstErrorMessage = "MST not found (graph might be disconnected).";
+        //                     showMSTError = true;
+        //                     usePrim = false; useKruskal = false; mstEdges.clear();
+        //                     currentHighlightLine = -1;
+        //                 } else {
+        //                     usePrim = false; useKruskal = true; showMSTError = false;
+        //                     mstEdgesDrawn.assign(mstEdges.size(), false);
+        //                     mstNodesDrawn.assign(nodePositions.size(), false);
+        //                     mstEdgeIndex = 0; mstDrawTimer = 0.0f; mstDoneDrawing = false;
+        //                     totalMSTWeight = 0; showWeightInfo = true; isMSTDrawingPaused = false;
+        //                     currentHighlightLine = 1; // Bắt đầu với bước khởi tạo
+        //                 }
+        //             }
+        //         } else if (CheckCollisionPointRec(mousePos, backButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        //              showMSTMenu = false; // Exit MST menu
+        //              showMSTError = false; // Clear error on exit
+        //              currentHighlightLine = -1; // Reset highlight
+        //          } else if (showWeightInfo && CheckCollisionPointRec(mousePos, pauseResumeButton)) { // Dùng pauseResumeButton mới
+        //             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        //                 isMSTDrawingPaused = !isMSTDrawingPaused;
+        //             }
+        //          }
+        //          else if (showWeightInfo && CheckCollisionPointRec(mousePos, prevStepButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        //             if (mstEdgeIndex > 0) { // Chỉ lùi lại nếu có bước trước đó
+        //                 isMSTDrawingPaused = true; // Tạm dừng khi nhấn Prev
+        //                 mstDoneDrawing = false;   // Chắc chắn không phải đã xong
+        //                 mstEdgeIndex--;           // Lùi chỉ số cạnh
+        //                 mstEdgesDrawn[mstEdgeIndex] = false; // Bỏ đánh dấu cạnh này
+        //                 totalMSTWeight -= mstEdges[mstEdgeIndex].weight; // Trừ trọng số
 
-                        // Tính toán lại trạng thái mstNodesDrawn
-                        mstNodesDrawn.assign(nodePositions.size(), false); // Reset lại
-                        for (int i = 0; i < mstEdgeIndex; ++i) { // Duyệt qua các cạnh *đã* được vẽ (đến trước cạnh vừa bỏ)
-                            if (mstEdgesDrawn[i]) {
-                                if (mstEdges[i].from > 0 && mstEdges[i].from <= mstNodesDrawn.size())
-                                    mstNodesDrawn[mstEdges[i].from - 1] = true;
-                                if (mstEdges[i].to > 0 && mstEdges[i].to <= mstNodesDrawn.size())
-                                    mstNodesDrawn[mstEdges[i].to - 1] = true;
-                            }
-                        }
-                        // Nếu mstEdgeIndex về 0, và thuật toán Prim bắt đầu từ node 0, thì node 0 vẫn nên được đánh dấu
-                        if (mstEdgeIndex == 0 && usePrim && !mstNodesDrawn.empty()) {
-                            // mstNodesDrawn[0] = true; // Hoặc không cần nếu logic vẽ xử lý node đầu tiên riêng
-                        }
-                        currentHighlightLine = -1; 
-                    }
-                }
-                else if (showWeightInfo && CheckCollisionPointRec(mousePos, nextStepButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                    if (mstEdgeIndex < mstEdges.size()) { // Chỉ tiến tới nếu chưa hết cạnh
-                        isMSTDrawingPaused = true; // Tạm dừng khi nhấn Next
-                        // Thực hiện ngay bước tiếp theo
-                        if (!mstEdgesDrawn[mstEdgeIndex]) { // Chỉ cộng weight nếu chưa vẽ
-                            mstEdgesDrawn[mstEdgeIndex] = true;
-                            totalMSTWeight += mstEdges[mstEdgeIndex].weight;
-                            if (mstEdges[mstEdgeIndex].from > 0 && mstEdges[mstEdgeIndex].from <= mstNodesDrawn.size())
-                                mstNodesDrawn[mstEdges[mstEdgeIndex].from - 1] = true;
-                            if (mstEdges[mstEdgeIndex].to > 0 && mstEdges[mstEdgeIndex].to <= mstNodesDrawn.size())
-                                mstNodesDrawn[mstEdges[mstEdgeIndex].to - 1] = true;
-                        }
-                        mstEdgeIndex++;
-                        mstDrawTimer = 0.0f; // Reset timer
-                        if (mstEdgeIndex == mstEdges.size()) {
-                            mstDoneDrawing = true;
-                        }
-                        if (usePrim) currentHighlightLine = 5; // Index của dòng "6. Add edge..." trong primPseudocode
-                        else if (useKruskal) currentHighlightLine = 5; // Index của dòng "6. Add edge..." trong kruskalPseudocode
-                        else currentHighlightLine = -1;
-                    }
-                }
-                else if (showWeightInfo && CheckCollisionPointRec(mousePos, skipButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                   if (!mstDoneDrawing) {
-                        isMSTDrawingPaused = true; // Tạm dừng
-                        // Hoàn thành các bước còn lại
-                        for (int i = mstEdgeIndex; i < mstEdges.size(); ++i) {
-                            if (!mstEdgesDrawn[i]) {
-                                mstEdgesDrawn[i] = true;
-                                totalMSTWeight += mstEdges[i].weight;
-                                if (mstEdges[i].from > 0 && mstEdges[i].from <= mstNodesDrawn.size())
-                                    mstNodesDrawn[mstEdges[i].from - 1] = true;
-                                if (mstEdges[i].to > 0 && mstEdges[i].to <= mstNodesDrawn.size())
-                                    mstNodesDrawn[mstEdges[i].to - 1] = true;
-                            }
-                        }
-                        mstEdgeIndex = mstEdges.size(); // Đi đến cuối
-                        mstDoneDrawing = true;
-                        mstDrawTimer = 0.0f;
-                        if (!mstEdges.empty()){ // Chỉ highlight nếu có cạnh nào được thêm
-                            if (usePrim) currentHighlightLine = 5;
-                            else if (useKruskal) currentHighlightLine = 5;
-                            else currentHighlightLine = -1;
-                        } else {
-                            currentHighlightLine = -1; // Hoặc highlight dòng cuối (return)
-                        }
-                    }
-                }
-             }
-              // Allow clicking outside MST menu to close it? Maybe not, use Back button.
-              else if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                 showMSTMenu = false; // Click outside closes
-              }
-         } // end if showMSTMenu
+        //                 // Tính toán lại trạng thái mstNodesDrawn
+        //                 mstNodesDrawn.assign(nodePositions.size(), false); // Reset lại
+        //                 for (int i = 0; i < mstEdgeIndex; ++i) { // Duyệt qua các cạnh *đã* được vẽ (đến trước cạnh vừa bỏ)
+        //                     if (mstEdgesDrawn[i]) {
+        //                         if (mstEdges[i].from > 0 && mstEdges[i].from <= mstNodesDrawn.size())
+        //                             mstNodesDrawn[mstEdges[i].from - 1] = true;
+        //                         if (mstEdges[i].to > 0 && mstEdges[i].to <= mstNodesDrawn.size())
+        //                             mstNodesDrawn[mstEdges[i].to - 1] = true;
+        //                     }
+        //                 }
+        //                 // Nếu mstEdgeIndex về 0, và thuật toán Prim bắt đầu từ node 0, thì node 0 vẫn nên được đánh dấu
+        //                 if (mstEdgeIndex == 0 && usePrim && !mstNodesDrawn.empty()) {
+        //                     // mstNodesDrawn[0] = true; // Hoặc không cần nếu logic vẽ xử lý node đầu tiên riêng
+        //                 }
+        //                 currentHighlightLine = -1; 
+        //             }
+        //         }
+        //         else if (showWeightInfo && CheckCollisionPointRec(mousePos, nextStepButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        //             if (mstEdgeIndex < mstEdges.size()) { // Chỉ tiến tới nếu chưa hết cạnh
+        //                 isMSTDrawingPaused = true; // Tạm dừng khi nhấn Next
+        //                 // Thực hiện ngay bước tiếp theo
+        //                 if (!mstEdgesDrawn[mstEdgeIndex]) { // Chỉ cộng weight nếu chưa vẽ
+        //                     mstEdgesDrawn[mstEdgeIndex] = true;
+        //                     totalMSTWeight += mstEdges[mstEdgeIndex].weight;
+        //                     if (mstEdges[mstEdgeIndex].from > 0 && mstEdges[mstEdgeIndex].from <= mstNodesDrawn.size())
+        //                         mstNodesDrawn[mstEdges[mstEdgeIndex].from - 1] = true;
+        //                     if (mstEdges[mstEdgeIndex].to > 0 && mstEdges[mstEdgeIndex].to <= mstNodesDrawn.size())
+        //                         mstNodesDrawn[mstEdges[mstEdgeIndex].to - 1] = true;
+        //                 }
+        //                 mstEdgeIndex++;
+        //                 mstDrawTimer = 0.0f; // Reset timer
+        //                 if (mstEdgeIndex == mstEdges.size()) {
+        //                     mstDoneDrawing = true;
+        //                 }
+        //                 if (usePrim) currentHighlightLine = 5; // Index của dòng "6. Add edge..." trong primPseudocode
+        //                 else if (useKruskal) currentHighlightLine = 5; // Index của dòng "6. Add edge..." trong kruskalPseudocode
+        //                 else currentHighlightLine = -1;
+        //             }
+        //         }
+        //         else if (showWeightInfo && CheckCollisionPointRec(mousePos, skipButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        //            if (!mstDoneDrawing) {
+        //                 isMSTDrawingPaused = true; // Tạm dừng
+        //                 // Hoàn thành các bước còn lại
+        //                 for (int i = mstEdgeIndex; i < mstEdges.size(); ++i) {
+        //                     if (!mstEdgesDrawn[i]) {
+        //                         mstEdgesDrawn[i] = true;
+        //                         totalMSTWeight += mstEdges[i].weight;
+        //                         if (mstEdges[i].from > 0 && mstEdges[i].from <= mstNodesDrawn.size())
+        //                             mstNodesDrawn[mstEdges[i].from - 1] = true;
+        //                         if (mstEdges[i].to > 0 && mstEdges[i].to <= mstNodesDrawn.size())
+        //                             mstNodesDrawn[mstEdges[i].to - 1] = true;
+        //                     }
+        //                 }
+        //                 mstEdgeIndex = mstEdges.size(); // Đi đến cuối
+        //                 mstDoneDrawing = true;
+        //                 mstDrawTimer = 0.0f;
+        //                 if (!mstEdges.empty()){ // Chỉ highlight nếu có cạnh nào được thêm
+        //                     if (usePrim) currentHighlightLine = 5;
+        //                     else if (useKruskal) currentHighlightLine = 5;
+        //                     else currentHighlightLine = -1;
+        //                 } else {
+        //                     currentHighlightLine = -1; // Hoặc highlight dòng cuối (return)
+        //                 }
+        //             }
+        //         }
+        //      }
+        //       // Allow clicking outside MST menu to close it? Maybe not, use Back button.
+        //       else if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        //          showMSTMenu = false; // Click outside closes
+        //       }
+        //  } // end if showMSTMenu
 
         // Check Edit Mode Interactions (if active)
          if (isEditingGraph && !clickedOnUI) {
@@ -1829,12 +1909,11 @@ void RunGraphApp() {
                   else if (CheckCollisionPointRec(mousePos, deleteVertexButtonRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) currentTool = EditTool::TOOL_DELETE_VERTEX;
                   else if (CheckCollisionPointRec(mousePos, deleteEdgeButtonRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) currentTool = EditTool::TOOL_DELETE_EDGE;
                  else if (CheckCollisionPointRec(mousePos, doneButtonRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                     isEditingGraph = false; // Exit edit mode
-                     currentTool = EditTool::TOOL_NONE;
-                     // Optional: Recalculate camera?
-                      if (!nodePositions.empty()) {
-                          UpdateGraphCamera(graphCamera, nodePositions, 20.0f, screenWidth, screenHeight, 0.0f, editPanelWidth); // Pass UI widths
-                      }
+                    isEditingGraph = false;
+                    currentTool = EditTool::TOOL_NONE;
+                    if (!nodePositions.empty()) {
+                        UpdateGraphCamera(graphCamera, nodePositions, 20.0f, screenWidth, screenHeight, uiLeftWidth, uiRightWidth);
+                    }
                  }
 
                  // Reset states when changing tools
@@ -2040,47 +2119,166 @@ void RunGraphApp() {
         // --- Update MST Animation (if active) ---
          if (showMSTMenu && (usePrim || useKruskal) && !mstDoneDrawing && mstEdgesDrawn.size() == mstEdges.size()) {
             if (!isMSTDrawingPaused) {
-                 mstDrawTimer += GetFrameTime();
-                 float drawInterval = speedSlider.getValue(); // Get speed from slider
+                mstDrawTimer += GetFrameTime();
+                float drawInterval = speedSlider.getValue();
 
-                 if (mstDrawTimer >= drawInterval) {
-                     if (mstEdgeIndex < mstEdges.size()) {
-                         mstEdgesDrawn[mstEdgeIndex] = true;
-                         // Add weight only when edge is fully drawn
-                         totalMSTWeight += mstEdges[mstEdgeIndex].weight;
-                         // Mark nodes as drawn
-                          if(mstEdges[mstEdgeIndex].from > 0 && mstEdges[mstEdgeIndex].from <= mstNodesDrawn.size())
-                               mstNodesDrawn[mstEdges[mstEdgeIndex].from - 1] = true;
-                          if(mstEdges[mstEdgeIndex].to > 0 && mstEdges[mstEdgeIndex].to <= mstNodesDrawn.size())
-                               mstNodesDrawn[mstEdges[mstEdgeIndex].to - 1] = true;
-
-                         mstEdgeIndex++;
-                         mstDrawTimer = 0.0f; // Reset timer for next edge
-
-                         if (mstEdgeIndex == mstEdges.size()) {
-                             mstDoneDrawing = true; // Mark as finished
-                         }
-                         if (!mstDoneDrawing) { // Chỉ cập nhật nếu chưa phải là bước cuối cùng hoàn tất
-                            if (usePrim) currentHighlightLine = 5;
-                            else if (useKruskal) currentHighlightLine = 5;
-                            else currentHighlightLine = -1;
-                        } else {
-                            // Highlight dòng cuối/return khi xong?
-                             if (usePrim) currentHighlightLine = -1; // Hoặc index dòng return
-                             else if (useKruskal) currentHighlightLine = -1; // Hoặc index dòng return
+                if (mstDrawTimer >= drawInterval) {
+                    if (mstEdgeIndex < mstEdges.size()) {
+                        if (usePrim) {
+                            // Chu kỳ highlight cho Prim:
+                            // 4: Lấy cạnh từ PQ
+                            // 5: Kiểm tra v có trong Visited
+                            // 6: Thêm cạnh vào MST
+                            // 7: Thêm v vào Visited
+                            // 8: Thêm các cạnh mới vào PQ
+                            switch (currentHighlightLine) {
+                                case 3: // While loop
+                                    currentHighlightLine = 4; // extract_min
+                                    break;
+                                case 4: // extract_min
+                                    currentHighlightLine = 5; // check Visited
+                                    break;
+                                case 5: // check Visited
+                                    if (!mstEdgesDrawn[mstEdgeIndex]) {
+                                        mstEdgesDrawn[mstEdgeIndex] = true;
+                                        totalMSTWeight += mstEdges[mstEdgeIndex].weight;
+                                        if (mstEdges[mstEdgeIndex].from > 0 && mstEdges[mstEdgeIndex].from <= mstNodesDrawn.size())
+                                            mstNodesDrawn[mstEdges[mstEdgeIndex].from - 1] = true;
+                                        if (mstEdges[mstEdgeIndex].to > 0 && mstEdges[mstEdgeIndex].to <= mstNodesDrawn.size())
+                                            mstNodesDrawn[mstEdges[mstEdgeIndex].to - 1] = true;
+                                        currentHighlightLine = 6; // add edge
+                                    }
+                                    break;
+                                case 6: // add edge
+                                    currentHighlightLine = 7; // add v
+                                    break;
+                                case 7: // add v
+                                    currentHighlightLine = 8; // add edges to PQ
+                                    break;
+                                case 8: // add edges to PQ
+                                    mstEdgeIndex++;
+                                    currentHighlightLine = 3; // quay lại while
+                                    break;
+                                default:
+                                    currentHighlightLine = 3;
+                                    break;
+                            }
+                        } else if (useKruskal) {
+                            // Chu kỳ highlight cho Kruskal:
+                            // 4: Duyệt cạnh tiếp theo
+                            // 5: Kiểm tra findSet
+                            // 6: Thêm cạnh vào MST
+                            // 7: Union
+                            switch (currentHighlightLine) {
+                                case 4: // for each edge
+                                    currentHighlightLine = 5; // findSet
+                                    break;
+                                case 5: // findSet
+                                    if (!mstEdgesDrawn[mstEdgeIndex]) {
+                                        mstEdgesDrawn[mstEdgeIndex] = true;
+                                        totalMSTWeight += mstEdges[mstEdgeIndex].weight;
+                                        if (mstEdges[mstEdgeIndex].from > 0 && mstEdges[mstEdgeIndex].from <= mstNodesDrawn.size())
+                                            mstNodesDrawn[mstEdges[mstEdgeIndex].from - 1] = true;
+                                        if (mstEdges[mstEdgeIndex].to > 0 && mstEdges[mstEdgeIndex].to <= mstNodesDrawn.size())
+                                            mstNodesDrawn[mstEdges[mstEdgeIndex].to - 1] = true;
+                                        currentHighlightLine = 6; // add edge
+                                    }
+                                    break;
+                                case 6: // add edge
+                                    currentHighlightLine = 7; // union
+                                    break;
+                                case 7: // union
+                                    mstEdgeIndex++;
+                                    currentHighlightLine = 4; // tiếp tục for
+                                    break;
+                                default:
+                                    currentHighlightLine = 4;
+                                    break;
+                            }
                         }
-                     } else {
-                          mstDoneDrawing = true; // Should already be set, but just in case
-                          if (usePrim) currentHighlightLine = -1; // Hoặc index dòng return
-                          else if (useKruskal) currentHighlightLine = -1; // Hoặc index dòng return
-                     }
-                 }
-             }
-          // Update cursor blink timer
-          cursorTimer += GetFrameTime();
-          if (cursorTimer >= 0.8f) cursorTimer = 0.0f; // Blink interval
-        }
 
+                        mstDrawTimer = 0.0f;
+                        if (mstEdgeIndex == mstEdges.size()) {
+                            mstDoneDrawing = true;
+                            currentHighlightLine = 9; // Return MST
+                        }
+                    } else {
+                        mstDoneDrawing = true;
+                        currentHighlightLine = 9; // Return MST
+                    }
+                }
+            }
+            cursorTimer += GetFrameTime();
+            if (cursorTimer >= 0.8f) cursorTimer = 0.0f;
+        }
+        else if (showWeightInfo && CheckCollisionPointRec(mousePos, prevStepButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            if (mstEdgeIndex > 0) {
+                isMSTDrawingPaused = true;
+                mstDoneDrawing = false;
+                mstEdgeIndex--;
+                mstEdgesDrawn[mstEdgeIndex] = false;
+                totalMSTWeight -= mstEdges[mstEdgeIndex].weight;
+
+                mstNodesDrawn.assign(nodePositions.size(), false);
+                for (int i = 0; i < mstEdgeIndex; ++i) {
+                    if (mstEdgesDrawn[i]) {
+                        if (mstEdges[i].from > 0 && mstEdges[i].from <= mstNodesDrawn.size())
+                            mstNodesDrawn[mstEdges[i].from - 1] = true;
+                        if (mstEdges[i].to > 0 && mstEdges[i].to <= mstNodesDrawn.size())
+                            mstNodesDrawn[mstEdges[i].to - 1] = true;
+                    }
+                }
+                if (usePrim) {
+                    currentHighlightLine = 3; // Quay lại while loop
+                } else if (useKruskal) {
+                    currentHighlightLine = 4; // Quay lại for loop
+                }
+            }
+        }
+        else if (showWeightInfo && CheckCollisionPointRec(mousePos, nextStepButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            if (mstEdgeIndex < mstEdges.size()) {
+                isMSTDrawingPaused = true;
+                if (!mstEdgesDrawn[mstEdgeIndex]) {
+                    mstEdgesDrawn[mstEdgeIndex] = true;
+                    totalMSTWeight += mstEdges[mstEdgeIndex].weight;
+                    if (mstEdges[mstEdgeIndex].from > 0 && mstEdges[mstEdgeIndex].from <= mstNodesDrawn.size())
+                        mstNodesDrawn[mstEdges[mstEdgeIndex].from - 1] = true;
+                    if (mstEdges[mstEdgeIndex].to > 0 && mstEdges[mstEdgeIndex].to <= mstNodesDrawn.size())
+                        mstNodesDrawn[mstEdges[mstEdgeIndex].to - 1] = true;
+                    if (usePrim) {
+                        currentHighlightLine = 6; // add edge
+                    } else if (useKruskal) {
+                        currentHighlightLine = 6; // add edge
+                    }
+                }
+                mstEdgeIndex++;
+                mstDrawTimer = 0.0f;
+                if (mstEdgeIndex == mstEdges.size()) {
+                    mstDoneDrawing = true;
+                    currentHighlightLine = 9; // Return MST
+                }
+            }
+        }
+        else if (showWeightInfo && CheckCollisionPointRec(mousePos, skipButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            if (!mstDoneDrawing) {
+                isMSTDrawingPaused = true;
+                for (int i = mstEdgeIndex; i < mstEdges.size(); ++i) {
+                    if (!mstEdgesDrawn[i]) {
+                        mstEdgesDrawn[i] = true;
+                        totalMSTWeight += mstEdges[i].weight;
+                        if (mstEdges[i].from > 0 && mstEdges[i].from <= mstNodesDrawn.size())
+                            mstNodesDrawn[mstEdges[i].from - 1] = true;
+                        if (mstEdges[i].to > 0 && mstEdges[i].to <= mstNodesDrawn.size())
+                            mstEdges[i].to = 1;
+                    }
+                }
+                mstEdgeIndex = mstEdges.size();
+                mstDoneDrawing = true;
+                mstDrawTimer = 0.0f;
+                currentHighlightLine = 9; // Return MST
+            }
+        }
+        
         // --- CHUẨN BỊ STATE ĐỂ VẼ UI ---
         UIState currentState = {}; // Khởi tạo struct
 
@@ -2135,7 +2333,7 @@ void RunGraphApp() {
 
         // --- Drawing ---
         BeginDrawing();
-        ClearBackground(DARKGRAY); // Use a different background
+        ClearBackground(GRAY); // Use a different background
 
         // --- Draw Graph Area ---
          if (graphDrawn && !showMSTMenu) { // Draw main graph if not in MST menu
@@ -2214,23 +2412,21 @@ void RunGraphApp() {
         if (currentState.isShowingExamples) DrawExampleButtonsUI(currentState); // Dùng isShowingExamples từ state
         if (currentState.isEditingGraph) DrawEditPanelUI(currentState);
 
-        // Draw MST Menu (if active) - Draw last to be on top
          if (showMSTMenu) {
             DrawRectangleRec(mstMenuRect, LIGHTGRAY);
             DrawRectangleLinesEx(mstMenuRect, 2, BLACK);
             DrawText("Minimum Spanning Tree", mstMenuRect.x + 10, mstMenuRect.y + 10, 20, BLACK);
            
-            float titleHeight = 30; // Khoảng trống cho tiêu đề
-            float bottomButtonHeight = mstButtonHeight + 10; // Khoảng trống cho nút dưới cùng + padding
-            float availableHeight = mstMenuRect.height - titleHeight - bottomButtonHeight - 20; // Chiều cao khả dụng cho graph và control panel (-20 padding trên dưới)
-            float controlPanelWidth = 220; // Chiều rộng cho panel điều khiển bên phải
+            float titleHeight = 30;
+            float bottomButtonHeight = mstButtonHeight + 10;
+            float availableHeight = mstMenuRect.height - titleHeight - bottomButtonHeight - 20;
+            float controlPanelWidth = 220;
             float panelPadding = 10;
-            const float controlButtonHeight = 30.0f; // Chiều cao chuẩn cho các nút control
 
             Rectangle graphArea = {
                 mstMenuRect.x + panelPadding,
                 mstMenuRect.y + titleHeight + panelPadding,
-                mstMenuRect.width - controlPanelWidth - 3 * panelPadding, // Trừ panel phải và các padding
+                mstMenuRect.width - controlPanelWidth - 3 * panelPadding,
                 availableHeight
             };
             DrawRectangleLinesEx(graphArea, 1, BLUE); // Visualize graph area
@@ -2241,14 +2437,13 @@ void RunGraphApp() {
                 controlPanelWidth,
                 availableHeight
             };
+            float currentControlY = controlPanelRect.y + 10;
+            int controlFontSize = 20;
+            float controlItemSpacing = 15;
+            const float controlButtonHeight = 30.0f;
             DrawRectangleRec(controlPanelRect, { 200, 200, 200, 150 }); // Optional background for control panel
             DrawRectangleLinesEx(controlPanelRect, 1, RED); // Visualize control panel area
-            
-            float currentControlY = controlPanelRect.y + 10; // Y bắt đầu trong panel
-            int controlFontSize = 20;
-            float controlItemSpacing = 15; // Khoảng cách giữa các item trong panel
 
-            // 1. Total Weight
             if (showWeightInfo) {
                 std::string weightStr = "Total Weight: " + std::to_string(totalMSTWeight);
                 Vector2 weightTextSize = MeasureTextEx(GetFontDefault(), weightStr.c_str(), controlFontSize, 1);
@@ -2309,40 +2504,16 @@ void RunGraphApp() {
                  DrawText("Skip", skipButton.x + (skipButton.width - skipTextSize.x)/2, skipButton.y + (skipButton.height - skipTextSize.y)/2, controlFontSize, mstDoneDrawing ? GRAY : BLACK);
                  currentControlY += controlButtonHeight + controlItemSpacing; // Khoảng cách cuối cùng
              }
-             Rectangle pseudocodeViewRect = {
-                controlPanelRect.x + panelPadding,
-                currentControlY, // Bắt đầu dưới các control
-                controlPanelRect.width - 2 * panelPadding,
-                controlPanelRect.y + controlPanelRect.height - currentControlY - panelPadding // Chiều cao còn lại
-            };
+           // Tính toán pseudocodeViewRect
+             pseudocodeViewRect = {
+               controlPanelRect.x + panelPadding,
+               currentControlY,
+               controlPanelRect.width - 2 * panelPadding - 12,
+               controlPanelRect.y + controlPanelRect.height - currentControlY - panelPadding - 12
+             };
              DrawRectangle(pseudocodeViewRect.x - 2, pseudocodeViewRect.y - 2, pseudocodeViewRect.width + 4, pseudocodeViewRect.height + 4, Fade(BLACK, 0.1f)); // Nền mờ nhẹ (tùy chọn)
              DrawRectangleLinesEx(pseudocodeViewRect, 1, GRAY); // Viền (tùy chọn)
 
-            std::vector<std::string>* codeToShow = nullptr;
-            if (usePrim) codeToShow = &primPseudocode;
-            else if (useKruskal) codeToShow = &kruskalPseudocode;
-
-            if (codeToShow) {
-                int pseudoFontSize = 16;
-                float pseudoLineHeight = (float)pseudoFontSize * 1.25f; // Tăng khoảng cách dòng
-                float textOffsetY = pseudocodeViewRect.y + 5;
-
-                 // (Tùy chọn: Thêm logic scroll nếu mã giả quá dài)
-                 BeginScissorMode((int)pseudocodeViewRect.x, (int)pseudocodeViewRect.y, (int)pseudocodeViewRect.width, (int)pseudocodeViewRect.height);
-                 DrawRectangleRec(pseudocodeViewRect, Fade(BLACK, 0.1f));
-                 for (int i = 0; i < codeToShow->size(); ++i) {
-                    // Chỉ vẽ nếu còn nằm trong khu vực hiển thị (vẫn nên giữ check này)
-                    if (textOffsetY < pseudocodeViewRect.y + pseudocodeViewRect.height - pseudoFontSize) {
-                         // Highlight (nếu có, bỏ qua nếu chỉ hiển thị)
-                         // if (i == highlightLine) { ... }
-                         DrawText((*codeToShow)[i].c_str(), pseudocodeViewRect.x + 5, textOffsetY, pseudoFontSize, BLACK);
-                    } else {
-                        break;
-                    }
-                    textOffsetY += pseudoLineHeight;
-                }
-                 EndScissorMode();
-             }
              int numNodesToDraw = nodePositions.size();
              std::vector<Vector2> mstDrawNodePositions(numNodesToDraw);
              if (numNodesToDraw > 0 && mstDrawNodePositions.size() == numNodesToDraw) {
@@ -2420,8 +2591,275 @@ void RunGraphApp() {
              DrawRectangleRec(primButton, usePrim ? ORANGE: WHITE); DrawButton("Prim", primButton, GetFontDefault(), "Prim"); 
              DrawRectangleRec(kruskalButton, useKruskal ? ORANGE : WHITE);  DrawButton("Kruskal", kruskalButton, GetFontDefault(), "Kruskal"); 
              DrawRectangleRec(backButton, WHITE); DrawButton("Back", backButton, GetFontDefault(), "Back");
-        
+            std::vector<std::string>* codeToShow = nullptr;
+            if (usePrim) codeToShow = &primPseudocode;
+            else if (useKruskal) codeToShow = &kruskalPseudocode;
+            
+            if (codeToShow) {
+                int pseudoFontSize = 16;
+                float pseudoLineHeight = (float)pseudoFontSize * 1.25f;
+
+                // Tính toán kích thước nội dung
+                mstPseudocodeTotalHeight = codeToShow->size() * pseudoLineHeight;
+                mstPseudocodeMaxWidth = 0.0f;
+                for (const auto& line : *codeToShow) {
+                    Vector2 textSize = MeasureTextEx(GetFontDefault(), line.c_str(), pseudoFontSize, 1);
+                    mstPseudocodeMaxWidth = std::max(mstPseudocodeMaxWidth, textSize.x + 10.0f);
+                }
+
+                // Vẽ pseudocode với scroll
+                BeginScissorMode((int)pseudocodeViewRect.x, (int)pseudocodeViewRect.y, (int)pseudocodeViewRect.width, (int)pseudocodeViewRect.height);
+                DrawRectangleRec(pseudocodeViewRect, Fade(BLACK, 0.1f));
+                float textOffsetY = pseudocodeViewRect.y + 5 - mstPseudocodeScrollY;
+                for (int i = 0; i < codeToShow->size(); ++i) {
+                    if (textOffsetY >= pseudocodeViewRect.y - pseudoLineHeight && textOffsetY < pseudocodeViewRect.y + pseudocodeViewRect.height) {
+                        Color textColor = BLACK;
+                        if (i == currentHighlightLine) {
+                            DrawRectangle(pseudocodeViewRect.x - mstPseudocodeScrollX, textOffsetY - 2, mstPseudocodeMaxWidth, pseudoLineHeight, Fade(YELLOW, 0.5f));
+                            textColor = DARKBLUE;
+                        }
+                        DrawText((*codeToShow)[i].c_str(), pseudocodeViewRect.x + 5 - mstPseudocodeScrollX, textOffsetY, pseudoFontSize, textColor);
+                    }
+                    textOffsetY += pseudoLineHeight;
+                }
+                EndScissorMode();
+
+                // Thanh cuộn ngang
+                showPseudocodeHScrollbar = mstPseudocodeMaxWidth > pseudocodeViewRect.width;
+                if (showPseudocodeHScrollbar) {
+                    float viewRatio = pseudocodeViewRect.width / mstPseudocodeMaxWidth;
+                    float handleWidth = pseudocodeViewRect.width * viewRatio;
+                    handleWidth = std::max(handleWidth, 20.0f);
+                    float trackWidth = pseudocodeViewRect.width;
+                    float scrollMax = mstPseudocodeMaxWidth - pseudocodeViewRect.width;
+                    float handleX = pseudocodeViewRect.x + (scrollMax > 0 ? (mstPseudocodeScrollX / scrollMax) * (trackWidth - handleWidth) : 0);
+
+                    pseudocodeHScrollbarRect = { pseudocodeViewRect.x, pseudocodeViewRect.y + pseudocodeViewRect.height, trackWidth, 12 };
+                    pseudocodeHScrollHandleRect = { handleX, pseudocodeViewRect.y + pseudocodeViewRect.height, handleWidth, 12 };
+
+                    DrawRectangleRec(pseudocodeHScrollbarRect, LIGHTGRAY);
+                    DrawRectangleRec(pseudocodeHScrollHandleRect, isDraggingHScrollbar ? DARKGRAY : GRAY);
+                } else {
+                    mstPseudocodeScrollX = 0.0f;
+                }
+            }
+            if (CheckCollisionPointRec(mousePos, mstMenuRect)) {
+                Vector2 screenMousePos = GetMousePosition();
+                clickedOnUI = true;
+                speedSlider.update();
+
+                // Handle slider value editing click
+                Rectangle sliderValueRect = { speedSlider.rect.x + speedSlider.rect.width + 10, speedSlider.rect.y, 60, 16 };
+                if (!speedSlider.isEditing() && CheckCollisionPointRec(mousePos, sliderValueRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                    speedSlider.startEditing();
+                }
+                if (speedSlider.isEditing() && (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_KP_ENTER) || (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !speedSlider.isHovered() && !CheckCollisionPointRec(mousePos, sliderValueRect)))) {
+                    speedSlider.stopEditing();
+                }
+
+                // Xử lý kéo thanh cuộn dọc
+                if (showPseudocodeVScrollbar && !isDraggingHScrollbar) {
+                    if (!isDraggingVScrollbar && CheckCollisionPointRec(screenMousePos, pseudocodeVScrollHandleRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                        isDraggingVScrollbar = true;
+                        scrollbarMouseOffsetY = screenMousePos.y - pseudocodeVScrollHandleRect.y;
+                    }
+                    if (isDraggingVScrollbar && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+                        float trackHeight = std::max(1.0f, pseudocodeVScrollbarRect.height - pseudocodeVScrollHandleRect.height);
+                        float scrollMax = std::max(0.0f, mstPseudocodeTotalHeight - pseudocodeViewRect.height);
+                        float newHandleY = screenMousePos.y - scrollbarMouseOffsetY;
+                        newHandleY = Clamp(newHandleY, pseudocodeVScrollbarRect.y, pseudocodeVScrollbarRect.y + trackHeight);
+                        float scrollRatio = trackHeight > 0 ? (newHandleY - pseudocodeVScrollbarRect.y) / trackHeight : 0.0f;
+                        mstPseudocodeScrollY = scrollRatio * scrollMax;
+                        mstPseudocodeScrollY = Clamp(mstPseudocodeScrollY, 0.0f, scrollMax);
+                    }
+                    if (isDraggingVScrollbar && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+                        isDraggingVScrollbar = false;
+                    }
+                }
+
+                // Xử lý kéo thanh cuộn ngang
+                if (showPseudocodeHScrollbar && !isDraggingVScrollbar) {
+                    if (!isDraggingHScrollbar && CheckCollisionPointRec(screenMousePos, pseudocodeHScrollHandleRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                        isDraggingHScrollbar = true;
+                        scrollbarMouseOffsetX = screenMousePos.x - pseudocodeHScrollHandleRect.x;
+                    }
+                    if (isDraggingHScrollbar && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+                        float trackWidth = std::max(1.0f, pseudocodeHScrollbarRect.width - pseudocodeHScrollHandleRect.width);
+                        float scrollMax = std::max(0.0f, mstPseudocodeMaxWidth - pseudocodeViewRect.width); // Sửa lỗi từ height thành width
+                        float newHandleX = screenMousePos.x - scrollbarMouseOffsetX;
+                        newHandleX = Clamp(newHandleX, pseudocodeHScrollbarRect.x, pseudocodeHScrollbarRect.x + trackWidth);
+                        float scrollRatio = trackWidth > 0 ? (newHandleX - pseudocodeHScrollbarRect.x) / trackWidth : 0.0f;
+                        mstPseudocodeScrollX = scrollRatio * scrollMax;
+                        mstPseudocodeScrollX = Clamp(mstPseudocodeScrollX, 0.0f, scrollMax);
+                    }
+                    if (isDraggingHScrollbar && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+                        isDraggingHScrollbar = false;
+                    }
+                }
+            }
          } // end if showMSTMenu
+         if (showMSTMenu) {
+            if (CheckCollisionPointRec(mousePos, mstMenuRect)) {
+                Vector2 screenMousePos = GetMousePosition();
+                clickedOnUI = true; // Interactions inside MST menu are UI
+                speedSlider.update(); // Update slider logic
+                // Handle slider value editing click
+                Rectangle sliderValueRect = { speedSlider.rect.x + speedSlider.rect.width + 10, speedSlider.rect.y, 60, 16 };
+                if (!speedSlider.isEditing() && CheckCollisionPointRec(mousePos, sliderValueRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                    speedSlider.startEditing();
+                }
+                 // Stop slider editing if clicking outside slider or pressing Enter
+                if (speedSlider.isEditing() && (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_KP_ENTER) || (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !speedSlider.isHovered() && !CheckCollisionPointRec(mousePos, sliderValueRect)))) {
+                    speedSlider.stopEditing();
+                }
+
+                if (showPseudocodeVScrollbar && !isDraggingHScrollbar) {
+                   if (!isDraggingVScrollbar && CheckCollisionPointRec(mousePos, pseudocodeVScrollHandleRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                       isDraggingVScrollbar = true;
+                       scrollbarMouseOffsetY = mousePos.y - pseudocodeVScrollHandleRect.y;
+                   }
+                   if (showPseudocodeVScrollbar && !isDraggingHScrollbar) {
+                       if (!isDraggingVScrollbar && CheckCollisionPointRec(screenMousePos, pseudocodeVScrollHandleRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                           isDraggingVScrollbar = true;
+                           scrollbarMouseOffsetY = screenMousePos.y - pseudocodeVScrollHandleRect.y;
+                       }
+                       if (isDraggingVScrollbar && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+                           float trackHeight = pseudocodeVScrollbarRect.height - pseudocodeVScrollHandleRect.height;
+                           float scrollMax = mstPseudocodeTotalHeight - pseudocodeViewRect.height;
+                           float newHandleY = screenMousePos.y - scrollbarMouseOffsetY;
+                           newHandleY = Clamp(newHandleY, pseudocodeVScrollbarRect.y, pseudocodeVScrollbarRect.y + trackHeight);
+                           float scrollRatio = scrollMax > 0 ? (newHandleY - pseudocodeVScrollbarRect.y) / trackHeight : 0.0f;
+                           mstPseudocodeScrollY = scrollRatio * scrollMax;
+                           mstPseudocodeScrollY = Clamp(mstPseudocodeScrollY, 0.0f, scrollMax);
+                       }
+                       if (isDraggingVScrollbar && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+                           isDraggingVScrollbar = false;
+                       }
+                    }
+               }
+                // Check Button Clicks
+                if (CheckCollisionPointRec(mousePos, primButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                   if (!nodePositions.empty()) {
+                       mstEdges = calculatePrimMST(edges, nodePositions.size());
+                       if (mstEdges.size() < nodePositions.size() - 1 && nodePositions.size() > 1) {
+                           mstErrorMessage = "MST not found (graph might be disconnected).";
+                           showMSTError = true;
+                           usePrim = false; useKruskal = false; mstEdges.clear();
+                           currentHighlightLine = -1;
+                       } else {
+                           usePrim = true; useKruskal = false; showMSTError = false;
+                           mstEdgesDrawn.assign(mstEdges.size(), false);
+                           mstNodesDrawn.assign(nodePositions.size(), false);
+                           mstEdgeIndex = 0; mstDrawTimer = 0.0f; mstDoneDrawing = false;
+                           totalMSTWeight = 0; showWeightInfo = true; isMSTDrawingPaused = false;
+                           currentHighlightLine = 1; // Bắt đầu với bước khởi tạo
+                       }
+                   }
+               } else if (CheckCollisionPointRec(mousePos, kruskalButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                   if (!nodePositions.empty()) {
+                       mstEdges = calculateKruskalMST(edges, nodePositions.size());
+                       if (mstEdges.size() < nodePositions.size() - 1 && nodePositions.size() > 1) {
+                           mstErrorMessage = "MST not found (graph might be disconnected).";
+                           showMSTError = true;
+                           usePrim = false; useKruskal = false; mstEdges.clear();
+                           currentHighlightLine = -1;
+                       } else {
+                           usePrim = false; useKruskal = true; showMSTError = false;
+                           mstEdgesDrawn.assign(mstEdges.size(), false);
+                           mstNodesDrawn.assign(nodePositions.size(), false);
+                           mstEdgeIndex = 0; mstDrawTimer = 0.0f; mstDoneDrawing = false;
+                           totalMSTWeight = 0; showWeightInfo = true; isMSTDrawingPaused = false;
+                           currentHighlightLine = 1; // Bắt đầu với bước khởi tạo
+                       }
+                   }
+               } else if (CheckCollisionPointRec(mousePos, backButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                    showMSTMenu = false; // Exit MST menu
+                    showMSTError = false; // Clear error on exit
+                    currentHighlightLine = -1; // Reset highlight
+                } else if (showWeightInfo && CheckCollisionPointRec(mousePos, pauseResumeButton)) { // Dùng pauseResumeButton mới
+                   if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                       isMSTDrawingPaused = !isMSTDrawingPaused;
+                   }
+                }
+                else if (showWeightInfo && CheckCollisionPointRec(mousePos, prevStepButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                   if (mstEdgeIndex > 0) { // Chỉ lùi lại nếu có bước trước đó
+                       isMSTDrawingPaused = true; // Tạm dừng khi nhấn Prev
+                       mstDoneDrawing = false;   // Chắc chắn không phải đã xong
+                       mstEdgeIndex--;           // Lùi chỉ số cạnh
+                       mstEdgesDrawn[mstEdgeIndex] = false; // Bỏ đánh dấu cạnh này
+                       totalMSTWeight -= mstEdges[mstEdgeIndex].weight; // Trừ trọng số
+
+                       // Tính toán lại trạng thái mstNodesDrawn
+                       mstNodesDrawn.assign(nodePositions.size(), false); // Reset lại
+                       for (int i = 0; i < mstEdgeIndex; ++i) { // Duyệt qua các cạnh *đã* được vẽ (đến trước cạnh vừa bỏ)
+                           if (mstEdgesDrawn[i]) {
+                               if (mstEdges[i].from > 0 && mstEdges[i].from <= mstNodesDrawn.size())
+                                   mstNodesDrawn[mstEdges[i].from - 1] = true;
+                               if (mstEdges[i].to > 0 && mstEdges[i].to <= mstNodesDrawn.size())
+                                   mstNodesDrawn[mstEdges[i].to - 1] = true;
+                           }
+                       }
+                       // Nếu mstEdgeIndex về 0, và thuật toán Prim bắt đầu từ node 0, thì node 0 vẫn nên được đánh dấu
+                       if (mstEdgeIndex == 0 && usePrim && !mstNodesDrawn.empty()) {
+                           // mstNodesDrawn[0] = true; // Hoặc không cần nếu logic vẽ xử lý node đầu tiên riêng
+                       }
+                       currentHighlightLine = -1; 
+                   }
+               }
+               else if (showWeightInfo && CheckCollisionPointRec(mousePos, nextStepButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                   if (mstEdgeIndex < mstEdges.size()) { // Chỉ tiến tới nếu chưa hết cạnh
+                       isMSTDrawingPaused = true; // Tạm dừng khi nhấn Next
+                       // Thực hiện ngay bước tiếp theo
+                       if (!mstEdgesDrawn[mstEdgeIndex]) { // Chỉ cộng weight nếu chưa vẽ
+                           mstEdgesDrawn[mstEdgeIndex] = true;
+                           totalMSTWeight += mstEdges[mstEdgeIndex].weight;
+                           if (mstEdges[mstEdgeIndex].from > 0 && mstEdges[mstEdgeIndex].from <= mstNodesDrawn.size())
+                               mstNodesDrawn[mstEdges[mstEdgeIndex].from - 1] = true;
+                           if (mstEdges[mstEdgeIndex].to > 0 && mstEdges[mstEdgeIndex].to <= mstNodesDrawn.size())
+                               mstNodesDrawn[mstEdges[mstEdgeIndex].to - 1] = true;
+                       }
+                       mstEdgeIndex++;
+                       mstDrawTimer = 0.0f; // Reset timer
+                       if (mstEdgeIndex == mstEdges.size()) {
+                           mstDoneDrawing = true;
+                       }
+                       if (usePrim) currentHighlightLine = 5; // Index của dòng "6. Add edge..." trong primPseudocode
+                       else if (useKruskal) currentHighlightLine = 5; // Index của dòng "6. Add edge..." trong kruskalPseudocode
+                       else currentHighlightLine = -1;
+                   }
+               }
+               else if (showWeightInfo && CheckCollisionPointRec(mousePos, skipButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                  if (!mstDoneDrawing) {
+                       isMSTDrawingPaused = true; // Tạm dừng
+                       // Hoàn thành các bước còn lại
+                       for (int i = mstEdgeIndex; i < mstEdges.size(); ++i) {
+                           if (!mstEdgesDrawn[i]) {
+                               mstEdgesDrawn[i] = true;
+                               totalMSTWeight += mstEdges[i].weight;
+                               if (mstEdges[i].from > 0 && mstEdges[i].from <= mstNodesDrawn.size())
+                                   mstNodesDrawn[mstEdges[i].from - 1] = true;
+                               if (mstEdges[i].to > 0 && mstEdges[i].to <= mstNodesDrawn.size())
+                                   mstNodesDrawn[mstEdges[i].to - 1] = true;
+                           }
+                       }
+                       mstEdgeIndex = mstEdges.size(); // Đi đến cuối
+                       mstDoneDrawing = true;
+                       mstDrawTimer = 0.0f;
+                       if (!mstEdges.empty()){ // Chỉ highlight nếu có cạnh nào được thêm
+                           if (usePrim) currentHighlightLine = 5;
+                           else if (useKruskal) currentHighlightLine = 5;
+                           else currentHighlightLine = -1;
+                       } else {
+                           currentHighlightLine = -1; // Hoặc highlight dòng cuối (return)
+                       }
+                   }
+               }
+            }
+             // Allow clicking outside MST menu to close it? Maybe not, use Back button.
+             else if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                showMSTMenu = false; // Click outside closes
+             }
+        } // end if showMSTMenu
          if (showMSTError) {
             DrawText(mstErrorMessage.c_str(), mstMenuRect.x + 10, mstButtonsY - 25, 18, RED); // Position above buttons
         }

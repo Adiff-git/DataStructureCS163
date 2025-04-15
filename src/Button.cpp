@@ -1,25 +1,58 @@
-﻿#include "Button.h"
-#include "raylib.h"
 
-bool DrawButton(const char* text, float x, float y, Font font, bool& buttonClicked, const char*& buttonMessage) { // Vẽ nút và xử lý sự kiện
-    Rectangle button = { x, y, 200.0f, 50.0f }; // Tạo hình chữ nhật cho nút
-    bool isHovered = CheckCollisionPointRec(GetMousePosition(), button); // Kiểm tra chuột có trên nút không
-    bool isClicked = false;                     // Biến kiểm tra nút có được nhấn không
+#include "Button.h"
 
-    if (isHovered) {                            // Nếu chuột di chuột qua nút
-        DrawRectangleRec(button, DARKGRAY);     // Vẽ nút màu xám đậm
-        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) { // Nếu nhấn chuột trái
-            isClicked = true;                   // Đánh dấu nút được nhấn
-            buttonClicked = true;               // Cập nhật biến ngoài
-            buttonMessage = text;               // Lưu thông điệp của nút
+bool IsButtonClicked(Rectangle button) {
+    Vector2 mousePos = GetMousePosition();
+    return CheckCollisionPointRec(mousePos, button) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
+}
+
+bool DrawButton(const char* text, Rectangle bounds, Font font, bool& buttonClicked, const char* buttonMessage) {
+    // (Mã hiện có của bạn cho hàm DrawButton)
+    // Ví dụ:
+    bool clicked = false;
+    Vector2 mousePos = GetMousePosition();
+    if (CheckCollisionPointRec(mousePos, bounds)) {
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            buttonClicked = true;
+            clicked = true;
         }
-    } else {                                    // Nếu chuột không trên nút
-        DrawRectangleRec(button, GRAY);         // Vẽ nút màu xám nhạt
+        DrawRectangleRec(bounds, Fade(GRAY, 0.5f));
+    } else {
+        DrawRectangleRec(bounds, LIGHTGRAY);
+    }
+    Vector2 textSize = MeasureTextEx(font, text, 20, 1);
+    DrawTextEx(font, text, { bounds.x + (bounds.width - textSize.x) / 2, bounds.y + (bounds.height - textSize.y) / 2 }, 20, 1, BLACK);
+    return clicked;
+}
+
+bool DrawBackButton(Texture2D backButtonTexture, Rectangle bounds, bool& buttonClicked) {
+    // Kiểm tra xem texture có hợp lệ không
+    if (backButtonTexture.id == 0) {
+        // Nếu không tải được texture, vẽ một hình chữ nhật tạm thời để kiểm tra vị trí
+        DrawRectangleRec(bounds, RED);
+        DrawText("Back", bounds.x + 5, bounds.y + 15, 20, WHITE);
+    } else {
+        // Vẽ hình ảnh nút "Back" với tỷ lệ phù hợp
+        Rectangle sourceRect = { 0, 0, (float)backButtonTexture.width, (float)backButtonTexture.height };
+        Rectangle destRect = { bounds.x, bounds.y, bounds.width, bounds.height };
+        Vector2 origin = { 0, 0 };
+        DrawTexturePro(backButtonTexture, sourceRect, destRect, origin, 0.0f, WHITE);
     }
 
-    DrawRectangleLines(x, y, 200.0f, 50.0f, BLACK); // Vẽ viền nút
-    Vector2 textSize = MeasureTextEx(font, text, 30, 1); // Đo kích thước văn bản
-    DrawTextEx(font, text, { x + 100.0f - textSize.x / 2, y + 10.0f }, 30, 1, WHITE); // Vẽ văn bản ở giữa nút
-
-    return isClicked;                           // Trả về trạng thái nhấn nút
+    // Kiểm tra xem nút có được nhấn hay không
+    Vector2 mousePos = GetMousePosition();
+    if (CheckCollisionPointRec(mousePos, bounds)) {
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            buttonClicked = true;
+            return true;
+        }
+        // Tạo hiệu ứng khi di chuột qua (làm sáng nút)
+        if (backButtonTexture.id != 0) {
+            Rectangle sourceRect = { 0, 0, (float)backButtonTexture.width, (float)backButtonTexture.height };
+            Rectangle destRect = { bounds.x, bounds.y, bounds.width, bounds.height };
+            Vector2 origin = { 0, 0 };
+            DrawTexturePro(backButtonTexture, sourceRect, destRect, origin, 0.0f, Fade(WHITE, 0.8f));
+        }
+    }
+    return false;
 }

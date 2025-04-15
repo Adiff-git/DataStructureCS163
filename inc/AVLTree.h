@@ -1,44 +1,51 @@
-#ifndef AVL_TREE_H
-#define AVL_TREE_H
+#ifndef AVLTREE_H
+#define AVLTREE_H
 
-#include "DataStructureLogic.h"
-#include "raylib.h"
-#include "Screen.h" // Include Screen.h
 #include <vector>
-#include <string>
+#include <algorithm>
+#include <queue>
+#include <iostream>
 
-class AVLTree : public DataStructureLogic {
-private:
-    struct AVLNode {
-        int data;
-        int height;
-        AVLNode* left;
-        AVLNode* right;
-        AVLNode(int d) : data(d), height(1), left(nullptr), right(nullptr) {}
-    };
-    AVLNode* root;
-    int Height(AVLNode* node);
-    int BalanceFactor(AVLNode* node);
-    AVLNode* RotateRight(AVLNode* y);
-    AVLNode* RotateLeft(AVLNode* x);
-    AVLNode* Insert(AVLNode* node, int value, bool saveSteps);
-    AVLNode* DeleteHelper(AVLNode* node, int value);
-    AVLNode* FindMin(AVLNode* node);
-    void DrawNode(Font font, AVLNode* node, int x, int y, int level);
-    AVLNode* CopyTree(AVLNode* source);
-    void* CopyState() override;
-    void Draw(Font font, void* state, int x, int y) override;
-    void ClearStates() override;
+// Node structure for the AVL tree
+struct Node {
+    int data;
+    Node* left;
+    Node* right;
+    int height; // Added to track height for balancing
 
-public:
-    AVLTree();
-    ~AVLTree() override;
-    void Initialize(int param) override;
-    void Add(int value) override;
-    void Delete(int value) override;
-    void Update(int oldValue, int newValue) override;
-    bool Search(int value) override;
-    void DrawScreen(Font font, bool& buttonClicked, const char*& buttonMessage, Screen& currentScreen);
+    Node(int val);
 };
 
-#endif
+// AVLTree class with core operations and visualization support
+class AVLTree {
+public:
+    Node* root;
+
+    void destroyTree(Node* node);
+    Node* copyTree(const Node* node);
+
+    // Constructor & Destructor
+    AVLTree();
+    ~AVLTree();
+    AVLTree(const AVLTree& other);
+    AVLTree& operator=(const AVLTree& other);
+
+    int getHeight(Node* node) const;
+    int getBalanceFactor(Node* node);
+    float getSubtreeWidth(Node* node);
+    Node* minValueNode(Node* node);
+
+    void rightRotate(Node*& root);
+    void leftRotate(Node*& root);
+    void insert(Node*& node, int value);
+    void remove(Node*& node, int value);
+    bool search(int value);
+    std::vector<Node*> getInsertionPath(int value);
+
+    // Debugging method to print the tree in-order
+    void printInOrder() const;
+private:
+    void printInOrder(Node* node) const; // Helper method for in-order traversal
+};
+
+#endif // AVLTREE_H

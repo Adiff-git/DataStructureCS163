@@ -1,8 +1,8 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.obj"
-  "CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.obj.d"
-  "CMakeFiles/DataStructureCS163.dir/src/AVLmain.cpp.obj"
-  "CMakeFiles/DataStructureCS163.dir/src/AVLmain.cpp.obj.d"
+  "CMakeFiles/DataStructureCS163.dir/src/AVLTree.cpp.obj"
+  "CMakeFiles/DataStructureCS163.dir/src/AVLTree.cpp.obj.d"
+  "CMakeFiles/DataStructureCS163.dir/src/AVLTreeMain.cpp.obj"
+  "CMakeFiles/DataStructureCS163.dir/src/AVLTreeMain.cpp.obj.d"
   "CMakeFiles/DataStructureCS163.dir/src/button.cpp.obj"
   "CMakeFiles/DataStructureCS163.dir/src/button.cpp.obj.d"
   "CMakeFiles/DataStructureCS163.dir/src/main.cpp.obj"

@@ -1,118 +1,249 @@
 #ifndef AVLMAIN_H
+
 #define AVLMAIN_H
 
-#include "AVL.h"
+
+
+#include "AVLTree.h"
+
 #include "button.h"
+
 #include "raylib.h"
+
 #include <string>
+
 #include <stack>
+
 #include <set>
+
 #include <vector>
 
+
+
 enum State {
+
     IDLE,
+
     TRAVERSING,
+
     INSERTING,
+
     HIGHLIGHTING_BEFORE_DELETE,
+
     DELETING,
+
     ROTATING,
+
     SHOWING_RESULT,
+
     SEARCHING,
+
     SEARCH_NOT_FOUND
+
 };
+
+
 
 class AVLTreeVisualizer {
+
 private:
+
+    float UpdateSlider(Rectangle slider, float minValue, float maxValue, float currentValue);
+
     AVLTree tree;
+
     std::string inputText;
+
     bool inputActive;
+
     Rectangle handleSpace;
+
     Rectangle inputBox;
+
     Rectangle initButtonRect;
+
     Rectangle insertButtonRect;
+
     Rectangle deleteButtonRect;
+
     Rectangle searchButtonRect;
+
     Rectangle loadFileButtonRect;
+
     Rectangle rewindButtonRect;
+
     Rectangle previousButtonRect;
+
     Rectangle playPauseButtonRect;
+
     Rectangle nextButtonRect;
+
     Rectangle fastForwardButtonRect;
+
     Rectangle speedBar;
+
     Rectangle sliderHandle;
+
     State currentState;
+
     std::vector<Node*> currentPath;
+
     int pathIndex;
+
     int rotationIndex;
+
     bool searchFound;
+
     float stateTimer;
+
     float resultTimer;
+
     int operationValue;
+
     int pendingInsertValue;
+
     float animationSpeed;
+
     bool draggingSlider;
+
     bool paused;
+
     std::string notificationMessage;
+
     std::set<Node*> highlightNodes;
+
     std::string currentOperation;
+
     bool initButtonClicked;
+
     bool insertButtonClicked;
+
     bool deleteButtonClicked;
+
     bool searchButtonClicked;
+
     bool loadFileButtonClicked;
+
     bool rewindButtonClicked;
+
     bool previousButtonClicked;
+
     bool playPauseButtonClicked;
+
     bool nextButtonClicked;
+
     bool fastForwardButtonClicked;
+
     bool randomButtonClicked;
+
     std::string initButtonMessage;
+
     std::string insertButtonMessage;
+
     std::string deleteButtonMessage;
+
     std::string searchButtonMessage;
+
     std::string loadFileButtonMessage;
+
     std::string rewindButtonMessage;
+
     std::string previousButtonMessage;
+
     std::string playPauseButtonMessage;
+
     std::string nextButtonMessage;
+
     std::string fastForwardButtonMessage;
+
     Rectangle randomButtonRect;
+
     std::string randomButtonMessage;
+
     bool manualStepping; // Tracks if we're stepping manually (via Previous/Next)
+
     std::vector<State> stateHistory; // Tracks the sequence of states for the current operation
+
     int stateHistoryIndex; // Current position in the state history
 
+
+
+    // Variables for "Back" button
+
+    Texture2D backButtonTexture;
+
+    bool backButtonClicked;
+
+
+
 public:
+
+    bool shouldClose; // Flag to indicate if the visualization should close
+
+
+
     AVLTreeVisualizer();
+
     ~AVLTreeVisualizer();
 
+
+
     void handleInput();
+
     void updateAnimation(float deltaTime);
+
     void draw();
 
+
+
     void animateInsert(int value);
+
     void animateDelete(int value);
+
     void animateSearch(int value);
+
     void animateRandom();
+
     void animateClear();
+
     void animateLoadFile();
+
     void animatePrevious();
+
     void animateNext();
+
     void stepBackward();
+
     void stepForward();
 
+
+
     void setNotificationMessage(const std::string& message);
+
     std::string getNotificationMessage() const;
+
     std::string getPseudocode();
 
+
+
+    // Getter để truy cập trạng thái nút "Back"
+
+    bool IsBackButtonClicked() const { return backButtonClicked; }
+
+
+
 private:
+
     void drawTree(Node* node, float x, float y, float offset, const std::set<Node*>& highlight);
+
 };
 
+
+
 extern std::stack<AVLTree> treeUndoState;
+
 extern std::stack<AVLTree> treeRedoState;
 
-// Function from init.h
-void initAVLProgram();
+
 
 #endif // AVLMAIN_H

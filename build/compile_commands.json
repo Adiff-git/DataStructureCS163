@@ -1,15 +1,15 @@
 [
 {
   "directory": "C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build",
-  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DSUPPORT_FILEFORMAT_MOD=0 @CMakeFiles/DataStructureCS163.dir/includes_CXX.rsp -g -o CMakeFiles\\DataStructureCS163.dir\\src\\AVL.cpp.obj -c \"C:\\Users\\LAPTOP ACER\\Downloads\\Project\\DataStructureCS163\\src\\AVL.cpp\"",
-  "file": "C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/src/AVL.cpp",
-  "output": "CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.obj"
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DSUPPORT_FILEFORMAT_MOD=0 @CMakeFiles/DataStructureCS163.dir/includes_CXX.rsp -g -o CMakeFiles\\DataStructureCS163.dir\\src\\AVLTree.cpp.obj -c \"C:\\Users\\LAPTOP ACER\\Downloads\\Project\\DataStructureCS163\\src\\AVLTree.cpp\"",
+  "file": "C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/src/AVLTree.cpp",
+  "output": "CMakeFiles/DataStructureCS163.dir/src/AVLTree.cpp.obj"
 },
 {
   "directory": "C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build",
-  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DSUPPORT_FILEFORMAT_MOD=0 @CMakeFiles/DataStructureCS163.dir/includes_CXX.rsp -g -o CMakeFiles\\DataStructureCS163.dir\\src\\AVLmain.cpp.obj -c \"C:\\Users\\LAPTOP ACER\\Downloads\\Project\\DataStructureCS163\\src\\AVLmain.cpp\"",
-  "file": "C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/src/AVLmain.cpp",
-  "output": "CMakeFiles/DataStructureCS163.dir/src/AVLmain.cpp.obj"
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DSUPPORT_FILEFORMAT_MOD=0 @CMakeFiles/DataStructureCS163.dir/includes_CXX.rsp -g -o CMakeFiles\\DataStructureCS163.dir\\src\\AVLTreeMain.cpp.obj -c \"C:\\Users\\LAPTOP ACER\\Downloads\\Project\\DataStructureCS163\\src\\AVLTreeMain.cpp\"",
+  "file": "C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/src/AVLTreeMain.cpp",
+  "output": "CMakeFiles/DataStructureCS163.dir/src/AVLTreeMain.cpp.obj"
 },
 {
   "directory": "C:/Users/LAPTOP ACER/Downloads/Project/DataStructureCS163/build",

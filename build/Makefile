@@ -245,53 +245,53 @@ update_mappings/fast:
 	$(MAKE) $(MAKESILENT) -f raylib\raylib\external\glfw\src\CMakeFiles\update_mappings.dir\build.make raylib/raylib/external/glfw/src/CMakeFiles/update_mappings.dir/build
 .PHONY : update_mappings/fast
 
-src/AVL.obj: src/AVL.cpp.obj
-.PHONY : src/AVL.obj
+src/AVLTree.obj: src/AVLTree.cpp.obj
+.PHONY : src/AVLTree.obj
 
 # target to build an object file
-src/AVL.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.obj
-.PHONY : src/AVL.cpp.obj
+src/AVLTree.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/AVLTree.cpp.obj
+.PHONY : src/AVLTree.cpp.obj
 
-src/AVL.i: src/AVL.cpp.i
-.PHONY : src/AVL.i
+src/AVLTree.i: src/AVLTree.cpp.i
+.PHONY : src/AVLTree.i
 
 # target to preprocess a source file
-src/AVL.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.i
-.PHONY : src/AVL.cpp.i
+src/AVLTree.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/AVLTree.cpp.i
+.PHONY : src/AVLTree.cpp.i
 
-src/AVL.s: src/AVL.cpp.s
-.PHONY : src/AVL.s
+src/AVLTree.s: src/AVLTree.cpp.s
+.PHONY : src/AVLTree.s
 
 # target to generate assembly for a file
-src/AVL.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/AVL.cpp.s
-.PHONY : src/AVL.cpp.s
+src/AVLTree.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/AVLTree.cpp.s
+.PHONY : src/AVLTree.cpp.s
 
-src/AVLmain.obj: src/AVLmain.cpp.obj
-.PHONY : src/AVLmain.obj
+src/AVLTreeMain.obj: src/AVLTreeMain.cpp.obj
+.PHONY : src/AVLTreeMain.obj
 
 # target to build an object file
-src/AVLmain.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/AVLmain.cpp.obj
-.PHONY : src/AVLmain.cpp.obj
+src/AVLTreeMain.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/AVLTreeMain.cpp.obj
+.PHONY : src/AVLTreeMain.cpp.obj
 
-src/AVLmain.i: src/AVLmain.cpp.i
-.PHONY : src/AVLmain.i
+src/AVLTreeMain.i: src/AVLTreeMain.cpp.i
+.PHONY : src/AVLTreeMain.i
 
 # target to preprocess a source file
-src/AVLmain.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/AVLmain.cpp.i
-.PHONY : src/AVLmain.cpp.i
+src/AVLTreeMain.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/AVLTreeMain.cpp.i
+.PHONY : src/AVLTreeMain.cpp.i
 
-src/AVLmain.s: src/AVLmain.cpp.s
-.PHONY : src/AVLmain.s
+src/AVLTreeMain.s: src/AVLTreeMain.cpp.s
+.PHONY : src/AVLTreeMain.s
 
 # target to generate assembly for a file
-src/AVLmain.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/AVLmain.cpp.s
-.PHONY : src/AVLmain.cpp.s
+src/AVLTreeMain.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DataStructureCS163.dir\build.make CMakeFiles/DataStructureCS163.dir/src/AVLTreeMain.cpp.s
+.PHONY : src/AVLTreeMain.cpp.s
 
 src/button.obj: src/button.cpp.obj
 .PHONY : src/button.obj
@@ -384,12 +384,12 @@ help:
 	@echo ... DataStructureCS163
 	@echo ... glfw
 	@echo ... raylib
-	@echo ... src/AVL.obj
-	@echo ... src/AVL.i
-	@echo ... src/AVL.s
-	@echo ... src/AVLmain.obj
-	@echo ... src/AVLmain.i
-	@echo ... src/AVLmain.s
+	@echo ... src/AVLTree.obj
+	@echo ... src/AVLTree.i
+	@echo ... src/AVLTree.s
+	@echo ... src/AVLTreeMain.obj
+	@echo ... src/AVLTreeMain.i
+	@echo ... src/AVLTreeMain.s
 	@echo ... src/button.obj
 	@echo ... src/button.i
 	@echo ... src/button.s

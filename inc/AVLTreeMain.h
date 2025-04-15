@@ -23,29 +23,11 @@ enum State {
 
 class AVLTreeVisualizer {
 private:
-
-    std::vector<std::vector<Node*>> insertPaths;
-    std::vector<std::set<Node*>> insertHighlightNodes;
-    std::vector<std::string> insertNotifications;
-    std::vector<State> insertStates;
-
-    std::vector<std::vector<Node*>> deletePaths;
-    std::vector<std::set<Node*>> deleteHighlightNodes;
-    std::vector<std::string> deleteNotifications;
-    std::vector<State> deleteStates;
-
-    std::vector<std::vector<Node*>> searchPaths;
-    std::vector<std::set<Node*>> searchHighlightNodes;
-    std::vector<std::string> searchNotifications;
-    std::vector<State> searchStates;
-
-    // Biến để theo dõi bước hiện tại của animation
-    int totalSteps;
-    int currentStep;
-
+    float UpdateSlider(Rectangle slider, float minValue, float maxValue, float currentValue);
     AVLTree tree;
     std::string inputText;
     bool inputActive;
+    Rectangle handleSpace;
     Rectangle inputBox;
     Rectangle initButtonRect;
     Rectangle insertButtonRect;
@@ -57,7 +39,6 @@ private:
     Rectangle playPauseButtonRect;
     Rectangle nextButtonRect;
     Rectangle fastForwardButtonRect;
-    Rectangle randomButtonRect;
     Rectangle speedBar;
     Rectangle sliderHandle;
     State currentState;
@@ -75,17 +56,6 @@ private:
     std::string notificationMessage;
     std::set<Node*> highlightNodes;
     std::string currentOperation;
-
-    // Animation control
-    int curStep;
-    void resetAnimation();
-
-    // Menu con và trạng thái nút
-    bool showInitOption;
-    bool showInsertOption;
-    bool showDeleteOption;
-    bool showSearchOption;
-    bool showLoadOption;
     bool initButtonClicked;
     bool insertButtonClicked;
     bool deleteButtonClicked;
@@ -107,19 +77,18 @@ private:
     std::string playPauseButtonMessage;
     std::string nextButtonMessage;
     std::string fastForwardButtonMessage;
+    Rectangle randomButtonRect;
     std::string randomButtonMessage;
+    bool manualStepping; // Tracks if we're stepping manually (via Previous/Next)
+    std::vector<State> stateHistory; // Tracks the sequence of states for the current operation
+    int stateHistoryIndex; // Current position in the state history
 
-    // Back button
+    // Variables for "Back" button
     Texture2D backButtonTexture;
     bool backButtonClicked;
 
-    // Code area
-    float codePosX = 10;
-    float codePosY = 60;
-    float codePosSpace = 25;
-
 public:
-    bool shouldClose;
+    bool shouldClose; // Flag to indicate if the visualization should close
 
     AVLTreeVisualizer();
     ~AVLTreeVisualizer();
@@ -131,7 +100,7 @@ public:
     void animateInsert(int value);
     void animateDelete(int value);
     void animateSearch(int value);
-    void animateRandom(int n);  // Sửa để nhận tham số
+    void animateRandom();
     void animateClear();
     void animateLoadFile();
     void animatePrevious();
@@ -142,18 +111,12 @@ public:
     void setNotificationMessage(const std::string& message);
     std::string getNotificationMessage() const;
     std::string getPseudocode();
+
+    // Getter để truy cập trạng thái nút "Back"
     bool IsBackButtonClicked() const { return backButtonClicked; }
 
 private:
     void drawTree(Node* node, float x, float y, float offset, const std::set<Node*>& highlight);
-    void drawOperationMenu();
-    void drawInitOptions();
-    void drawInsertOptions();
-    void drawDeleteOptions();
-    void drawSearchOptions();
-    void drawLoadOptions();
-    void drawAnimationMenu();
-    float UpdateSlider(Rectangle slider, float minValue, float maxValue, float currentValue);
 };
 
 extern std::stack<AVLTree> treeUndoState;

@@ -144,7 +144,7 @@ AVLTreeVisualizer::AVLTreeVisualizer()
 
     // Tải hình ảnh nút "Back"
 
-    backButtonTexture = LoadTexture("D:\\Downloads\\sproject\\DataStructureCS163\\resources\\images\\back_button.png");
+    backButtonTexture = LoadTexture("D:\\Downloads\\sproject\\DataStructureCS163\\resources\\images\\BackButton.png");
 
     if (backButtonTexture.id == 0) {
 
@@ -1081,378 +1081,218 @@ void AVLTreeVisualizer::drawTree(Node* node, float x, float y, float offset, con
 
 
 void AVLTreeVisualizer::draw() {
-
     std::set<Node*> highlightNodes(currentPath.begin(), currentPath.begin() + pathIndex);
-
-
 
     ClearBackground(WHITE);
 
-
-
     // Draw pseudocode first to calculate its width
-
     std::string pseudocodeText = getPseudocode();
-
     int lineHeight = 20;
-
     int lineCount = 0;
-
     std::istringstream stream(pseudocodeText);
-
     std::string line;
-
     std::vector<std::string> lines;
-
     while (std::getline(stream, line)) {
-
         lines.push_back(line);
-
         lineCount++;
-
     }
 
-
-
-    int pseudoCodeTopY = 50;
-
+    // Move pseudocode below back button (back button at y=20, height=65, ends at y=85)
+    int pseudoCodeTopY = 100; // Start at y=100 for clear separation
     int maxLineWidth = 0;
-
     for (const auto& l : lines) {
-
         int lineWidth = MeasureText(l.c_str(), 20);
-
         if (lineWidth > maxLineWidth) maxLineWidth = lineWidth;
-
     }
-
-
 
     // Calculate the offset to shift the title and tree further to the right
-
-    float pseudoCodeRightEdge = 10.0f + static_cast<float>(maxLineWidth) + 10.0f; // Right edge of pseudocode background
-
-    float offset = pseudoCodeRightEdge + 300.0f; // Increased buffer to 300 for more space
-
-
+    float pseudoCodeRightEdge = 10.0f + static_cast<float>(maxLineWidth) + 10.0f;
+    float offset = pseudoCodeRightEdge + 300.0f;
 
     // Draw title with offset
-
     int titleSize = MeasureText("AVL Tree Visualizer", 30);
-
     float titleX = offset;
-
     float titleY = 37.0f;
-
     DrawText("AVL Tree Visualizer", titleX, titleY, 30, BLACK);
 
-
-
     // Draw speed slider and label
-
     int speedLabelSize = MeasureText("Speed", 20);
-
     Rectangle speedLabelBgRect = { speedBar.x - 35.0f, speedBar.y - 20.0f - 5.0f, static_cast<float>(speedLabelSize) + 10.0f, 30.0f };
-
     DrawRectangleRec(speedLabelBgRect, Fade(LIGHTGRAY, 0.8f));
-
     DrawText("Speed", speedBar.x - 30.0f, speedBar.y - 20.0f, 20, BLACK);
 
-
-
-    // Hiển thị giá trị tốc độ (tương tự Linked List)
-
+    // Display speed value
     char* speedText = (char*)malloc(20);
-
     sprintf(speedText, "x%.2f", animationSpeed * 2);
-
     DrawText(speedText, speedBar.x + speedBar.width + 10.0f, speedBar.y, 20, BLACK);
-
     free(speedText);
 
-
-
-    // Tính toán vị trí của nút kéo dựa trên tốc độ
-
+    // Calculate slider position
     float t;
-
     float minSpeed = 0.1f;
-
     float maxSpeed = 10.0f;
-
     if (animationSpeed <= 1.0f) {
-
-        // Đoạn từ 0.1 đến 1 ánh xạ từ t = 0 đến t = 0.5
-
         t = (animationSpeed - minSpeed) / (1.0f - minSpeed) * 0.5f;
-
     } else {
-
-        // Đoạn từ 1 đến 10 ánh xạ từ t = 0.5 đến t = 1
-
         t = 0.5f + (animationSpeed - 1.0f) / (maxSpeed - 1.0f) * 0.5f;
-
     }
-
     float sliderPos = t * (speedBar.width - 10.0f);
-
     Rectangle thumbRect = { speedBar.x + sliderPos, speedBar.y, 10.0f, speedBar.height };
-
     DrawRectangleRec(speedBar, LIGHTGRAY);
-
     DrawRectangleRec(thumbRect, DARKGRAY);
 
-
-
     // Draw buttons with centered text
-
     Font defaultFont = GetFontDefault();
-
-    auto drawCenteredButton = [&](const char* text, Rectangle rect, bool& clicked, const std::string& message) {
-
+    auto drawCenteredButton = [&](const char* text, Rectangle rect, bool& clicked, const std::string& message, bool useTexture = false) {
         Vector2 mousePos = GetMousePosition();
+        bool isHovering = CheckCollisionPointRec(mousePos, rect);
+        clicked = isHovering && IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
 
-        clicked = CheckCollisionPointRec(mousePos, rect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
+        // Draw button background
+        DrawRectangleRec(rect, isHovering ? Fade(LIGHTGRAY, 0.9f) : LIGHTGRAY);
 
-        DrawRectangleRec(rect, LIGHTGRAY);
+        // Draw texture for Back button or text for others
+        if (useTexture && backButtonTexture.id > 0) {
+            // Scale texture slightly when clicked for feedback
+            float scale = clicked ? 0.95f : 1.0f;
+            float textureWidth = backButtonTexture.width * scale;
+            float textureHeight = backButtonTexture.height * scale;
+            Rectangle destRec = {
+                rect.x + (rect.width - textureWidth) / 2.0f,
+                rect.y + (rect.height - textureHeight) / 2.0f,
+                textureWidth,
+                textureHeight
+            };
+            DrawTexturePro(backButtonTexture, {0, 0, (float)backButtonTexture.width, (float)backButtonTexture.height}, destRec, {0, 0}, 0.0f, WHITE);
+        } else if (!useTexture) {
+            // Draw text for regular buttons
+            int fontSize = (rect.width < 50) ? 16 : 20;
+            int textSize = MeasureText(text, fontSize);
+            float textX = rect.x + (rect.width - static_cast<float>(textSize)) / 2.0f;
+            float textY = rect.y + (rect.height - static_cast<float>(fontSize)) / 2.0f;
+            DrawText(text, textX, textY, fontSize, BLACK);
+        } else {
+            // Fallback for Back button if texture fails
+            DrawRectangleRec(rect, GRAY);
+            DrawText("Back", rect.x + 10.0f, rect.y + 20.0f, 20, BLACK);
+        }
 
-        DrawRectangleLinesEx(rect, 2, clicked ? BLUE : GRAY);
-
-
-
-        int fontSize = (rect.width < 50) ? 16 : 20;
-
-        int textSize = MeasureText(text, fontSize);
-
-        float textX = rect.x + (rect.width - static_cast<float>(textSize)) / 2.0f;
-
-        float textY = rect.y + (rect.height - static_cast<float>(fontSize)) / 2.0f;
-
-        DrawText(text, textX, textY, fontSize, BLACK);
-
+        // Draw outline (blue on hover or click)
+        DrawRectangleLinesEx(rect, 2, isHovering || clicked ? BLUE : GRAY);
     };
 
-
-
     drawCenteredButton("Init", initButtonRect, initButtonClicked, initButtonMessage);
-
     drawCenteredButton("Insert", insertButtonRect, insertButtonClicked, insertButtonMessage);
-
     drawCenteredButton("Delete", deleteButtonRect, deleteButtonClicked, deleteButtonMessage);
-
     drawCenteredButton("Search", searchButtonRect, searchButtonClicked, searchButtonMessage);
-
     drawCenteredButton("Load", loadFileButtonRect, loadFileButtonClicked, loadFileButtonMessage);
-
     drawCenteredButton("|<<", rewindButtonRect, rewindButtonClicked, rewindButtonMessage);
-
     drawCenteredButton("Prev", previousButtonRect, previousButtonClicked, previousButtonMessage);
-
     drawCenteredButton(paused ? "Play" : "Pause", playPauseButtonRect, playPauseButtonClicked, playPauseButtonMessage);
-
     drawCenteredButton("Next", nextButtonRect, nextButtonClicked, nextButtonMessage);
-
     drawCenteredButton(">>|", fastForwardButtonRect, fastForwardButtonClicked, fastForwardButtonMessage);
-
     drawCenteredButton("?", randomButtonRect, randomButtonClicked, randomButtonMessage);
 
-
+    // Draw "Back" button
+    // Note to friend: This uses 'resources/images/ButtonBack.png'. Replace it with your new image,
+    // keeping the same name, or update the constructor to match your file name.
+    Rectangle backButtonBounds = { 20.0f, 20.0f, 65.0f, 65.0f };
+    drawCenteredButton("", backButtonBounds, backButtonClicked, "", true);
+    if (backButtonClicked) {
+        shouldClose = true; // Close visualizer on click
+    }
 
     // Draw tree with offset
-
     if (tree.root) {
-
         drawTree(tree.root, offset, 120.0f, 200.0f, highlightNodes);
-
     }
-
-
 
     // Draw notification
-
     if (!notificationMessage.empty()) {
-
         float maxWidth = static_cast<float>(GetScreenWidth()) * 0.8f;
-
         std::string displayMessage = notificationMessage;
-
         int messageSize = MeasureText(displayMessage.c_str(), 20);
-
         if (messageSize > maxWidth) {
-
             std::string truncatedMessage = notificationMessage;
-
             while (MeasureText((truncatedMessage + "...").c_str(), 20) > maxWidth && !truncatedMessage.empty()) {
-
                 truncatedMessage.pop_back();
-
             }
-
             displayMessage = truncatedMessage + "...";
-
             messageSize = MeasureText(displayMessage.c_str(), 20);
-
         }
-
         float yPos = 740.0f;
-
         float xPos = (static_cast<float>(GetScreenWidth()) - static_cast<float>(messageSize)) / 2.0f;
-
         Rectangle bgRect = { xPos - 5.0f, yPos - 5.0f, static_cast<float>(messageSize) + 10.0f, 25.0f };
-
         DrawRectangleRec(bgRect, Fade(LIGHTGRAY, 0.8f));
-
         DrawText(displayMessage.c_str(), xPos, yPos, 20, BLACK);
-
     }
 
-
-
-    // Draw pseudocode
-
+    // Draw pseudocode (now below back button)
     Rectangle pseudoCodeBgRect = { 10.0f - 5.0f, static_cast<float>(pseudoCodeTopY) - 5.0f, static_cast<float>(maxLineWidth) + 10.0f, static_cast<float>(lineCount * lineHeight) + 10.0f };
-
     DrawRectangleRec(pseudoCodeBgRect, Fade(LIGHTGRAY, 0.8f));
 
-
-
     int startY = pseudoCodeTopY;
-
     int lineIndex = 0;
-
     int activeLine = -1;
 
-
-
     if (currentOperation == "insert") {
-
         if (currentState == TRAVERSING) {
-
             if (pathIndex == 0) activeLine = 1;
-
             else if (pathIndex <= currentPath.size()) {
-
                 int traversalLine = 2 + (pathIndex - 1) % 5;
-
                 if (traversalLine <= 6) activeLine = traversalLine;
-
                 else activeLine = 7;
-
             }
-
         } else if (currentState == INSERTING) {
-
             activeLine = 9;
-
         } else if (currentState == SHOWING_RESULT) {
-
             activeLine = 10;
-
         }
-
     } else if (currentOperation == "delete") {
-
         if (currentState == TRAVERSING || currentState == HIGHLIGHTING_BEFORE_DELETE) {
-
             if (pathIndex == 0) activeLine = 1;
-
             else if (pathIndex <= currentPath.size()) {
-
                 int traversalLine = 2 + (pathIndex - 1) % 5;
-
                 if (traversalLine <= 6) activeLine = traversalLine;
-
                 else activeLine = 7;
-
             }
-
         } else if (currentState == DELETING) {
-
             activeLine = 10;
-
         } else if (currentState == SEARCH_NOT_FOUND) {
-
             activeLine = 9;
-
         } else if (currentState == SHOWING_RESULT) {
-
             activeLine = 11;
-
         }
-
     } else if (currentOperation == "search") {
-
         if (currentState == TRAVERSING || currentState == SEARCHING) {
-
             if (pathIndex == 0) activeLine = 1;
-
             else if (pathIndex <= currentPath.size()) {
-
                 int traversalLine = 2 + (pathIndex - 1) % 5;
-
                 if (traversalLine <= 6) activeLine = traversalLine;
-
                 else activeLine = 7;
-
             }
-
         } else if (currentState == SEARCH_NOT_FOUND || (currentState == SHOWING_RESULT && !searchFound)) {
-
             activeLine = 9;
-
         } else if (currentState == SHOWING_RESULT && searchFound) {
-
             activeLine = 7;
-
         }
-
     }
-
-
 
     for (const auto& l : lines) {
-
         Color textColor = (lineIndex == activeLine) ? YELLOW : BLACK;
-
         DrawText(l.c_str(), 10, startY, 20, textColor);
-
         startY += lineHeight;
-
         lineIndex++;
-
     }
-
-
 
     DrawRectangleRec(inputBox, LIGHTGRAY);
-
     DrawRectangleLinesEx(inputBox, 2, inputActive ? BLUE : GRAY);
-
     DrawText(inputText.c_str(), inputBox.x + 5.0f, inputBox.y + 5.0f, 20, BLACK);
 
-
-
-    // Vẽ nút "Back" ở góc trái trên với kích thước tương đương một node
-
-    Rectangle backButtonBounds = { 20.0f, 20.0f, 65.0f, 65.0f }; // Kích thước nút 65x65 pixels, tương đương nodeWidth
-
-    // Draw the back button with texture and handle click
-    if (CheckCollisionPointRec(GetMousePosition(), backButtonBounds) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-        backButtonClicked = true;
-    }
-    DrawTexture(backButtonTexture, backButtonBounds.x, backButtonBounds.y, WHITE);
-    DrawRectangleLinesEx(backButtonBounds, 2, GRAY);
-
-
-
-    // Nếu nhấn ESC, quay lại màn hình chính
-
+    // Handle ESC key
     if (IsKeyPressed(KEY_ESCAPE)) {
-
         shouldClose = true;
-
     }
-
 }
 
 

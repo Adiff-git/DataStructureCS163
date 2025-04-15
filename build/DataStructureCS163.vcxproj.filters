@@ -10,6 +10,12 @@
     <ClCompile Include="D:\Downloads\sproject\Main\DataStructureCS163\src\Button.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D:\Downloads\sproject\Main\DataStructureCS163\src\Graph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Downloads\sproject\Main\DataStructureCS163\src\GraphMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="D:\Downloads\sproject\Main\DataStructureCS163\src\HashTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

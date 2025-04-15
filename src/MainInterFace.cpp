@@ -10,21 +10,22 @@ MainInterface::MainInterface() {
     currentState = ScreenState::MAIN_MENU;
     linkedListProgram = nullptr;
     hashTableProgram = nullptr;
-    avlTreeProgram = nullptr; // Khởi tạo pointer cho AVL Tree
+    avlTreeProgram = nullptr;
+    graphProgram = nullptr; // Khởi tạo pointer cho Graph
 
     LoadTextures();
 
     // Define button sizes and positions
-    float buttonWidth = 300;  // Adjusted to match the image
-    float buttonHeight = 200; // Adjusted to match the image
-    float paddingX = 100;     // Horizontal padding between buttons
-    float paddingY = 50;      // Vertical padding between buttons
+    float buttonWidth = 300;
+    float buttonHeight = 200;
+    float paddingX = 100;
+    float paddingY = 50;
 
     // Calculate the starting position to center the 2x2 grid
-    float gridWidth = 2 * buttonWidth + paddingX;  // 700 pixels
-    float gridHeight = 2 * buttonHeight + paddingY; // 450 pixels
-    float startX = (screenWidth - gridWidth) / 2;  // 450 pixels
-    float startY = (screenHeight - gridHeight) / 2; // 225 pixels
+    float gridWidth = 2 * buttonWidth + paddingX;
+    float gridHeight = 2 * buttonHeight + paddingY;
+    float startX = (screenWidth - gridWidth) / 2;
+    float startY = (screenHeight - gridHeight) / 2;
 
     // Define button rectangles
     hashTableRect = { startX, startY, buttonWidth, buttonHeight };
@@ -43,12 +44,14 @@ MainInterface::~MainInterface() {
     if (avlTreeProgram) {
         delete avlTreeProgram;
     }
+    if (graphProgram) {
+        delete graphProgram;
+    }
     UnloadTextures();
     CloseWindow();
 }
 
 void MainInterface::LoadTextures() {
-    // Load the images as textures
     hashTableButton = LoadTexture("D:\\Downloads\\sproject\\DataStructureCS163\\resources\\images\\HashTable.png");
     if (hashTableButton.id == 0) {
         std::cerr << "Failed to load HashTable.png\n";
@@ -65,6 +68,10 @@ void MainInterface::LoadTextures() {
     if (graphButton.id == 0) {
         std::cerr << "Failed to load Graph.png\n";
     }
+    backButtonTexture = LoadTexture("D:\\Downloads\\sproject\\DataStructureCS163\\resources\\images\\BackButton.png");
+    if (backButtonTexture.id == 0) {
+        std::cerr << "Failed to load BackButton.png\n";
+    }
 }
 
 void MainInterface::UnloadTextures() {
@@ -72,6 +79,7 @@ void MainInterface::UnloadTextures() {
     UnloadTexture(linkedListButton);
     UnloadTexture(avlTreeButton);
     UnloadTexture(graphButton);
+    UnloadTexture(backButtonTexture);
 }
 
 void MainInterface::DrawInterface() {
@@ -82,12 +90,12 @@ void MainInterface::DrawInterface() {
     const char* title = "Data Structure Visualization";
     int fontSize = 40;
     Vector2 textSize = MeasureTextEx(GetFontDefault(), title, fontSize, 1);
-    float titleX = (1600 - textSize.x) / 2; // Center horizontally
-    DrawText(title, titleX, 30, fontSize, BLACK); // Adjusted y-position to 30
+    float titleX = (1600 - textSize.x) / 2;
+    DrawText(title, titleX, 30, fontSize, BLACK);
 
     // Check for mouse hover to apply the highlight effect
     Vector2 mousePos = GetMousePosition();
-    float scale = 1.1f; // Scale factor for the hover effect (10% larger)
+    float scale = 1.1f;
 
     // Hash Table Button
     bool isHashTableHovered = CheckCollisionPointRec(mousePos, hashTableRect);
@@ -156,13 +164,11 @@ void MainInterface::DrawPlaceholderScreen(const char* title) {
     BeginDrawing();
     ClearBackground(RAYWHITE);
 
-    // Draw the placeholder screen
     DrawText(title, 600, 400, 40, BLACK);
     DrawText("Press ESC to return to the main menu", 550, 500, 20, DARKGRAY);
 
     EndDrawing();
 
-    // Check for ESC key to return to the main menu
     if (IsKeyPressed(KEY_ESCAPE)) {
         currentState = ScreenState::MAIN_MENU;
     }
@@ -170,7 +176,7 @@ void MainInterface::DrawPlaceholderScreen(const char* title) {
 
 void MainInterface::HandleButtonClicks() {
     if (currentState != ScreenState::MAIN_MENU) {
-        return; // Only handle clicks in the main menu
+        return;
     }
 
     Vector2 mousePos = GetMousePosition();
@@ -198,6 +204,9 @@ void MainInterface::HandleButtonClicks() {
         }
         else if (CheckCollisionPointRec(mousePos, graphRect)) {
             currentState = ScreenState::GRAPH;
+            if (!graphProgram) {
+                graphProgram = new GraphMain();
+            }
             std::cout << "Graph selected\n";
         }
     }
@@ -250,7 +259,14 @@ void MainInterface::Run() {
                 break;
 
             case ScreenState::GRAPH:
-                DrawPlaceholderScreen("Graph Visualization");
+                if (graphProgram) {
+                    graphProgram->Run();
+                    if (graphProgram->ShouldClose()) {
+                        delete graphProgram;
+                        graphProgram = nullptr;
+                        currentState = ScreenState::MAIN_MENU;
+                    }
+                }
                 break;
         }
     }

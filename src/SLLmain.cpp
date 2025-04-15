@@ -6,6 +6,7 @@
 SLLmain::SLLmain() : linkedList() {
     // Do not call InitWindow here; the window is already created by MainInterface
     shouldClose = false;
+    backToMainMenu = false;
 }
 
 SLLmain::~SLLmain() {
@@ -19,8 +20,13 @@ void SLLmain::Run() {
     ClearBackground(RAYWHITE);
     linkedList.DrawScreen();
 
-    // Add a way to return to the main menu (e.g., pressing ESC)
-    if (IsKeyPressed(KEY_ESCAPE)) {
+    // Nếu nút "Back" được nhấn, đặt backToMainMenu = true
+    if (linkedList.IsBackButtonClicked()) { // Sử dụng getter thay vì truy cập trực tiếp
+        backToMainMenu = true;
+    }
+
+    // Nếu nhấn ESC hoặc nhấn nút "Back", quay lại màn hình chính
+    if (IsKeyPressed(KEY_ESCAPE) || backToMainMenu) {
         shouldClose = true;
     }
 

@@ -16,6 +16,13 @@ struct HashNode {
 
 class HashTable {
 private:
+        // Thanh kéo để cuộn ngang
+    float scrollOffsetX = 0; // Độ lệch ngang khi cuộn
+    float maxScrollOffsetX = 0; // Độ lệch tối đa có thể cuộn
+    Rectangle scrollBarRect = { 30, 850, 300, 20 }; // Vị trí và kích thước của thanh kéo (góc trái dưới)
+    float scrollBarWidth = 20; // Chiều rộng của nút kéo (thumb) trên thanh kéo
+    Texture2D backButtonTexture; // Texture cho nút "Back"
+    bool backButtonClicked = false; // Trạng thái của nút "Back"
 	void insert(int m, int n);
 
     // hash table
@@ -63,7 +70,9 @@ private:
     int totalStep = 0;
     float curX = 0;
     float delta = 0;
-    float speed = 1;
+    float speed = 1; // Tốc độ ban đầu là 1
+    float minSpeed = 0.1f; // Tốc độ tối thiểu
+    float maxSpeed = 10.0f; // Tốc độ tối đa 
     bool pause = false;
     int done = 0;
     bool doneStep = true;
@@ -181,6 +190,7 @@ public:
     void Delete(int key);
     HashNode* Search(int key);
     void DrawScreen();
+    bool IsBackButtonClicked() const { return backButtonClicked; }
 	void handleFileDrop() {
         if (showUploadPrompt && IsFileDropped()) {
             FilePathList droppedFiles = LoadDroppedFiles();

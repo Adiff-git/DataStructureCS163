@@ -9,7 +9,8 @@ MainInterface::MainInterface() {
 
     currentState = ScreenState::MAIN_MENU;
     linkedListProgram = nullptr;
-    hashTableProgram = nullptr; // Initialize HashTableMain pointer
+    hashTableProgram = nullptr;
+    avlTreeProgram = nullptr; // Khởi tạo pointer cho AVL Tree
 
     LoadTextures();
 
@@ -38,6 +39,9 @@ MainInterface::~MainInterface() {
     }
     if (hashTableProgram) {
         delete hashTableProgram;
+    }
+    if (avlTreeProgram) {
+        delete avlTreeProgram;
     }
     UnloadTextures();
     CloseWindow();
@@ -88,7 +92,6 @@ void MainInterface::DrawInterface() {
     // Hash Table Button
     bool isHashTableHovered = CheckCollisionPointRec(mousePos, hashTableRect);
     if (isHashTableHovered) {
-        // Calculate scaled dimensions and position to keep the image centered
         float scaledWidth = hashTableRect.width * scale;
         float scaledHeight = hashTableRect.height * scale;
         float offsetX = (scaledWidth - hashTableRect.width) / 2;
@@ -188,6 +191,9 @@ void MainInterface::HandleButtonClicks() {
         }
         else if (CheckCollisionPointRec(mousePos, avlTreeRect)) {
             currentState = ScreenState::AVL_TREE;
+            if (!avlTreeProgram) {
+                avlTreeProgram = new AVLTreeVisualizer();
+            }
             std::cout << "AVL Tree selected\n";
         }
         else if (CheckCollisionPointRec(mousePos, graphRect)) {
@@ -228,7 +234,19 @@ void MainInterface::Run() {
                 break;
 
             case ScreenState::AVL_TREE:
-                DrawPlaceholderScreen("AVL Tree Visualization");
+                if (avlTreeProgram) {
+                    float deltaTime = GetFrameTime();
+                    avlTreeProgram->handleInput();
+                    avlTreeProgram->updateAnimation(deltaTime);
+                    BeginDrawing();
+                    avlTreeProgram->draw();
+                    EndDrawing();
+                    if (avlTreeProgram->shouldClose) {
+                        delete avlTreeProgram;
+                        avlTreeProgram = nullptr;
+                        currentState = ScreenState::MAIN_MENU;
+                    }
+                }
                 break;
 
             case ScreenState::GRAPH:

@@ -12,7 +12,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "raylib/raylib/Release/raylib.lib"
+			"path" : "raylib/raylib/RelWithDebInfo/raylib.lib"
 		}
 	],
 	"backtrace" : 1,
@@ -119,6 +119,12 @@
 				"parent" : 13
 			},
 			{
+				"command" : 6,
+				"file" : 4,
+				"line" : 15,
+				"parent" : 13
+			},
+			{
 				"command" : 7,
 				"file" : 0,
 				"line" : 102,
@@ -132,13 +138,13 @@
 			},
 			{
 				"file" : 5,
-				"parent" : 16
+				"parent" : 17
 			},
 			{
 				"command" : 6,
 				"file" : 5,
 				"line" : 30,
-				"parent" : 17
+				"parent" : 18
 			}
 		]
 	},
@@ -148,7 +154,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "/DWIN32 /D_WINDOWS /O2 /Ob2 /DNDEBUG -MD"
+					"fragment" : "/DWIN32 /D_WINDOWS /Zi /O2 /Ob1 /DNDEBUG -MD"
 				}
 			],
 			"defines" : 
@@ -174,10 +180,14 @@
 				},
 				{
 					"backtrace" : 15,
+					"path" : "D:/Downloads/sproject/DataStructureCS163/thirdparty/tinyfiledialogs"
+				},
+				{
+					"backtrace" : 16,
 					"path" : "D:/Downloads/sproject/DataStructureCS163/raylib/src"
 				},
 				{
-					"backtrace" : 18,
+					"backtrace" : 19,
 					"isSystem" : true,
 					"path" : "D:/Downloads/sproject/DataStructureCS163/raylib/src/external/glfw/include"
 				}
@@ -206,11 +216,11 @@
 	"dependencies" : 
 	[
 		{
-			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
-		},
-		{
 			"backtrace" : 5,
 			"id" : "glfw::@a896dd99b4a5c6eab3d9"
+		},
+		{
+			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
 		}
 	],
 	"id" : "raylib::@7d429ebd5d102775094d",

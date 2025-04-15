@@ -78,7 +78,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\thirdparty\tinyfiledialogs;D:\Downloads\sproject\DataStructureCS163\raylib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions) /external:I "D:/Downloads/sproject/DataStructureCS163/raylib/src/external/glfw/include"</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -99,10 +99,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;PLATFORM_DESKTOP;GRAPHICS_API_OPENGL_33;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\thirdparty\tinyfiledialogs;D:\Downloads\sproject\DataStructureCS163\raylib\src;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\thirdparty\tinyfiledialogs;D:\Downloads\sproject\DataStructureCS163\raylib\src;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -115,7 +115,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\thirdparty\tinyfiledialogs;D:\Downloads\sproject\DataStructureCS163\raylib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions) /external:I "D:/Downloads/sproject/DataStructureCS163/raylib/src/external/glfw/include"</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -137,10 +137,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;PLATFORM_DESKTOP;GRAPHICS_API_OPENGL_33;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\thirdparty\tinyfiledialogs;D:\Downloads\sproject\DataStructureCS163\raylib\src;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\thirdparty\tinyfiledialogs;D:\Downloads\sproject\DataStructureCS163\raylib\src;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -153,7 +153,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\thirdparty\tinyfiledialogs;D:\Downloads\sproject\DataStructureCS163\raylib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions) /external:I "D:/Downloads/sproject/DataStructureCS163/raylib/src/external/glfw/include"</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -175,10 +175,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;PLATFORM_DESKTOP;GRAPHICS_API_OPENGL_33;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\thirdparty\tinyfiledialogs;D:\Downloads\sproject\DataStructureCS163\raylib\src;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\thirdparty\tinyfiledialogs;D:\Downloads\sproject\DataStructureCS163\raylib\src;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -191,7 +191,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\thirdparty\tinyfiledialogs;D:\Downloads\sproject\DataStructureCS163\raylib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions) /external:I "D:/Downloads/sproject/DataStructureCS163/raylib/src/external/glfw/include"</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -212,10 +212,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;PLATFORM_DESKTOP;GRAPHICS_API_OPENGL_33;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\thirdparty\tinyfiledialogs;D:\Downloads\sproject\DataStructureCS163\raylib\src;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\raylib\src;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Downloads\sproject\DataStructureCS163\inc;D:\Downloads\sproject\DataStructureCS163\thirdparty\tinyfiledialogs;D:\Downloads\sproject\DataStructureCS163\raylib\src;D:\Downloads\sproject\DataStructureCS163\raylib\src\external\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>

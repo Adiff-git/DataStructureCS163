@@ -22,6 +22,7 @@ LinkedList::LinkedList() : head(nullptr), selectedNode(nullptr), selectedValue(0
     showUploadPrompt = false;
     prevHead = nullptr;
     operation_type = -1;
+    backButtonTexture = LoadTexture("D:\\Downloads\\sproject\\DataStructureCS163\\resources\\images\\BackButton.png");
 }
 
 LinkedList::~LinkedList() {
@@ -39,6 +40,8 @@ LinkedList::~LinkedList() {
         current = current->next;
         delete temp;
     }
+    // Giải phóng texture của nút "Back"
+    UnloadTexture(backButtonTexture);
 }
 
 void LinkedList::saveCurrentList() {
@@ -65,14 +68,12 @@ void LinkedList::saveCurrentList() {
 
 Vector2 LinkedList::calNodeCenter(int idx) {
     float radius = nodeWidth / 2;
-    return {listPosX + (nodeWidth + nodeSpaceX) * idx + radius, listPosY + nodeHeight / 2};
+    return {listPosX + (nodeWidth + nodeSpaceX) * idx + radius - scrollOffsetX, listPosY + nodeHeight / 2};
 }
 
-
-
-Rectangle LinkedList::calEdgeArea(int idx) { // tính toán dduongg nối
+Rectangle LinkedList::calEdgeArea(int idx) {
     return {
-        listPosX + (nodeWidth + nodeSpaceX) * idx - nodeSpaceX,
+        listPosX + (nodeWidth + nodeSpaceX) * idx - nodeSpaceX - scrollOffsetX,
         listPosY + nodeHeight / 2,
         nodeSpaceX,
         lineWidth
@@ -80,7 +81,7 @@ Rectangle LinkedList::calEdgeArea(int idx) { // tính toán dduongg nối
 }
 
 Vector2 LinkedList::calEdgeCenter(int idx) {
-    float x = listPosX + (nodeWidth + nodeSpaceX) * idx - nodeSpaceX + nodeSpaceX / 2;
+    float x = listPosX + (nodeWidth + nodeSpaceX) * idx - nodeSpaceX + nodeSpaceX / 2 - scrollOffsetX;
     float y = listPosY + nodeHeight / 2;
     return {x, y};
 }
@@ -88,7 +89,16 @@ Vector2 LinkedList::calEdgeCenter(int idx) {
 void LinkedList::drawList() {
     ListNode* current = head;
     int idx = 0;
-    float radius = nodeWidth / 2;;
+    float radius = nodeWidth / 2;
+
+    // Tính toán độ lệch tối đa dựa trên số lượng node
+    int nodeCount = 0;
+    ListNode* temp = head;
+    while (temp) {
+        nodeCount++;
+        temp = temp->next;
+    }
+    maxScrollOffsetX = std::max(0.0f, (nodeWidth + nodeSpaceX) * nodeCount - (1600 - listPosX - 50)); // Chiều rộng khu vực hiển thị
 
     if (!current) {
         Vector2 nullCenter = calNodeCenter(0);
@@ -146,7 +156,7 @@ void LinkedList::drawList() {
 void LinkedList::drawPrevList() {
     ListNode* current = prevHead;
     int idx = 0;
-    float radius = nodeWidth / 2;;
+    float radius = nodeWidth / 2;
 
     if (!current) {
         Vector2 nullCenter = calNodeCenter(0);
@@ -694,9 +704,11 @@ void LinkedList::drawAddHeadAnimation() {
         doneAnimation = true;
         return;
     }
+
+    // vẽ các node đã có trc đó
     drawPrevList();
-    float radius = nodeWidth / 2;;
-    for (int i = 0; i < done; i++) {
+    float radius = nodeWidth / 2;
+    for (int i = 0; i < done; i++) {// vòng loop này đang vẽ các đường đi của các node
         auto path = addHeadPaths2[curStep][i];
         Vector2 center = std::get<0>(path);
         Color color = std::get<1>(path);
@@ -708,6 +720,8 @@ void LinkedList::drawAddHeadAnimation() {
             DrawRectangleLines(center.x - nodeSpaceX / 2, center.y - lineWidth / 2, nodeSpaceX, lineWidth, color);
         }
     }
+
+    // bắt đầu vẽ node mới
     if (curStep < totalStep - 1 && curStep < addHeadPaths2.size() && done == addHeadPaths2[curStep].size()) {
         curStep++;
         done = 0;
@@ -1064,7 +1078,7 @@ void LinkedList::drawOperationMenu() {
             addIndexClicked = false;
         }
 
-        // Kiểm tra và xử lý nút Add Tail với log
+        // Kiểm tra và xử lý nút Add Tail
         if (DrawButton("Add Tail", addTailOptionPos, GetFontDefault(), addTailClicked, addTailMessage)) {
             showAddTailOption = true;
             showAddHeadOption = false;
@@ -1073,7 +1087,7 @@ void LinkedList::drawOperationMenu() {
             addTailClicked = false;
         }
 
-        // Đóng menu con nếu click ra ngoài
+        // Đóng menu con nếu nhấp ra ngoài
         Vector2 mousePoint = GetMousePosition();
         Rectangle subMenuArea = {subMenuPosX, subMenuPosY - 3 * opHeight, subMenuWidth, 3 * opHeight};
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !CheckCollisionPointRec(mousePoint, subMenuArea) && !CheckCollisionPointRec(mousePoint, addButtonPos)) {
@@ -1081,7 +1095,7 @@ void LinkedList::drawOperationMenu() {
         }
     }
 
-    // Hiển thị giao diện nhập liệu tương ứng với log
+    // Hiển thị giao diện nhập liệu tương ứng
     if (showAddHeadOption) {
         drawAddHeadOptions();
     }
@@ -1143,23 +1157,33 @@ void LinkedList::drawOperationMenu() {
         drawUpdateOptions();
     }
 
-    // Đóng các menu nếu click ra ngoài
+    // Đóng các menu nếu nhấp ra ngoài
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         Vector2 mousePoint = GetMousePosition();
-        Rectangle optionPos = {opPosX, 610, 380, 90};
-        if (!CheckCollisionPointRec(mousePoint, optionPos) && !CheckCollisionPointRec(mousePoint, initializeButtonPos)) {
+        Rectangle optionPos = {opPosX, 580, 380, 120}; // Vùng chung cho các menu con
+
+        // Kiểm tra cho menu Initialize
+        if (showInitializeOption && !CheckCollisionPointRec(mousePoint, optionPos) && !CheckCollisionPointRec(mousePoint, initializeButtonPos)) {
             showInitializeOption = false;
         }
-        if (!CheckCollisionPointRec(mousePoint, optionPos) && !CheckCollisionPointRec(mousePoint, deleteButtonPos)) {
+
+        // Kiểm tra cho menu Delete
+        if (showDeleteOption && !CheckCollisionPointRec(mousePoint, optionPos) && !CheckCollisionPointRec(mousePoint, deleteButtonPos)) {
             showDeleteOption = false;
         }
-        if (!CheckCollisionPointRec(mousePoint, optionPos) && !CheckCollisionPointRec(mousePoint, searchButtonPos)) {
+
+        // Kiểm tra cho menu Search
+        if (showSearchOption && !CheckCollisionPointRec(mousePoint, optionPos) && !CheckCollisionPointRec(mousePoint, searchButtonPos)) {
             showSearchOption = false;
         }
-        if (!CheckCollisionPointRec(mousePoint, optionPos) && !CheckCollisionPointRec(mousePoint, updateButtonPos)) {
+
+        // Kiểm tra cho menu Update
+        if (showUpdateOption && !CheckCollisionPointRec(mousePoint, optionPos) && !CheckCollisionPointRec(mousePoint, updateButtonPos)) {
             showUpdateOption = false;
         }
-        if (!CheckCollisionPointRec(mousePoint, optionPos)) {
+
+        // Kiểm tra cho các menu con của Add (Add Head, Add Index, Add Tail)
+        if ((showAddHeadOption || showAddIndexOption || showAddTailOption) && !CheckCollisionPointRec(mousePoint, optionPos)) {
             showAddHeadOption = false;
             showAddIndexOption = false;
             showAddTailOption = false;
@@ -1746,15 +1770,46 @@ void LinkedList::drawAnimationMenu() {
     static bool firstClicked = false, prevClicked = false, playPauseClicked = false, nextClicked = false, lastClicked = false;
     static const char* firstMessage = "", *prevMessage = "", *playPauseMessage = "", *nextMessage = "", *lastMessage = "";
     
+    // Vẽ thanh tốc độ
     Rectangle sliderRect = {posX + 100, 670, sliderWidth, sliderHeight};
-    DrawRectangleRec(sliderRect, LIGHTGRAY);
-    float sliderPos = (speed - 1) / 29.0f * sliderWidth;
-    DrawRectangle(posX + 100 + sliderPos, 670, 5, sliderHeight, DARKGRAY);
+    DrawRectangleRec(sliderRect, LIGHTGRAY); // Nền của thanh tốc độ
+
+    // Tính toán vị trí của nút kéo dựa trên tốc độ
+    // Tốc độ từ 0.1 (minSpeed) đến 10 (maxSpeed), với giá trị 1 ở giữa thanh kéo (t = 0.5)
+    float t;
+    if (speed <= 1.0f) {
+        // Đoạn từ 0.1 đến 1 ánh xạ từ t = 0 đến t = 0.5
+        t = (speed - minSpeed) / (1.0f - minSpeed) * 0.5f;
+    } else {
+        // Đoạn từ 1 đến 10 ánh xạ từ t = 0.5 đến t = 1
+        t = 0.5f + (speed - 1.0f) / (maxSpeed - 1.0f) * 0.5f;
+    }
+    float sliderPos = t * (sliderWidth - scrollBarWidth);
+    Rectangle thumbRect = { posX + 100 + sliderPos, 670, scrollBarWidth, sliderHeight };
+    DrawRectangleRec(thumbRect, DARKGRAY); // Nút kéo của thanh tốc độ
+
+    // Hiển thị nhãn "Speed" và giá trị tốc độ
     DrawText("Speed", posX + 35, 670, 20, BLACK);
     char* speedText = ftc(speed);
     DrawText(speedText, posX + 390, 670, 20, BLACK);
     delete[] speedText;
-    speed = UpdateSlider(sliderRect, 1.0f, 30.0f, speed);
+    
+    // Xử lý tương tác với thanh tốc độ
+    if (CheckCollisionPointRec(GetMousePosition(), sliderRect) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+        float mouseX = GetMouseX();
+        t = (mouseX - (posX + 100)) / (sliderWidth - scrollBarWidth);
+        t = std::max(0.0f, std::min(t, 1.0f)); // Giới hạn t trong [0, 1]
+
+        // Tính speed từ t
+        if (t <= 0.5f) {
+            // Đoạn từ t = 0 đến t = 0.5 ánh xạ từ speed = 0.1 đến speed = 1
+            speed = minSpeed + (t / 0.5f) * (1.0f - minSpeed);
+        } else {
+            // Đoạn từ t = 0.5 đến t = 1 ánh xạ từ speed = 1 đến speed = 10
+            speed = 1.0f + ((t - 0.5f) / 0.5f) * (maxSpeed - 1.0f);
+        }
+        speed = std::max(minSpeed, std::min(speed, maxSpeed)); // Đảm bảo tốc độ nằm trong khoảng [0.1, 10]
+    }
     
     Rectangle firstRect = {posX, buttonPosY, buttonWidth, buttonHeight};
     if (DrawButton("First", firstRect, GetFontDefault(), firstClicked, firstMessage)) {
@@ -2090,6 +2145,20 @@ void LinkedList::DrawScreen() {
         drawPrevList();
     }
     
+    // Vẽ và xử lý thanh kéo ngang
+    DrawRectangleRec(scrollBarRect, LIGHTGRAY); // Nền của thanh kéo
+    float scrollBarPos = maxScrollOffsetX > 0 ? (scrollOffsetX / maxScrollOffsetX) * (scrollBarRect.width - scrollBarWidth) : 0;
+    Rectangle thumbRect = { scrollBarRect.x + scrollBarPos, scrollBarRect.y, scrollBarWidth, scrollBarRect.height };
+    DrawRectangleRec(thumbRect, DARKGRAY); // Nút kéo (thumb) của thanh kéo
+
+    // Xử lý tương tác với thanh kéo
+    if (CheckCollisionPointRec(GetMousePosition(), scrollBarRect) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+        float mouseX = GetMouseX();
+        float t = (mouseX - scrollBarRect.x) / (scrollBarRect.width - scrollBarWidth);
+        t = std::max(0.0f, std::min(t, 1.0f)); // Giới hạn giá trị t trong khoảng [0, 1]
+        scrollOffsetX = t * maxScrollOffsetX;
+    }
+
     drawNodeDetailMenu();
     
     if (operation_type == 1) {
@@ -2120,4 +2189,8 @@ void LinkedList::DrawScreen() {
         drawUpdateDescription();
         drawUpdateAnimation();
     }
+
+    // Vẽ nút "Back" ở góc trái trên với kích thước tương đương một node
+    Rectangle backButtonBounds = { 20, 20, 65, 65 }; // Kích thước nút 65x65 pixels, tương đương nodeWidth
+    DrawBackButton(backButtonTexture, backButtonBounds, backButtonClicked);
 }

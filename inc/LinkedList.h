@@ -15,6 +15,12 @@ struct ListNode {
 
 class LinkedList {
 private:
+    Texture2D backButtonTexture; // Texture cho nút "Back"
+    bool backButtonClicked = false; // Trạng thái của nút "Back"
+    float scrollOffsetX = 0; // Độ lệch ngang khi cuộn
+    float maxScrollOffsetX = 0; // Độ lệch tối đa có thể cuộn
+    Rectangle scrollBarRect = { 30, 850, 300, 20 }; // Vị trí và kích thước của thanh kéo (góc trái dưới)
+    float scrollBarWidth = 20; // Chiều rộng của nút kéo (thumb) trên thanh kéo
     ListNode* head;
     ListNode* prevHead; // Để lưu trạng thái trước đó
     
@@ -30,7 +36,9 @@ private:
     int curStep = 0;
     int totalStep = 0;
     float delta = 0;
-    float speed = 1;
+    float speed = 1; // Tốc độ ban đầu là 1
+    float minSpeed = 0.1f; // Tốc độ tối thiểu
+    float maxSpeed = 10.0f; // Tốc độ tối đa
     bool pause = false;
     int done = 0;
     bool doneStep = true;
@@ -112,11 +120,15 @@ private:
         "if (cur) cur->val = newValue;"
     };
     
-    std::vector<std::string> initDescriptions;
-    std::vector<int> initCodeIndex;
-    std::vector<std::vector<std::tuple<Vector2, Color>>> initPaths1;
-    std::vector<std::vector<std::tuple<Vector2, Color>>> initPaths2;
-    
+
+    // dùng vector 2 chiều để lưu trữ các đoạn mã và mô tả cho từng bước của từng hàm
+    std::vector<std::string> initDescriptions; // vector này chứa các mô tả cho từng bước
+    std::vector<int> initCodeIndex; // vector này chứa các chỉ số của các đoạn mã tương ứng với từng bước
+    std::vector<std::vector<std::tuple<Vector2, Color>>> initPaths1; // vector này chứa các đường đi cho từng bước
+    std::vector<std::vector<std::tuple<Vector2, Color>>> initPaths2; // vector này chứa các đường đi cho từng bước
+    // init paths1 và paths2 khác nhau ở chỗ paths1 là đường đi của các node trong danh sách, còn paths2 là đường đi của các đường nối giữa các node
+
+
     std::vector<std::string> addHeadDescriptions;
     std::vector<int> addHeadCodeIndex;
     std::vector<std::vector<std::tuple<Vector2, Color>>> addHeadPaths1;
@@ -180,6 +192,7 @@ public:
     void Update(int oldValue, int newValue);
     void DrawScreen();
     void handleFileDrop();
+    bool IsBackButtonClicked() const { return backButtonClicked; }
 };
 
 #endif

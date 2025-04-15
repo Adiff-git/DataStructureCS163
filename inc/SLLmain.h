@@ -9,11 +9,12 @@ public:
     SLLmain();
     ~SLLmain();
     void Run();
-    bool ShouldClose(); 
+    bool ShouldClose(); // Add a method to check if the visualization should close
 
 private:
     LinkedList linkedList;
-    bool shouldClose; 
+    bool shouldClose; // Flag to indicate if the visualization should close
+    bool backToMainMenu; // Flag to indicate if the "Back" button was clicked
 };
 
 #endif

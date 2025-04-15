@@ -3,7 +3,8 @@
 
 #include "raylib.h"
 #include "SLLmain.h"
-#include "HashTableMain.h" // Include HashTableMain header
+#include "HashTableMain.h"
+#include "AVLTreeMain.h" // Thêm header cho AVL Tree
 
 class MainInterface {
 public:
@@ -23,6 +24,7 @@ private:
     ScreenState currentState;
     SLLmain* linkedListProgram; // Pointer to manage the Linked List program
     HashTableMain* hashTableProgram; // Pointer to manage the Hash Table program
+    AVLTreeVisualizer* avlTreeProgram; // Pointer to manage the AVL Tree program
 
     Texture2D hashTableButton;
     Texture2D linkedListButton;

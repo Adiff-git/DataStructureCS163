@@ -22,8 +22,10 @@ HashTable::HashTable(int size) : size(size), selectedNode(nullptr), selectedValu
     pathfile[0] = '\0';      // Initialize empty file path
     fileLoaded = false;      // No file loaded initially
     showUploadPrompt = false;
+    operation_type = -1;
+    // Tải hình ảnh nút "Back"
+    backButtonTexture = LoadTexture("D:\\Downloads\\sproject\\DataStructureCS163\\resources\\images\\BackButton.png");
 }
-
 HashTable::~HashTable() {
     for (auto& slot : table) {
         while (slot) {
@@ -42,6 +44,8 @@ HashTable::~HashTable() {
     if (selectedNode) {
         selectedNode = nullptr;
     }
+    // Giải phóng texture của nút "Back"
+    UnloadTexture(backButtonTexture);
 }
 
 void HashTable::saveCurrentTable() {
@@ -74,16 +78,16 @@ void HashTable::drawPrevTable() {
     const char* buttonMessage = nullptr;
 
     for (int i = 0; i < size; i++) {
-        // Index node
+        // Node chỉ số (index node) - không bị ảnh hưởng bởi cuộn
         Rectangle indexRect = {tablePosX, tablePosY + (nodeHeight + nodeSpaceY) * i, indexWidth, nodeHeight};
         DrawButton(TextFormat("Index: %d", i), indexRect, GetFontDefault(), buttonClicked, buttonMessage);
         
         HashNode* current = prevTable[i];
         if (!current) {
-            // edge[0]
-            DrawRectangle(llPosX - 10, tablePosY + (nodeHeight + nodeSpaceY) * i + nodeHeight / 2, nodeSpaceX, 2, BLACK);
-            // node[0]
-            Rectangle nullRect = {llPosX, tablePosY + (nodeHeight + nodeSpaceY) * i, nodeWidth, nodeHeight};
+            // Cạnh (edge[0])
+            DrawRectangle(llPosX - 10 - scrollOffsetX, tablePosY + (nodeHeight + nodeSpaceY) * i + nodeHeight / 2, nodeSpaceX, 2, BLACK);
+            // Node NULL
+            Rectangle nullRect = {llPosX - scrollOffsetX, tablePosY + (nodeHeight + nodeSpaceY) * i, nodeWidth, nodeHeight};
             if (IsButtonClicked(nullRect)) {
                 selectedNode = nullptr;
             }
@@ -91,13 +95,13 @@ void HashTable::drawPrevTable() {
         }
         int idx = 0;
         while (current) {
-            // edge[0]
-            DrawRectangle(llPosX + (nodeWidth + nodeSpaceX) * idx - nodeSpaceX,
+            // Cạnh (edge[0])
+            DrawRectangle(llPosX + (nodeWidth + nodeSpaceX) * idx - nodeSpaceX - scrollOffsetX,
                           tablePosY + (nodeHeight + nodeSpaceY) * i + nodeHeight / 2,
                           nodeSpaceX, lineWidth, BLACK);
-            // node[0]
+            // Node
             Rectangle nodeRect = {
-                llPosX + (nodeWidth + nodeSpaceX) * idx,
+                llPosX + (nodeWidth + nodeSpaceX) * idx - scrollOffsetX,
                 tablePosY + (nodeHeight + nodeSpaceY) * i,
                 nodeWidth,
                 nodeHeight
@@ -118,17 +122,31 @@ void HashTable::drawTable() {
     bool buttonClicked = false;
     const char* buttonMessage = nullptr;
 
+    // Tính toán độ lệch tối đa dựa trên hàng có nhiều node nhất
+    maxScrollOffsetX = 0;
     for (int i = 0; i < size; i++) {
-        // Index node
+        int idx = 0;
+        HashNode* current = table[i];
+        while (current) {
+            idx++;
+            current = current->next;
+        }
+        float rowWidth = llPosX + (nodeWidth + nodeSpaceX) * idx - tablePosX;
+        maxScrollOffsetX = std::max(maxScrollOffsetX, rowWidth - (1600 - tablePosX - 50)); // Chiều rộng khu vực hiển thị
+    }
+    maxScrollOffsetX = std::max(0.0f, maxScrollOffsetX); // Đảm bảo không âm
+
+    for (int i = 0; i < size; i++) {
+        // Node chỉ số (index node) - không bị ảnh hưởng bởi cuộn
         Rectangle indexRect = {tablePosX, tablePosY + (nodeHeight + nodeSpaceY) * i, indexWidth, nodeHeight};
         DrawButton(TextFormat("Index: %d", i), indexRect, GetFontDefault(), buttonClicked, buttonMessage);
         
         HashNode* current = table[i];
         if (!current) {
-            // edge[0]
-            DrawRectangle(llPosX - 10, tablePosY + (nodeHeight + nodeSpaceY) * i + nodeHeight / 2, nodeSpaceX, 2, BLACK);
-            // node[0]
-            Rectangle nullRect = {llPosX, tablePosY + (nodeHeight + nodeSpaceY) * i, nodeWidth, nodeHeight};
+            // Cạnh (edge[0])
+            DrawRectangle(llPosX - 10 - scrollOffsetX, tablePosY + (nodeHeight + nodeSpaceY) * i + nodeHeight / 2, nodeSpaceX, 2, BLACK);
+            // Node NULL
+            Rectangle nullRect = {llPosX - scrollOffsetX, tablePosY + (nodeHeight + nodeSpaceY) * i, nodeWidth, nodeHeight};
             if (IsButtonClicked(nullRect)) {
                 selectedNode = nullptr;
             }
@@ -137,13 +155,13 @@ void HashTable::drawTable() {
         
         int idx = 0;
         while (current) {
-            // edge[0]
-            DrawRectangle(llPosX + (nodeWidth + nodeSpaceX) * idx - nodeSpaceX,
+            // Cạnh (edge[0])
+            DrawRectangle(llPosX + (nodeWidth + nodeSpaceX) * idx - nodeSpaceX - scrollOffsetX,
                           tablePosY + (nodeHeight + nodeSpaceY) * i + nodeHeight / 2,
                           nodeSpaceX, lineWidth, BLACK);
-            // node[0]
+            // Node
             Rectangle nodeRect = {
-                llPosX + (nodeWidth + nodeSpaceX) * idx,
+                llPosX + (nodeWidth + nodeSpaceX) * idx - scrollOffsetX,
                 tablePosY + (nodeHeight + nodeSpaceY) * i,
                 nodeWidth,
                 nodeHeight
@@ -1298,15 +1316,45 @@ void HashTable::drawAnimationMenu() {
     bool buttonClicked = false;
     const char* buttonMessage = nullptr;
 
+    // Vẽ thanh tốc độ
     Rectangle sliderRect = {posX + 100, 670, sliderWidth, sliderHeight};
-    DrawRectangleRec(sliderRect, LIGHTGRAY);
-    float sliderPos = (speed - 1) / 29.0f * sliderWidth;
-    DrawRectangle(posX + 100 + sliderPos, 670, 5, sliderHeight, DARKGRAY);
+    DrawRectangleRec(sliderRect, LIGHTGRAY); // Nền của thanh tốc độ
+
+    // Tính toán vị trí của nút kéo dựa trên tốc độ
+    // Tốc độ từ 0.1 (minSpeed) đến 10 (maxSpeed), với giá trị 1 ở giữa thanh kéo (t = 0.5)
+    float t;
+    if (speed <= 1.0f) {
+        // Đoạn từ 0.1 đến 1 ánh xạ từ t = 0 đến t = 0.5
+        t = (speed - minSpeed) / (1.0f - minSpeed) * 0.5f;
+    } else {
+        // Đoạn từ 1 đến 10 ánh xạ từ t = 0.5 đến t = 1
+        t = 0.5f + (speed - 1.0f) / (maxSpeed - 1.0f) * 0.5f;
+    }
+    float sliderPos = t * (sliderWidth - scrollBarWidth);
+    Rectangle thumbRect = { posX + 100 + sliderPos, 670, scrollBarWidth, sliderHeight };
+    DrawRectangleRec(thumbRect, DARKGRAY); // Nút kéo của thanh tốc độ
+
+    // Hiển thị nhãn "Speed" và giá trị tốc độ
     DrawText("Speed", posX + 35, 670, 20, BLACK);
-    DrawText(ftc(speed), posX + 390, 670, 20, BLACK);
-    if (CheckCollisionPointRec(GetMousePosition(), sliderRect) && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
-        speed = 1 + (GetMouseX() - (posX + 100)) / sliderWidth * 29;
-        speed = std::max(1.0f, std::min(speed, 30.0f));
+    char* speedText = ftc(speed);
+    DrawText(speedText, posX + 390, 670, 20, BLACK);
+    delete[] speedText;
+
+    // Xử lý tương tác với thanh tốc độ
+    if (CheckCollisionPointRec(GetMousePosition(), sliderRect) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+        float mouseX = GetMouseX();
+        t = (mouseX - (posX + 100)) / (sliderWidth - scrollBarWidth);
+        t = std::max(0.0f, std::min(t, 1.0f)); // Giới hạn t trong [0, 1]
+
+        // Tính speed từ t
+        if (t <= 0.5f) {
+            // Đoạn từ t = 0 đến t = 0.5 ánh xạ từ speed = 0.1 đến speed = 1
+            speed = minSpeed + (t / 0.5f) * (1.0f - minSpeed);
+        } else {
+            // Đoạn từ t = 0.5 đến t = 1 ánh xạ từ speed = 1 đến speed = 10
+            speed = 1.0f + ((t - 0.5f) / 0.5f) * (maxSpeed - 1.0f);
+        }
+        speed = std::max(minSpeed, std::min(speed, maxSpeed)); // Đảm bảo tốc độ nằm trong khoảng [0.1, 10]
     }
     
     Rectangle firstRect = {posX, buttonPosY, buttonWidth, buttonHeight};
@@ -1315,7 +1363,7 @@ void HashTable::drawAnimationMenu() {
         pause = true;
     }
     DrawButton("First", firstRect, GetFontDefault(), buttonClicked, buttonMessage);
-
+    
     Rectangle prevRect = {posX + buttonWidth + spacing, buttonPosY, buttonWidth, buttonHeight};
     if (IsButtonClicked(prevRect)) {
         pause = true;
@@ -1329,7 +1377,7 @@ void HashTable::drawAnimationMenu() {
         }
     }
     DrawButton("Prev", prevRect, GetFontDefault(), buttonClicked, buttonMessage);
-
+    
     Rectangle playPauseRect = {posX + 2*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight};
     if (pause) {
         if (IsButtonClicked(playPauseRect)) {
@@ -1342,7 +1390,7 @@ void HashTable::drawAnimationMenu() {
         }
         DrawButton("Pause", playPauseRect, GetFontDefault(), buttonClicked, buttonMessage);
     }
-
+    
     Rectangle nextRect = {posX + 3*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight};
     if (IsButtonClicked(nextRect)) {
         pause = true;
@@ -1351,7 +1399,7 @@ void HashTable::drawAnimationMenu() {
         }
     }
     DrawButton("Next", nextRect, GetFontDefault(), buttonClicked, buttonMessage);
-
+    
     Rectangle lastRect = {posX + 4*(buttonWidth + spacing), buttonPosY, buttonWidth, buttonHeight};
     if (IsButtonClicked(lastRect)) {
         pause = true;
@@ -1556,6 +1604,20 @@ void HashTable::DrawScreen() {
         drawPrevTable();
     }
 
+    // Vẽ và xử lý thanh kéo ngang
+    DrawRectangleRec(scrollBarRect, LIGHTGRAY); // Nền của thanh kéo
+    float scrollBarPos = maxScrollOffsetX > 0 ? (scrollOffsetX / maxScrollOffsetX) * (scrollBarRect.width - scrollBarWidth) : 0;
+    Rectangle thumbRect = { scrollBarRect.x + scrollBarPos, scrollBarRect.y, scrollBarWidth, scrollBarRect.height };
+    DrawRectangleRec(thumbRect, DARKGRAY); // Nút kéo (thumb) của thanh kéo
+
+    // Xử lý tương tác với thanh kéo
+    if (CheckCollisionPointRec(GetMousePosition(), scrollBarRect) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+        float mouseX = GetMouseX();
+        float t = (mouseX - scrollBarRect.x) / (scrollBarRect.width - scrollBarWidth);
+        t = std::max(0.0f, std::min(t, 1.0f)); // Giới hạn giá trị t trong khoảng [0, 1]
+        scrollOffsetX = t * maxScrollOffsetX;
+    }
+
     drawNodeDetailMenu();
 
     if (operation_type == 1) {
@@ -1570,4 +1632,8 @@ void HashTable::DrawScreen() {
         drawSearchDescription();
         drawSearchAnimation();
     }
+
+    // Vẽ nút "Back" ở góc trái trên với kích thước tương đương một node
+    Rectangle backButtonBounds = { 20, 20, 65, 65 }; // Kích thước nút 65x65 pixels, tương đương nodeWidth
+    DrawBackButton(backButtonTexture, backButtonBounds, backButtonClicked);
 }

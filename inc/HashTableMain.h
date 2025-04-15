@@ -9,11 +9,12 @@ public:
     HashTableMain();
     ~HashTableMain();
     void Run();
-    bool ShouldClose(); // Add a method to check if the visualization should close
+    bool ShouldClose(); // Check if the visualization should close
 
 private:
     HashTable hashTable;
     bool shouldClose; // Flag to indicate if the visualization should close
+    bool backToMainMenu; // Flag to indicate if the "Back" button was clicked
 };
 
 #endif

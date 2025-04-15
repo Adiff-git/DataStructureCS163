@@ -4,8 +4,8 @@
 #include <random>
 
 HashTableMain::HashTableMain() : hashTable(1) {
-    // Do not call InitWindow here; the window is already created by MainInterface
     shouldClose = false;
+    backToMainMenu = false; // Khởi tạo biến
 }
 
 HashTableMain::~HashTableMain() {
@@ -19,8 +19,13 @@ void HashTableMain::Run() {
     ClearBackground(RAYWHITE);
     hashTable.DrawScreen();
 
-    // Add a way to return to the main menu (e.g., pressing ESC)
-    if (IsKeyPressed(KEY_ESCAPE)) {
+    // Nếu nút "Back" được nhấn, đặt backToMainMenu = true
+    if (hashTable.IsBackButtonClicked()) { // Sử dụng getter thay vì truy cập trực tiếp
+        backToMainMenu = true;
+    }
+
+    // Nếu nhấn ESC hoặc nhấn nút "Back", quay lại màn hình chính
+    if (IsKeyPressed(KEY_ESCAPE) || backToMainMenu) {
         shouldClose = true;
     }
 

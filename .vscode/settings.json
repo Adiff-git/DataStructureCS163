@@ -58,6 +58,12 @@
         "queue": "cpp",
         "ranges": "cpp",
         "span": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "iomanip": "cpp",
+        "map": "cpp",
+        "random": "cpp",
+        "set": "cpp",
+        "stack": "cpp",
+        "xtree": "cpp"
     }
 }

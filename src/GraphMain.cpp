@@ -131,7 +131,7 @@ GraphMain::GraphMain()
       scrollbarMouseOffsetY(0.0f), scrollbarMouseOffsetX(0.0f), showPseudocodeVScrollbar(false),
       showPseudocodeHScrollbar(false), speedSlider({0, 0, 150, 20}, 0.1f, 2.0f, "Speed:") {
 
-    backButtonTexture = LoadTexture("D:\\Downloads\\sproject\\DataStructureCS163\\resources\\images\\BackButton.png");
+    backButtonTexture = LoadTexture("..\\resources\\images\\BackButton.png");
     // Initialize camera
     graphCamera.target = { (float)screenWidth / 2.0f, (float)screenHeight / 2.0f };
     graphCamera.offset = { (float)screenWidth / 2.0f, (float)screenHeight / 2.0f };

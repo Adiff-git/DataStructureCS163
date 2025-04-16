@@ -58,7 +58,7 @@ struct UIState {
     Rectangle createButton, randomButton, exampleButton, fileButton, editButton, mstButton;
     Rectangle nodesInputRect, edgesInputRect;
     Rectangle k5Button, c6Button, p4Button, s7Button;
-    Rectangle mstMenuRect, primButton, kruskalButton, backButton;
+    Rectangle mstMenuRect, primButton, kruskalButton, cancelButton;
     Rectangle prevStepButton, nextStepButton, skipButton, pauseResumeButton;
     Rectangle addVertexButtonRect, addEdgeButtonRect, editWeightButtonRect, moveNodeButtonRect;
     Rectangle deleteVertexButtonRect, deleteEdgeButtonRect, doneButtonRect, weightInputRect;

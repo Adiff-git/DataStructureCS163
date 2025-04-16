@@ -1052,7 +1052,7 @@ void RunGraphApp() {
      const float mstButtonsY = mstMenuRect.y + mstMenuRect.height - mstButtonHeight - 10;
      Rectangle primButton = {mstMenuRect.x + 10, mstButtonsY, (float)mstButtonWidth, (float)mstButtonHeight};
      Rectangle kruskalButton = {primButton.x + mstButtonWidth + mstButtonSpacing, mstButtonsY, (float)mstButtonWidth, (float)mstButtonHeight};
-     Rectangle backButton = {kruskalButton.x + mstButtonWidth + mstButtonSpacing, mstButtonsY, (float)mstButtonWidth, (float)mstButtonHeight};
+     Rectangle cancelButton = {kruskalButton.x + mstButtonWidth + mstButtonSpacing, mstButtonsY, (float)mstButtonWidth, (float)mstButtonHeight};
      Rectangle prevStepButton = { 0 };
      Rectangle nextStepButton = { 0 };
      Rectangle skipButton = { 0 };
@@ -2155,7 +2155,7 @@ void RunGraphApp() {
         currentState.nodesInputRect = nodesInputRect; currentState.edgesInputRect = edgesInputRect;
         currentState.k5Button = k5Button; currentState.c6Button = c6Button;
         currentState.p4Button = p4Button; currentState.s7Button = s7Button; 
-        currentState.kruskalButton = kruskalButton; currentState.backButton = backButton;
+        currentState.kruskalButton = kruskalButton; currentState.cancelButton = cancelButton;
         currentState.prevStepButton = prevStepButton; currentState.nextStepButton = nextStepButton;
         currentState.skipButton = skipButton; currentState.pauseResumeButton = pauseResumeButton;
         currentState.addVertexButtonRect = addVertexButtonRect; currentState.addEdgeButtonRect = addEdgeButtonRect;
@@ -2431,7 +2431,7 @@ void RunGraphApp() {
              }
              DrawRectangleRec(primButton, usePrim ? ORANGE: WHITE); DrawButton("Prim", primButton, GetFontDefault(), "Prim"); 
              DrawRectangleRec(kruskalButton, useKruskal ? ORANGE : WHITE);  DrawButton("Kruskal", kruskalButton, GetFontDefault(), "Kruskal"); 
-             DrawRectangleRec(backButton, WHITE); DrawButton("Back", backButton, GetFontDefault(), "Back");
+             DrawRectangleRec(cancelButton, WHITE); DrawButton("Cancel", cancelButton, GetFontDefault(), "Cancel");
             std::vector<std::string>* codeToShow = nullptr;
             if (usePrim) codeToShow = &primPseudocode;
             else if (useKruskal) codeToShow = &kruskalPseudocode;
@@ -2613,7 +2613,7 @@ void RunGraphApp() {
                            currentHighlightLine = 1; // Bắt đầu với bước khởi tạo
                        }
                    }
-               } else if (CheckCollisionPointRec(mousePos, backButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+               } else if (CheckCollisionPointRec(mousePos, cancelButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                     showMSTMenu = false; // Exit MST menu
                     showMSTError = false; // Clear error on exit
                     currentHighlightLine = -1; // Reset highlight

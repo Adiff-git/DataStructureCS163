@@ -1,7 +1,7 @@
 #include "LinkedList.h"
 #include "Button.h"
 #include <vector>
-#include <string>
+#include <string.h>
 #include <algorithm>
 #include <sstream>
 #include <iomanip>

@@ -1,7 +1,7 @@
 #include "HashTable.h"
 #include "raylib.h"
 #include <vector>
-#include <string>
+#include <string.h>
 #include <algorithm>
 #include <sstream>
 #include <iomanip>

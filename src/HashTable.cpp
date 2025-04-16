@@ -24,7 +24,7 @@ HashTable::HashTable(int size) : size(size), selectedNode(nullptr), selectedValu
     showUploadPrompt = false;
     operation_type = -1;
     // Tải hình ảnh nút "Back"
-    backButtonTexture = LoadTexture("D:\\Downloads\\sproject\\DataStructureCS163\\resources\\images\\BackButton.png");
+    backButtonTexture = LoadTexture("..\\resources\\images\\BackButton.png");
 }
 HashTable::~HashTable() {
     for (auto& slot : table) {

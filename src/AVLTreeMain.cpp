@@ -1542,7 +1542,7 @@ AVLTreeVisualizer::AVLTreeVisualizer()
 
     // Tải hình ảnh nút "Back"
 
-    backButtonTexture = LoadTexture("D:\\Downloads\\sproject\\DataStructureCS163\\resources\\images\\BackButton.png");
+    backButtonTexture = LoadTexture("..\\resources\\images\\BackButton.png");
 
     if (backButtonTexture.id == 0) {
 

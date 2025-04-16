@@ -22,7 +22,7 @@ LinkedList::LinkedList() : head(nullptr), selectedNode(nullptr), selectedValue(0
     showUploadPrompt = false;
     prevHead = nullptr;
     operation_type = -1;
-    backButtonTexture = LoadTexture("D:\\Downloads\\sproject\\DataStructureCS163\\resources\\images\\BackButton.png");
+    backButtonTexture = LoadTexture("..\\resources\\images\\BackButton.png");
 }
 
 LinkedList::~LinkedList() {

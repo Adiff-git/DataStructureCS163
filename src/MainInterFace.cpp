@@ -52,23 +52,23 @@ MainInterface::~MainInterface() {
 }
 
 void MainInterface::LoadTextures() {
-    hashTableButton = LoadTexture("D:\\Downloads\\sproject\\DataStructureCS163\\resources\\images\\HashTable.png");
+    hashTableButton = LoadTexture("..\\resources\\images\\HashTable.png");
     if (hashTableButton.id == 0) {
         std::cerr << "Failed to load HashTable.png\n";
     }
-    linkedListButton = LoadTexture("D:\\Downloads\\sproject\\DataStructureCS163\\resources\\images\\LinkedList.png");
+    linkedListButton = LoadTexture("..\\resources\\images\\LinkedList.png");
     if (linkedListButton.id == 0) {
         std::cerr << "Failed to load LinkedList.png\n";
     }
-    avlTreeButton = LoadTexture("D:\\Downloads\\sproject\\DataStructureCS163\\resources\\images\\AVLTree.png");
+    avlTreeButton = LoadTexture("..\\resources\\images\\AVLTree.png");
     if (avlTreeButton.id == 0) {
         std::cerr << "Failed to load AVLTree.png\n";
     }
-    graphButton = LoadTexture("D:\\Downloads\\sproject\\DataStructureCS163\\resources\\images\\Graph.png");
+    graphButton = LoadTexture("..\\resources\\images\\Graph.png");
     if (graphButton.id == 0) {
         std::cerr << "Failed to load Graph.png\n";
     }
-    backButtonTexture = LoadTexture("D:\\Downloads\\sproject\\DataStructureCS163\\resources\\images\\BackButton.png");
+    backButtonTexture = LoadTexture("..\\resources\\images\\BackButton.png");
     if (backButtonTexture.id == 0) {
         std::cerr << "Failed to load BackButton.png\n";
     }

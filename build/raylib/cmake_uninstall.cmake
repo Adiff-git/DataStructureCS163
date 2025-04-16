@@ -1,8 +1,8 @@
-if(NOT EXISTS "D:/Downloads/sproject/Main/DataStructureCS163/build/install_manifest.txt")
-  message(FATAL_ERROR "Cannot find install manifest: D:/Downloads/sproject/Main/DataStructureCS163/build/install_manifest.txt")
+if(NOT EXISTS "C:/Users/trong/Downloads/DataStructureCS163/build/install_manifest.txt")
+  message(FATAL_ERROR "Cannot find install manifest: C:/Users/trong/Downloads/DataStructureCS163/build/install_manifest.txt")
 endif()
 
-file(READ "D:/Downloads/sproject/Main/DataStructureCS163/build/install_manifest.txt" files)
+file(READ "C:/Users/trong/Downloads/DataStructureCS163/build/install_manifest.txt" files)
 string(REGEX REPLACE "\n" ";" files "${files}")
 foreach(file ${files})
   message(STATUS "Uninstalling $ENV{DESTDIR}${file}")

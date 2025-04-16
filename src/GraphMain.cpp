@@ -35,7 +35,7 @@ void DrawMainControlsUI(const UIState& state) {
 }
 
 void DrawCreateModeUI(const UIState& state) {
-    DrawText("N:", state.nodesInputRect.x - 25, state.nodesInputRect.y + 5, 20, WHITE);
+    DrawText("N:", state.nodesInputRect.x - 25, state.nodesInputRect.y + 5, 20, BLACK);
     DrawRectangleRec(state.nodesInputRect, LIGHTGRAY);
     DrawButtonUI("", state.nodesInputRect, GetFontDefault(), LIGHTGRAY);
     DrawText(state.numNodesStr.c_str(), state.nodesInputRect.x + 5, state.nodesInputRect.y + 5, 20, BLACK);
@@ -47,7 +47,7 @@ void DrawCreateModeUI(const UIState& state) {
     DrawRectangleRoundedLines(nodesQuestionButton, 0.3f, 8, DARKGRAY);
     DrawText("?", nodesQuestionButton.x + 8, nodesQuestionButton.y + 2, 24, BLACK);
 
-    DrawText("E:", state.edgesInputRect.x - 25, state.edgesInputRect.y + 5, 20, WHITE);
+    DrawText("E:", state.edgesInputRect.x - 25, state.edgesInputRect.y + 5, 20, BLACK);
     DrawRectangleRec(state.edgesInputRect, LIGHTGRAY);
     DrawButtonUI("", state.edgesInputRect, GetFontDefault(), LIGHTGRAY);
     DrawText(state.numEdgesStr.c_str(), state.edgesInputRect.x + 5, state.edgesInputRect.y + 5, 20, BLACK);
@@ -231,7 +231,7 @@ void GraphMain::Run() {
     UpdateGraph();
 
     BeginDrawing();
-    ClearBackground(GRAY);
+    ClearBackground(WHITE);
     DrawGraph();
     DrawUI();
     Rectangle backButtonBounds = { 20, 20, 65, 65 };

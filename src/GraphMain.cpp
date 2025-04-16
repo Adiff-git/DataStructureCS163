@@ -235,7 +235,7 @@ void GraphMain::Run() {
     DrawGraph();
     DrawUI();
     Rectangle backButtonBounds = { 20, 20, 65, 65 };
-    DrawButton("Back", backButtonBounds, GetFontDefault(), "Back"); 
+    DrawBackButton(backButtonTexture, backButtonBounds, backButtonClicked);
     if (CheckCollisionPointRec(GetMousePosition(), backButtonBounds) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         backToMainMenu = true;
     }
@@ -1879,9 +1879,4 @@ void GraphMain::DrawUI()
 }
 bool GraphMain::ShouldClose() {
     return shouldClose || WindowShouldClose();
-}
-void GraphMain::DrawBackButton(Texture2D texture, Rectangle bounds, bool clicked) {
-    Color tint = clicked ? Fade(WHITE, 0.7f) : WHITE;
-    DrawTexturePro(texture, {0, 0, (float)texture.width, (float)texture.height},
-                   bounds, {0, 0}, 0.0f, tint);
 }

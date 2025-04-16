@@ -235,7 +235,6 @@ private:
      void UpdateGraph();
      void DrawGraph();
      void DrawUI();
-     void DrawBackButton(Texture2D texture, Rectangle bounds, bool clicked);
 };
 
 // Khai báo hàm DrawButton độc lập (dùng cho các nút trong MST menu)

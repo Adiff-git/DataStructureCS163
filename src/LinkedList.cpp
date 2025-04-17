@@ -109,7 +109,7 @@ void LinkedList::drawList() {
         if (isHovered && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             selectedNode = nullptr;
         }
-        DrawCircleV(nullCenter, radius, isHovered ? GRAY : LIGHTGRAY);
+        DrawCircleV(nullCenter, radius, isHovered ? GRAY : WHITE);
         DrawCircleLines(nullCenter.x, nullCenter.y, radius, BLACK);
         Vector2 textSize = MeasureTextEx(GetFontDefault(), "NULL", 20, 1);
         DrawTextEx(GetFontDefault(), "NULL", {nullCenter.x - textSize.x / 2, nullCenter.y - textSize.y / 2}, 20, 1, BLACK);
@@ -127,7 +127,7 @@ void LinkedList::drawList() {
             selectedNodeArea = {nodeCenter.x - radius, nodeCenter.y - radius, nodeWidth, nodeHeight};
         }
         bool isSelected = (selectedNode == current);
-        DrawCircleV(nodeCenter, radius, isSelected ? BLUE : (isHovered ? GRAY : LIGHTGRAY));
+        DrawCircleV(nodeCenter, radius, isSelected ? BLUE : (isHovered ? GRAY : WHITE));
         DrawCircleLines(nodeCenter.x, nodeCenter.y, radius, BLACK);
         Vector2 textSize = MeasureTextEx(GetFontDefault(), TextFormat("%d", current->value), 20, 1);
         DrawTextEx(GetFontDefault(), TextFormat("%d", current->value), {nodeCenter.x - textSize.x / 2, nodeCenter.y - textSize.y / 2}, 20, 1, BLACK);
@@ -149,7 +149,7 @@ void LinkedList::drawList() {
     if (isHoveredNull && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         selectedNode = nullptr;
     }
-    DrawCircleV(nullCenter, radius, isHoveredNull ? GRAY : LIGHTGRAY);
+    DrawCircleV(nullCenter, radius, isHoveredNull ? GRAY : WHITE);
     DrawCircleLines(nullCenter.x, nullCenter.y, radius, BLACK);
     Vector2 textSize = MeasureTextEx(GetFontDefault(), "NULL", 20, 1);
     DrawTextEx(GetFontDefault(), "NULL", {nullCenter.x - textSize.x / 2, nullCenter.y - textSize.y / 2}, 20, 1, BLACK);
@@ -168,7 +168,7 @@ void LinkedList::drawPrevList() {
         if (isHovered && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             selectedNode = nullptr;
         }
-        DrawCircleV(nullCenter, radius, isHovered ? GRAY : LIGHTGRAY);
+        DrawCircleV(nullCenter, radius, isHovered ? GRAY : WHITE);
         DrawCircleLines(nullCenter.x, nullCenter.y, radius, BLACK);
         Vector2 textSize = MeasureTextEx(GetFontDefault(), "NULL", 20, 1);
         DrawTextEx(GetFontDefault(), "NULL", {nullCenter.x - textSize.x / 2, nullCenter.y - textSize.y / 2}, 20, 1, BLACK);
@@ -186,7 +186,7 @@ void LinkedList::drawPrevList() {
             selectedNodeArea = {nodeCenter.x - radius, nodeCenter.y - radius, nodeWidth, nodeHeight};
         }
         bool isSelected = (selectedNode == current);
-        DrawCircleV(nodeCenter, radius, isSelected ? BLUE : (isHovered ? GRAY : LIGHTGRAY));
+        DrawCircleV(nodeCenter, radius, isSelected ? BLUE : (isHovered ? GRAY : WHITE));
         DrawCircleLines(nodeCenter.x, nodeCenter.y, radius, BLACK);
         Vector2 textSize = MeasureTextEx(GetFontDefault(), TextFormat("%d", current->value), 20, 1);
         DrawTextEx(GetFontDefault(), TextFormat("%d", current->value), {nodeCenter.x - textSize.x / 2, nodeCenter.y - textSize.y / 2}, 20, 1, BLACK);

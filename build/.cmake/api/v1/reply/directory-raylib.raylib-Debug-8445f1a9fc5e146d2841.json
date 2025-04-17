@@ -60,10 +60,10 @@
 			"destination" : "lib",
 			"paths" : 
 			[
-				"raylib/raylib/libraylib.a"
+				"raylib/raylib/Debug/raylib.lib"
 			],
 			"targetId" : "raylib::@7d429ebd5d102775094d",
-			"targetIndex" : 2,
+			"targetIndex" : 6,
 			"type" : "target"
 		},
 		{

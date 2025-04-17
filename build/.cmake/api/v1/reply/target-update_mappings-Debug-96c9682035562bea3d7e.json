@@ -23,6 +23,12 @@
 			}
 		]
 	},
+	"dependencies" : 
+	[
+		{
+			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
+		}
+	],
 	"folder" : 
 	{
 		"name" : "GLFW3"
@@ -80,7 +86,7 @@
 		{
 			"backtrace" : 0,
 			"isGenerated" : true,
-			"path" : "build/raylib/raylib/external/glfw/src/CMakeFiles/update_mappings.rule",
+			"path" : "build/CMakeFiles/ffbf6ecb33f6ddbb8bc1478f3713292f/update_mappings.rule",
 			"sourceGroupIndex" : 2
 		}
 	],

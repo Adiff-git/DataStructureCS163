@@ -2,67 +2,67 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/context.c.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/context.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/init.c.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/init.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/input.c.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/input.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/monitor.c.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/monitor.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/platform.c.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/platform.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/vulkan.c.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/vulkan.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/window.c.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/window.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/egl_context.c.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/egl_context.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/osmesa_context.c.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/osmesa_context.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/null_init.c.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/null_init.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/null_monitor.c.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/null_monitor.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/null_window.c.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/null_window.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/null_joystick.c.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/null_joystick.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_module.c.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/win32_module.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_time.c.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/win32_time.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_thread.c.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/win32_thread.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_init.c.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/win32_init.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_joystick.c.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/win32_joystick.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_monitor.c.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/win32_monitor.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_window.c.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/win32_window.obj"
 		},
 		{
-			"path" : "raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/wgl_context.c.obj"
+			"path" : "raylib/raylib/external/glfw/src/glfw.dir/Release/wgl_context.obj"
 		}
 	],
 	"backtrace" : 1,
@@ -97,7 +97,7 @@
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 256,
+				"line" : 251,
 				"parent" : 0
 			},
 			{
@@ -109,7 +109,7 @@
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 268,
+				"line" : 283,
 				"parent" : 0
 			},
 			{
@@ -171,11 +171,11 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "-fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -g -std=c99"
+					"fragment" : "/DWIN32 /D_WINDOWS /O2 /Ob2 /DNDEBUG -MD"
 				},
 				{
 					"backtrace" : 2,
-					"fragment" : "-Wall"
+					"fragment" : "/W3"
 				}
 			],
 			"defines" : 
@@ -186,7 +186,7 @@
 				},
 				{
 					"backtrace" : 4,
-					"define" : "WINVER=0x0501"
+					"define" : "_CRT_SECURE_NO_WARNINGS"
 				},
 				{
 					"backtrace" : 5,
@@ -201,23 +201,23 @@
 			[
 				{
 					"backtrace" : 7,
-					"path" : "C:/Users/trong/Downloads/DataStructureCS163/inc"
+					"path" : "D:/Downloads/sproject/Main/DataStructureCS163/inc"
 				},
 				{
 					"backtrace" : 8,
-					"path" : "C:/Users/trong/Downloads/DataStructureCS163/thirdparty/tinyfiledialogs"
+					"path" : "D:/Downloads/sproject/Main/DataStructureCS163/thirdparty/tinyfiledialogs"
 				},
 				{
 					"backtrace" : 9,
-					"path" : "C:/Users/trong/Downloads/DataStructureCS163/raylib/src/external/glfw/include"
+					"path" : "D:/Downloads/sproject/Main/DataStructureCS163/raylib/src/external/glfw/include"
 				},
 				{
 					"backtrace" : 10,
-					"path" : "C:/Users/trong/Downloads/DataStructureCS163/raylib/src/external/glfw/src"
+					"path" : "D:/Downloads/sproject/Main/DataStructureCS163/raylib/src/external/glfw/src"
 				},
 				{
 					"backtrace" : 10,
-					"path" : "C:/Users/trong/Downloads/DataStructureCS163/build/raylib/raylib/external/glfw/src"
+					"path" : "D:/Downloads/sproject/Main/DataStructureCS163/build/raylib/raylib/external/glfw/src"
 				}
 			],
 			"language" : "C",
@@ -253,6 +253,12 @@
 				30,
 				31
 			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
 		}
 	],
 	"folder" : 

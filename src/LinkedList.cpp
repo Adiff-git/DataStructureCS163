@@ -45,7 +45,7 @@ LinkedList::~LinkedList() {
 }
 
 void LinkedList::saveCurrentList() {
-    // Giải phóng danh sách trước đó nếu có
+    // Xóa danh sách prevHead cũ
     ListNode* current = prevHead;
     while (current) {
         ListNode* temp = current;
@@ -63,6 +63,7 @@ void LinkedList::saveCurrentList() {
         currentHead = currentHead->next;
         currentPrev->next = new ListNode(currentHead->value);
         currentPrev = currentPrev->next;
+        currentPrev->next = nullptr; // Đảm bảo không có con trỏ treo
     }
 }
 
@@ -91,14 +92,14 @@ void LinkedList::drawList() {
     int idx = 0;
     float radius = nodeWidth / 2;
 
-    // Tính toán độ lệch tối đa dựa trên số lượng node
+    // Đếm số lượng node thực tế để xác định vị trí cuối cùng
     int nodeCount = 0;
     ListNode* temp = head;
     while (temp) {
         nodeCount++;
         temp = temp->next;
     }
-    maxScrollOffsetX = std::max(0.0f, (nodeWidth + nodeSpaceX) * nodeCount - (1600 - listPosX - 50)); // Chiều rộng khu vực hiển thị
+    maxScrollOffsetX = std::max(0.0f, (nodeWidth + nodeSpaceX) * nodeCount - (1600 - listPosX - 50));
 
     if (!current) {
         Vector2 nullCenter = calNodeCenter(0);
@@ -115,7 +116,7 @@ void LinkedList::drawList() {
         return;
     }
     
-    while (current) {
+    while (current && idx < nodeCount) {
         Vector2 nodeCenter = calNodeCenter(idx);
         float dx = GetMousePosition().x - nodeCenter.x;
         float dy = GetMousePosition().y - nodeCenter.y;
@@ -131,7 +132,7 @@ void LinkedList::drawList() {
         Vector2 textSize = MeasureTextEx(GetFontDefault(), TextFormat("%d", current->value), 20, 1);
         DrawTextEx(GetFontDefault(), TextFormat("%d", current->value), {nodeCenter.x - textSize.x / 2, nodeCenter.y - textSize.y / 2}, 20, 1, BLACK);
         
-        if (current->next) {
+        if (current->next && idx < nodeCount - 1) {
             Rectangle edgeRect = calEdgeArea(idx + 1);
             DrawRectangleRec(edgeRect, BLACK);
         }
@@ -139,8 +140,9 @@ void LinkedList::drawList() {
         current = current->next;
         idx++;
     }
-    
-    Vector2 nullCenter = calNodeCenter(idx);
+
+    // Chỉ vẽ node "NULL" ở vị trí cuối cùng dựa trên nodeCount
+    Vector2 nullCenter = calNodeCenter(nodeCount);
     float dxNull = GetMousePosition().x - nullCenter.x;
     float dyNull = GetMousePosition().y - nullCenter.y;
     bool isHoveredNull = (dxNull * dxNull + dyNull * dyNull) <= (radius * radius);
@@ -212,13 +214,18 @@ void LinkedList::drawPrevList() {
 }
 
 void LinkedList::Init(int n) {
-    saveCurrentList();
-    while (head) {
-        ListNode* temp = head;
-        head = head->next;
+    // Xóa danh sách cũ
+    ListNode* current = head;
+    while (current) {
+        ListNode* temp = current;
+        current = current->next;
         delete temp;
     }
-    
+    head = nullptr;
+
+    // Xóa danh sách prevHead để tránh trạng thái sai
+    saveCurrentList(); // Gọi saveCurrentList để đảm bảo prevHead được làm mới
+
     initDescriptions.clear();
     initCodeIndex.clear();
     initPaths1.clear();
@@ -229,17 +236,22 @@ void LinkedList::Init(int n) {
     initPaths1.push_back({});
     initPaths2.push_back({});
 
-    // Tạo danh sách ngay lập tức mà không qua animation
-    ListNode* curr = nullptr;
-    for (int i = 0; i < n; i++) {
-        int value = rand() % 100;
-        ListNode* newNode = new ListNode(value);
-        if (!head) {
-            head = newNode;
-            curr = head;
-        } else {
-            curr->next = newNode;
-            curr = curr->next;
+    // Tạo danh sách mới với n node
+    if (n <= 0) {
+        head = nullptr;
+    } else {
+        ListNode* curr = nullptr;
+        for (int i = 0; i < n; i++) {
+            int value = rand() % 100;
+            ListNode* newNode = new ListNode(value);
+            newNode->next = nullptr; // Đảm bảo next được khởi tạo đúng
+            if (!head) {
+                head = newNode;
+                curr = head;
+            } else {
+                curr->next = newNode;
+                curr = curr->next;
+            }
         }
     }
     
@@ -250,11 +262,10 @@ void LinkedList::Init(int n) {
     
     curStep = 0;
     totalStep = initCodeIndex.size();
-    doneAnimation = true; // Đánh dấu animation đã hoàn tất để hiển thị danh sách ngay
-    operation_type = 6; // Init
+    doneAnimation = true;
+    operation_type = 6;
     selectedNode = nullptr;
 }
-
 void LinkedList::AddHead(int value) {
     selectedNode = nullptr;
     saveCurrentList();

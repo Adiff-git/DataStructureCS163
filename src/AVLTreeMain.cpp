@@ -1,32 +1,19 @@
 #include "../inc/AVLTreeMain.h"
-
 #include "../inc/AVLTree.h"
-
 #include "../inc/Button.h"
-
 #include "tinyfiledialogs.h"
-
 #include <sstream>
-
 #include <cstdlib>
-
 #include <stack>
-
 #include <iostream>
-
 #include <cmath>
-#include "raylib.h" // Ensure this header is included for Rectangle and related functions
-
+#include "raylib.h"
 #include <fstream>
-
-
 
 std::stack<AVLTree> treeUndoState;
 std::stack<AVLTree> treeRedoState;
 
 #define NODE_RADIUS 20.0f
-
-
 
 AVLTreeVisualizer::AVLTreeVisualizer() 
     : inputText(""),
@@ -88,7 +75,8 @@ AVLTreeVisualizer::AVLTreeVisualizer()
       okButtonClicked(false),
       okButtonMessage("OK"),
       operationType(""),
-      currentStepIndex(-1)
+      currentStepIndex(-1),
+      isInitialized(false) // Initialize isInitialized to false
 {
     sliderHandle = { speedBar.x + (speedBar.width - sliderHandle.width) / 2.0f, speedBar.y + 2.0f, 10.0f, 16.0f };
     backButtonTexture = LoadTexture("..\\resources\\images\\BackButton.png");
@@ -105,17 +93,19 @@ AVLTreeVisualizer::AVLTreeVisualizer()
 }
 
 AVLTreeVisualizer::~AVLTreeVisualizer() {
-
-    // Giải phóng texture của nút "Back"
-
     UnloadTexture(backButtonTexture);
-
 }
-
-
 
 void AVLTreeVisualizer::handleInput() {
     Vector2 mousePos = GetMousePosition();
+
+    // Handle Back button
+    Rectangle backButtonBounds = { 20.0f, 20.0f, 65.0f, 65.0f };
+    if (DrawBackButton(backButtonTexture, backButtonBounds, backButtonClicked)) {
+        shouldClose = true;
+        backButtonClicked = false;
+        return;
+    }
 
     if (showInputWindow) {
         Font defaultFont = GetFontDefault();
@@ -287,8 +277,6 @@ void AVLTreeVisualizer::handleInput() {
     }
 
     // Animation control buttons
-
-    // Skip Back (Rewind)
     if (DrawButton("|<<", rewindButtonRect, defaultFont, rewindButtonClicked, buttonMessage)) {
         if (!treeUndoState.empty()) {
             paused = true;
@@ -321,45 +309,14 @@ void AVLTreeVisualizer::handleInput() {
     }
 
     // Step Back (Previous)
-    if (paused && currentStepIndex > 0 && DrawButton("Prev", previousButtonRect, defaultFont, previousButtonClicked, buttonMessage)) {
-        // Store current tree state for redo
-        AVLTree treeReplica(tree);
-        treeRedoState.push(treeReplica);
-
-        // Decrement step index
-        currentStepIndex--;
-        const OperationStep& step = operationSteps[currentStepIndex];
-        currentOperation = step.operation;
-        currentState = step.currentState;
-        currentPath = step.currentPath;
-        pathIndex = step.pathIndex;
-        highlightNodes = step.highlightNodes;
-        notificationMessage = step.notificationMessage;
-        operationValue = step.operationValue;
-        pendingInsertValue = step.pendingInsertValue;
-        searchFound = step.searchFound;
-        stateTimer = step.stateTimer;
-        resultTimer = step.resultTimer;
-        rotationIndex = step.rotationIndex;
-
-        // Restore tree state from snapshot
-        tree = step.treeSnapshot;
-        isInitialized = tree.root != nullptr;
-
-        // Update notification based on context
-        if (currentState == TRAVERSING || currentState == SEARCHING) {
-            notificationMessage = "Stepped back: Traversing " + std::to_string(currentPath[pathIndex]->data);
-        } else if (currentState == SHOWING_RESULT || currentState == IDLE) {
-            notificationMessage = "Stepped back to: " + step.notificationMessage;
-        } else {
-            notificationMessage = "Stepped back: " + step.notificationMessage;
-        }
-
-        inputText.clear();
+    if (paused && !operationSteps.empty() && currentStepIndex > 0 && DrawButton("Prev", previousButtonRect, defaultFont, previousButtonClicked, buttonMessage)) {
+        stepBackward();
+        previousButtonClicked = false;
+    } else if (paused && (operationSteps.empty() || currentStepIndex <= 0)) {
+        notificationMessage = "Cannot step back further";
         previousButtonClicked = false;
     }
 
-    // Play/Pause
     if (DrawButton(paused ? "Play" : "Pause", playPauseButtonRect, defaultFont, playPauseButtonClicked, buttonMessage)) {
         paused = !paused;
         playPauseButtonMessage = paused ? "Play" : "Pause";
@@ -367,31 +324,11 @@ void AVLTreeVisualizer::handleInput() {
         playPauseButtonClicked = false;
     }
 
-    // Step Forward (Next)
     if (paused && currentStepIndex < static_cast<int>(operationSteps.size()) - 1 && DrawButton("Next", nextButtonRect, defaultFont, nextButtonClicked, buttonMessage)) {
-        currentStepIndex++;
-        const OperationStep& step = operationSteps[currentStepIndex];
-        currentOperation = step.operation;
-        currentState = step.currentState;
-        currentPath = step.currentPath;
-        pathIndex = step.pathIndex;
-        highlightNodes = step.highlightNodes;
-        notificationMessage = step.notificationMessage;
-        operationValue = step.operationValue;
-        pendingInsertValue = step.pendingInsertValue;
-        searchFound = step.searchFound;
-        stateTimer = step.stateTimer;
-        resultTimer = step.resultTimer;
-        rotationIndex = step.rotationIndex;
-
-        tree = step.treeSnapshot;
-        isInitialized = tree.root != nullptr;
-
-        inputText.clear();
+        stepForward();
         nextButtonClicked = false;
     }
 
-    // Skip Forward (Fast Forward)
     if (DrawButton(">>|", fastForwardButtonRect, defaultFont, fastForwardButtonClicked, buttonMessage)) {
         if (currentState != IDLE || !treeRedoState.empty()) {
             paused = true;
@@ -468,69 +405,52 @@ void AVLTreeVisualizer::handleInput() {
     if (CheckCollisionPointRec(GetMousePosition(), speedBar) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
         animationSpeed = UpdateSlider(speedBar, 0.05f, 5.0f, animationSpeed);
     }
-
-    Rectangle backButtonBounds = { 20.0f, 20.0f, 65.0f, 65.0f };
-    if (DrawButton("", backButtonBounds, defaultFont, backButtonClicked, buttonMessage)) {
-        shouldClose = true;
-        backButtonClicked = false;
-    }
 }
+
 void AVLTreeVisualizer::stepBackward() {
-    if (!paused) {
+    if (!paused || operationSteps.empty() || currentStepIndex <= 0) {
+        notificationMessage = "Cannot step back further";
         return;
     }
 
-    if (currentState != IDLE) {
-        // Step back within the current animation
-        if (currentStepIndex > 0) {
-            currentStepIndex--;
-            const OperationStep& step = operationSteps[currentStepIndex];
+    // Store current tree state for redo
+    AVLTree treeReplica(tree);
+    treeRedoState.push(treeReplica);
 
-            currentOperation = step.operation;
-            currentState = step.currentState;
-            currentPath = step.currentPath;
-            pathIndex = step.pathIndex;
-            highlightNodes = step.highlightNodes;
-            notificationMessage = step.notificationMessage;
-            operationValue = step.operationValue;
-            pendingInsertValue = step.pendingInsertValue;
-            searchFound = step.searchFound;
-            stateTimer = step.stateTimer;
-            resultTimer = step.resultTimer;
-        }
-    } else {
-        // Not currently animating, step back into the previous command
-        if (!treeUndoState.empty()) {
-            AVLTree treeReplica(tree);
-            treeRedoState.push(treeReplica);
-            tree = treeUndoState.top();
-            treeUndoState.pop();
+    // Decrement step index
+    currentStepIndex--;
+    const OperationStep& step = operationSteps[currentStepIndex];
+    currentOperation = step.operation;
+    currentState = step.currentState;
+    currentPath = step.currentPath;
+    pathIndex = step.pathIndex;
+    highlightNodes = step.highlightNodes;
+    notificationMessage = step.notificationMessage;
+    operationValue = step.operationValue;
+    pendingInsertValue = step.pendingInsertValue;
+    searchFound = step.searchFound;
+    stateTimer = step.stateTimer;
+    resultTimer = step.resultTimer;
+    rotationIndex = step.rotationIndex;
 
-            if (!operationSteps.empty()) {
-                currentStepIndex = std::max(0, currentStepIndex - 1);
-                while (currentStepIndex > 0 && operationSteps[currentStepIndex].currentState != SHOWING_RESULT && operationSteps[currentStepIndex].currentState != IDLE) {
-                    currentStepIndex--;
-                }
+    // Restore tree state from snapshot
+    tree = step.treeSnapshot;
+    isInitialized = tree.root != nullptr;
 
-                const OperationStep& step = operationSteps[currentStepIndex];
-                currentOperation = step.operation;
-                currentState = step.currentState;
-                currentPath = step.currentPath;
-                pathIndex = step.pathIndex;
-                highlightNodes = step.highlightNodes;
-                notificationMessage = step.notificationMessage;
-                operationValue = step.operationValue;
-                pendingInsertValue = step.pendingInsertValue;
-                searchFound = step.searchFound;
-                stateTimer = step.stateTimer;
-                resultTimer = step.resultTimer;
-            }
-
-            isInitialized = tree.root != nullptr;
+    // Update notification based on context
+    if (currentState == TRAVERSING || currentState == SEARCHING) {
+        if (pathIndex < currentPath.size()) {
+            notificationMessage = "Stepped back: Traversing " + std::to_string(currentPath[pathIndex]->data);
         } else {
-            notificationMessage = "No previous tree state available";
+            notificationMessage = "Stepped back: Traversing complete";
         }
+    } else if (currentState == SHOWING_RESULT || currentState == IDLE) {
+        notificationMessage = "Stepped back to: " + step.notificationMessage;
+    } else {
+        notificationMessage = "Stepped back: " + step.notificationMessage;
     }
+
+    inputText.clear();
 }
 void AVLTreeVisualizer::stepForward() {
     if (!paused || currentState == SHOWING_RESULT || currentState == IDLE) {
@@ -942,12 +862,9 @@ void AVLTreeVisualizer::draw() {
     DrawText(speedText, speedBar.x + speedBar.width + 10.0f, speedBar.y, 20, BLACK);
     free(speedText);
 
-    // Draw speed bar, middle mark, and slider handle
     DrawRectangleRec(speedBar, LIGHTGRAY);
-    // Draw middle mark (vertical line at speedBar.x + speedBar.width/2)
     float middleX = speedBar.x + speedBar.width / 2.0f;
     DrawLineEx({middleX, speedBar.y - 5.0f}, {middleX, speedBar.y + speedBar.height + 5.0f}, 2.0f, BLACK);
-    // Draw slider handle
     DrawRectangleRec(sliderHandle, DARKGRAY);
 
     if (showInputWindow) {
@@ -985,11 +902,10 @@ void AVLTreeVisualizer::draw() {
     DrawButton(paused ? "Play" : "Pause", playPauseButtonRect, defaultFont, playPauseButtonClicked, buttonMessage);
     DrawButton("Next", nextButtonRect, defaultFont, nextButtonClicked, buttonMessage);
     DrawButton(">>|", fastForwardButtonRect, defaultFont, fastForwardButtonClicked, buttonMessage);
+
     Rectangle backButtonBounds = { 20.0f, 20.0f, 65.0f, 65.0f };
-    DrawButton("", backButtonBounds, defaultFont, backButtonClicked, buttonMessage);
-    if (backButtonClicked) {
-        shouldClose = true;
-    }
+    DrawBackButton(backButtonTexture, backButtonBounds, backButtonClicked);
+
     if (tree.root) {
         drawTree(tree.root, offset, 120.0f, 200.0f, highlightNodes);
     }
@@ -1068,6 +984,7 @@ void AVLTreeVisualizer::draw() {
         shouldClose = true;
     }
 }
+
 void AVLTreeVisualizer::animateLoadFile() {
     const char* filterPatterns[] = {"*.txt"};
     const char* filePath = tinyfd_openFileDialog(

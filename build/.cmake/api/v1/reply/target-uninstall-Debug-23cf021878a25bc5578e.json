@@ -23,6 +23,12 @@
 			}
 		]
 	},
+	"dependencies" : 
+	[
+		{
+			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
+		}
+	],
 	"id" : "uninstall::@5003b8f497eeabc0006e",
 	"name" : "uninstall",
 	"paths" : 
@@ -58,7 +64,7 @@
 		{
 			"backtrace" : 0,
 			"isGenerated" : true,
-			"path" : "build/raylib/CMakeFiles/uninstall.rule",
+			"path" : "build/CMakeFiles/7b4299eeaa83dc81fae5723790cc76f9/uninstall.rule",
 			"sourceGroupIndex" : 1
 		}
 	],

@@ -24101,3 +24101,150 @@ events:
       Running the CXX compiler's linker: "C:/msys64/ucrt64/x86_64-w64-mingw32/bin/ld.exe" "-v"
       GNU ld (GNU Binutils) 2.41
 ...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.0/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-4.0/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "C:/Program Files/CMake/share/cmake-4.0/Modules/CheckCCompilerFlag.cmake:56 (cmake_check_compiler_flag)"
+      - "raylib/cmake/AddIfFlagCompiles.cmake:3 (CHECK_C_COMPILER_FLAG)"
+      - "raylib/cmake/CompilerFlags.cmake:5 (add_if_flag_compiles)"
+      - "raylib/CMakeLists.txt:35 (include)"
+    checks:
+      - "Performing Test COMPILER_HAS_THOSE_TOGGLES"
+    directories:
+      source: "C:/Users/trong/Downloads/DataStructureCS163/build/CMakeFiles/CMakeScratch/TryCompile-btiin6"
+      binary: "C:/Users/trong/Downloads/DataStructureCS163/build/CMakeFiles/CMakeScratch/TryCompile-btiin6"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "C:/Users/trong/Downloads/DataStructureCS163/raylib/cmake"
+    buildResult:
+      variable: "COMPILER_HAS_THOSE_TOGGLES"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/trong/Downloads/DataStructureCS163/build/CMakeFiles/CMakeScratch/TryCompile-btiin6'
+        
+        Run Build Command(s): "C:/Program Files/CMake/bin/cmake.exe" -E env VERBOSE=1 C:/msys64/ucrt64/bin/mingw32-make.exe -f Makefile cmTC_82720/fast
+        C:/msys64/ucrt64/bin/mingw32-make.exe  -f CMakeFiles\\cmTC_82720.dir\\build.make CMakeFiles/cmTC_82720.dir/build
+        mingw32-make[1]: Entering directory 'C:/Users/trong/Downloads/DataStructureCS163/build/CMakeFiles/CMakeScratch/TryCompile-btiin6'
+        Building C object CMakeFiles/cmTC_82720.dir/src.c.obj
+        C:\\msys64\\ucrt64\\bin\\gcc.exe -DCOMPILER_HAS_THOSE_TOGGLES  -Werror=pointer-arith -o CMakeFiles\\cmTC_82720.dir\\src.c.obj -c C:\\Users\\trong\\Downloads\\DataStructureCS163\\build\\CMakeFiles\\CMakeScratch\\TryCompile-btiin6\\src.c
+        Linking C executable cmTC_82720.exe
+        "C:\\Program Files\\CMake\\bin\\cmake.exe" -E cmake_link_script CMakeFiles\\cmTC_82720.dir\\link.txt --verbose=1
+        "C:\\Program Files\\CMake\\bin\\cmake.exe" -E rm -f CMakeFiles\\cmTC_82720.dir/objects.a
+        C:\\msys64\\ucrt64\\bin\\ar.exe qc CMakeFiles\\cmTC_82720.dir/objects.a @CMakeFiles\\cmTC_82720.dir\\objects1.rsp
+        C:\\msys64\\ucrt64\\bin\\gcc.exe -Wl,--whole-archive CMakeFiles\\cmTC_82720.dir/objects.a -Wl,--no-whole-archive -o cmTC_82720.exe -Wl,--out-implib,libcmTC_82720.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\\cmTC_82720.dir\\linkLibs.rsp
+        mingw32-make[1]: Leaving directory 'C:/Users/trong/Downloads/DataStructureCS163/build/CMakeFiles/CMakeScratch/TryCompile-btiin6'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.0/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-4.0/Modules/CheckCSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "C:/Program Files/CMake/share/cmake-4.0/Modules/FindThreads.cmake:97 (check_c_source_compiles)"
+      - "C:/Program Files/CMake/share/cmake-4.0/Modules/FindThreads.cmake:163 (_threads_check_libc)"
+      - "raylib/src/external/glfw/CMakeLists.txt:60 (find_package)"
+    checks:
+      - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
+    directories:
+      source: "C:/Users/trong/Downloads/DataStructureCS163/build/CMakeFiles/CMakeScratch/TryCompile-ppvdkb"
+      binary: "C:/Users/trong/Downloads/DataStructureCS163/build/CMakeFiles/CMakeScratch/TryCompile-ppvdkb"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "-fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith "
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "C:/Users/trong/Downloads/DataStructureCS163/raylib/cmake;C:/Users/trong/Downloads/DataStructureCS163/raylib/src/external/glfw/CMake/modules"
+    buildResult:
+      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/trong/Downloads/DataStructureCS163/build/CMakeFiles/CMakeScratch/TryCompile-ppvdkb'
+        
+        Run Build Command(s): "C:/Program Files/CMake/bin/cmake.exe" -E env VERBOSE=1 C:/msys64/ucrt64/bin/mingw32-make.exe -f Makefile cmTC_1af50/fast
+        C:/msys64/ucrt64/bin/mingw32-make.exe  -f CMakeFiles\\cmTC_1af50.dir\\build.make CMakeFiles/cmTC_1af50.dir/build
+        mingw32-make[1]: Entering directory 'C:/Users/trong/Downloads/DataStructureCS163/build/CMakeFiles/CMakeScratch/TryCompile-ppvdkb'
+        Building C object CMakeFiles/cmTC_1af50.dir/src.c.obj
+        C:\\msys64\\ucrt64\\bin\\gcc.exe -DCMAKE_HAVE_LIBC_PTHREAD  -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith   -std=gnu99 -o CMakeFiles\\cmTC_1af50.dir\\src.c.obj -c C:\\Users\\trong\\Downloads\\DataStructureCS163\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ppvdkb\\src.c
+        Linking C executable cmTC_1af50.exe
+        "C:\\Program Files\\CMake\\bin\\cmake.exe" -E cmake_link_script CMakeFiles\\cmTC_1af50.dir\\link.txt --verbose=1
+        "C:\\Program Files\\CMake\\bin\\cmake.exe" -E rm -f CMakeFiles\\cmTC_1af50.dir/objects.a
+        C:\\msys64\\ucrt64\\bin\\ar.exe qc CMakeFiles\\cmTC_1af50.dir/objects.a @CMakeFiles\\cmTC_1af50.dir\\objects1.rsp
+        C:\\msys64\\ucrt64\\bin\\gcc.exe -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith   -Wl,--whole-archive CMakeFiles\\cmTC_1af50.dir/objects.a -Wl,--no-whole-archive -o cmTC_1af50.exe -Wl,--out-implib,libcmTC_1af50.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\\cmTC_1af50.dir\\linkLibs.rsp
+        mingw32-make[1]: Leaving directory 'C:/Users/trong/Downloads/DataStructureCS163/build/CMakeFiles/CMakeScratch/TryCompile-ppvdkb'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.0/Modules/CheckIncludeFile.cmake:99 (try_compile)"
+      - "raylib/src/external/glfw/src/CMakeLists.txt:274 (check_include_file)"
+    checks:
+      - "Looking for dinput.h"
+    directories:
+      source: "C:/Users/trong/Downloads/DataStructureCS163/build/CMakeFiles/CMakeScratch/TryCompile-7sf17e"
+      binary: "C:/Users/trong/Downloads/DataStructureCS163/build/CMakeFiles/CMakeScratch/TryCompile-7sf17e"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "-fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith "
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "C:/Users/trong/Downloads/DataStructureCS163/raylib/cmake;C:/Users/trong/Downloads/DataStructureCS163/raylib/src/external/glfw/CMake/modules"
+    buildResult:
+      variable: "DINPUT_H_FOUND"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/trong/Downloads/DataStructureCS163/build/CMakeFiles/CMakeScratch/TryCompile-7sf17e'
+        
+        Run Build Command(s): "C:/Program Files/CMake/bin/cmake.exe" -E env VERBOSE=1 C:/msys64/ucrt64/bin/mingw32-make.exe -f Makefile cmTC_e267f/fast
+        C:/msys64/ucrt64/bin/mingw32-make.exe  -f CMakeFiles\\cmTC_e267f.dir\\build.make CMakeFiles/cmTC_e267f.dir/build
+        mingw32-make[1]: Entering directory 'C:/Users/trong/Downloads/DataStructureCS163/build/CMakeFiles/CMakeScratch/TryCompile-7sf17e'
+        Building C object CMakeFiles/cmTC_e267f.dir/CheckIncludeFile.c.obj
+        C:\\msys64\\ucrt64\\bin\\gcc.exe   -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith   -std=gnu99 -o CMakeFiles\\cmTC_e267f.dir\\CheckIncludeFile.c.obj -c C:\\Users\\trong\\Downloads\\DataStructureCS163\\build\\CMakeFiles\\CMakeScratch\\TryCompile-7sf17e\\CheckIncludeFile.c
+        Linking C executable cmTC_e267f.exe
+        "C:\\Program Files\\CMake\\bin\\cmake.exe" -E cmake_link_script CMakeFiles\\cmTC_e267f.dir\\link.txt --verbose=1
+        "C:\\Program Files\\CMake\\bin\\cmake.exe" -E rm -f CMakeFiles\\cmTC_e267f.dir/objects.a
+        C:\\msys64\\ucrt64\\bin\\ar.exe qc CMakeFiles\\cmTC_e267f.dir/objects.a @CMakeFiles\\cmTC_e267f.dir\\objects1.rsp
+        C:\\msys64\\ucrt64\\bin\\gcc.exe -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith   -Wl,--whole-archive CMakeFiles\\cmTC_e267f.dir/objects.a -Wl,--no-whole-archive -o cmTC_e267f.exe -Wl,--out-implib,libcmTC_e267f.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\\cmTC_e267f.dir\\linkLibs.rsp
+        mingw32-make[1]: Leaving directory 'C:/Users/trong/Downloads/DataStructureCS163/build/CMakeFiles/CMakeScratch/TryCompile-7sf17e'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.0/Modules/CheckIncludeFile.cmake:99 (try_compile)"
+      - "raylib/src/external/glfw/src/CMakeLists.txt:275 (check_include_file)"
+    checks:
+      - "Looking for xinput.h"
+    directories:
+      source: "C:/Users/trong/Downloads/DataStructureCS163/build/CMakeFiles/CMakeScratch/TryCompile-mtwwhc"
+      binary: "C:/Users/trong/Downloads/DataStructureCS163/build/CMakeFiles/CMakeScratch/TryCompile-mtwwhc"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "-fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith "
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "C:/Users/trong/Downloads/DataStructureCS163/raylib/cmake;C:/Users/trong/Downloads/DataStructureCS163/raylib/src/external/glfw/CMake/modules"
+    buildResult:
+      variable: "XINPUT_H_FOUND"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/trong/Downloads/DataStructureCS163/build/CMakeFiles/CMakeScratch/TryCompile-mtwwhc'
+        
+        Run Build Command(s): "C:/Program Files/CMake/bin/cmake.exe" -E env VERBOSE=1 C:/msys64/ucrt64/bin/mingw32-make.exe -f Makefile cmTC_36e5f/fast
+        C:/msys64/ucrt64/bin/mingw32-make.exe  -f CMakeFiles\\cmTC_36e5f.dir\\build.make CMakeFiles/cmTC_36e5f.dir/build
+        mingw32-make[1]: Entering directory 'C:/Users/trong/Downloads/DataStructureCS163/build/CMakeFiles/CMakeScratch/TryCompile-mtwwhc'
+        Building C object CMakeFiles/cmTC_36e5f.dir/CheckIncludeFile.c.obj
+        C:\\msys64\\ucrt64\\bin\\gcc.exe   -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith   -std=gnu99 -o CMakeFiles\\cmTC_36e5f.dir\\CheckIncludeFile.c.obj -c C:\\Users\\trong\\Downloads\\DataStructureCS163\\build\\CMakeFiles\\CMakeScratch\\TryCompile-mtwwhc\\CheckIncludeFile.c
+        Linking C executable cmTC_36e5f.exe
+        "C:\\Program Files\\CMake\\bin\\cmake.exe" -E cmake_link_script CMakeFiles\\cmTC_36e5f.dir\\link.txt --verbose=1
+        "C:\\Program Files\\CMake\\bin\\cmake.exe" -E rm -f CMakeFiles\\cmTC_36e5f.dir/objects.a
+        C:\\msys64\\ucrt64\\bin\\ar.exe qc CMakeFiles\\cmTC_36e5f.dir/objects.a @CMakeFiles\\cmTC_36e5f.dir\\objects1.rsp
+        C:\\msys64\\ucrt64\\bin\\gcc.exe -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith   -Wl,--whole-archive CMakeFiles\\cmTC_36e5f.dir/objects.a -Wl,--no-whole-archive -o cmTC_36e5f.exe -Wl,--out-implib,libcmTC_36e5f.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\\cmTC_36e5f.dir\\linkLibs.rsp
+        mingw32-make[1]: Leaving directory 'C:/Users/trong/Downloads/DataStructureCS163/build/CMakeFiles/CMakeScratch/TryCompile-mtwwhc'
+        
+      exitCode: 0
+...

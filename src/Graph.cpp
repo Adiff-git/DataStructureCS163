@@ -702,16 +702,10 @@ bool LoadGraphFromFile(const char* filePath,
           int weight = adjacencyMatrix[i][j];
           if (weight != 0) {
           if (weight <= 0) {
-  // Decide policy: error, warning, default weight?
-  // Let's use a default weight of 1 and maybe log a warning.
-  // std::cerr << "Warning: Non-positive weight (" << weight << ") found between nodes "
-  //           << (i + 1) << " and " << (j + 1) << " in file '" << filePath
-  //           << "'. Using weight 1." << std::endl;
         weight = 1;
         }
         outEdges.push_back({ i + 1, j + 1, weight });
       }
-// If the graph could be directed, you'd check adjacencyMatrix[j][i] separately.
     }
 }
 

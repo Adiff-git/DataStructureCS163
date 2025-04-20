@@ -1710,8 +1710,7 @@ void GraphMain::DrawUI()
                         int toIdx = edge.to - 1;
                         if (fromIdx >= 0 && fromIdx < numNodesToDraw && toIdx >= 0 && toIdx < numNodesToDraw) {
                             drawBezierEdge(mstDrawNodePositions[fromIdx], mstDrawNodePositions[toIdx], 1.0f, Fade(DARKBLUE, 0.2f)); // Faded
-                             // Optionally draw faded weight? Maybe too cluttered.
-                             // drawEdgeWeight(mstDrawNodePositions[fromIdx], mstDrawNodePositions[toIdx], edge.weight); // Faded?
+                            drawEdgeWeight(mstDrawNodePositions[fromIdx], mstDrawNodePositions[toIdx], edge.weight); // Faded?
                         }
                     }
                 }

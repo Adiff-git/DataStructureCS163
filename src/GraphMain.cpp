@@ -223,7 +223,7 @@ void GraphMain::InitializeUI() {
     moveNodeButtonRect = { editPanelX + 10, 130, editPanelWidth - 20, 30 };
     deleteVertexButtonRect = { editPanelX + 10, 170, editPanelWidth - 20, 30 };
     deleteEdgeButtonRect = { editPanelX + 10, 210, editPanelWidth - 20, 30 };
-    doneButtonRect = { editPanelX + 10, screenHeight - 50, editPanelWidth - 20, 30 };
+    doneButtonRect = { editPanelX + 10, 250, editPanelWidth - 20, 30 };
     weightInputRect = {0, 0, 60, 25};
 }
 

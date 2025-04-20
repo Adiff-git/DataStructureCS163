@@ -6,6 +6,7 @@
 #include <string>
 #include <tuple>
 #include <fstream>
+#include "tinyfiledialogs.h"
 
 struct HashNode {
     int key;
@@ -59,9 +60,8 @@ private:
     HashNode* selectedNode;
     int selectedValue;
     Rectangle selectedNodeArea;
-    char pathfile[1024];       // Buffer for dropped file path
-    bool fileLoaded;           // True when a file is successfully dropped
-    bool showUploadPrompt;
+    std::string selectedFilePath;  // Path to selected file
+    bool fileLoaded;              // Flag for successful file loading
 
     // animation control menu
     void drawAnimationMenu();
@@ -191,18 +191,6 @@ public:
     HashNode* Search(int key);
     void DrawScreen();
     bool IsBackButtonClicked() const { return backButtonClicked; }
-	void handleFileDrop() {
-        if (showUploadPrompt && IsFileDropped()) {
-            FilePathList droppedFiles = LoadDroppedFiles();
-            if (droppedFiles.count > 0) {
-                TextCopy(pathfile, droppedFiles.paths[0]);
-                fileLoaded = true;
-                showUploadPrompt = false;
-                TraceLog(LOG_INFO, "File dropped: %s", pathfile); // Optional debug
-            }
-            UnloadDroppedFiles(droppedFiles);
-        }
-    }
 };
 
 #endif

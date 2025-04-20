@@ -25,7 +25,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{B6756138-BED2-317B-A2E8-3FBBAC7FB63F}</ProjectGuid>
+    <ProjectGuid>{CBD3DEAF-9402-3C35-8066-8DAF0FD1FC6C}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
     <Platform>x64</Platform>
@@ -69,7 +69,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\Main\DataStructureCS163\inc;D:\Downloads\sproject\Main\DataStructureCS163\thirdparty\tinyfiledialogs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\abc\DataStructureCS163\inc;C:\Users\Huyen\Documents\abc\DataStructureCS163\thirdparty\tinyfiledialogs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -79,7 +79,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\Main\DataStructureCS163\inc;D:\Downloads\sproject\Main\DataStructureCS163\thirdparty\tinyfiledialogs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\abc\DataStructureCS163\inc;C:\Users\Huyen\Documents\abc\DataStructureCS163\thirdparty\tinyfiledialogs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -89,7 +89,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <Midl>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\Main\DataStructureCS163\inc;D:\Downloads\sproject\Main\DataStructureCS163\thirdparty\tinyfiledialogs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\abc\DataStructureCS163\inc;C:\Users\Huyen\Documents\abc\DataStructureCS163\thirdparty\tinyfiledialogs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -99,7 +99,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <Midl>
-      <AdditionalIncludeDirectories>D:\Downloads\sproject\Main\DataStructureCS163\inc;D:\Downloads\sproject\Main\DataStructureCS163\thirdparty\tinyfiledialogs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Huyen\Documents\abc\DataStructureCS163\inc;C:\Users\Huyen\Documents\abc\DataStructureCS163\thirdparty\tinyfiledialogs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -108,11 +108,11 @@
     </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="D:\Downloads\sproject\Main\DataStructureCS163\raylib\CMakeLists.txt">
+    <CustomBuild Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\CMakeLists.txt">
       <UseUtf8Encoding>Always</UseUtf8Encoding>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule D:/Downloads/sproject/Main/DataStructureCS163/raylib/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/Huyen/Documents/abc/DataStructureCS163/raylib/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SD:/Downloads/sproject/Main/DataStructureCS163 -BD:/Downloads/sproject/Main/DataStructureCS163/build --check-stamp-file D:/Downloads/sproject/Main/DataStructureCS163/build/raylib/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Huyen/Documents/abc/DataStructureCS163 -BC:/Users/Huyen/Documents/abc/DataStructureCS163/build --check-stamp-file C:/Users/Huyen/Documents/abc/DataStructureCS163/build/raylib/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -120,12 +120,12 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDependentOption.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckFlagCommonConfig.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckSourceCompiles.cmake;D:\Downloads\sproject\Main\DataStructureCS163\raylib\CMakeOptions.txt;D:\Downloads\sproject\Main\DataStructureCS163\raylib\cmake\AddIfFlagCompiles.cmake;D:\Downloads\sproject\Main\DataStructureCS163\raylib\cmake\CompilerFlags.cmake;D:\Downloads\sproject\Main\DataStructureCS163\raylib\cmake\EnumOption.cmake;D:\Downloads\sproject\Main\DataStructureCS163\raylib\cmake\ParseConfigHeader.cmake;D:\Downloads\sproject\Main\DataStructureCS163\raylib\cmake\Uninstall.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Downloads\sproject\Main\DataStructureCS163\build\raylib\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-4.0\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\CMakeDependentOption.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\CheckCCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\Internal\CheckCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\Internal\CheckFlagCommonConfig.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\Internal\CheckSourceCompiles.cmake;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\CMakeOptions.txt;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\cmake\AddIfFlagCompiles.cmake;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\cmake\CompilerFlags.cmake;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\cmake\EnumOption.cmake;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\cmake\ParseConfigHeader.cmake;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\cmake\Uninstall.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule D:/Downloads/sproject/Main/DataStructureCS163/raylib/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/Huyen/Documents/abc/DataStructureCS163/raylib/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SD:/Downloads/sproject/Main/DataStructureCS163 -BD:/Downloads/sproject/Main/DataStructureCS163/build --check-stamp-file D:/Downloads/sproject/Main/DataStructureCS163/build/raylib/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Huyen/Documents/abc/DataStructureCS163 -BC:/Users/Huyen/Documents/abc/DataStructureCS163/build --check-stamp-file C:/Users/Huyen/Documents/abc/DataStructureCS163/build/raylib/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -133,12 +133,12 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDependentOption.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckFlagCommonConfig.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckSourceCompiles.cmake;D:\Downloads\sproject\Main\DataStructureCS163\raylib\CMakeOptions.txt;D:\Downloads\sproject\Main\DataStructureCS163\raylib\cmake\AddIfFlagCompiles.cmake;D:\Downloads\sproject\Main\DataStructureCS163\raylib\cmake\CompilerFlags.cmake;D:\Downloads\sproject\Main\DataStructureCS163\raylib\cmake\EnumOption.cmake;D:\Downloads\sproject\Main\DataStructureCS163\raylib\cmake\ParseConfigHeader.cmake;D:\Downloads\sproject\Main\DataStructureCS163\raylib\cmake\Uninstall.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Downloads\sproject\Main\DataStructureCS163\build\raylib\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-4.0\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\CMakeDependentOption.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\CheckCCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\Internal\CheckCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\Internal\CheckFlagCommonConfig.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\Internal\CheckSourceCompiles.cmake;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\CMakeOptions.txt;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\cmake\AddIfFlagCompiles.cmake;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\cmake\CompilerFlags.cmake;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\cmake\EnumOption.cmake;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\cmake\ParseConfigHeader.cmake;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\cmake\Uninstall.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule D:/Downloads/sproject/Main/DataStructureCS163/raylib/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/Huyen/Documents/abc/DataStructureCS163/raylib/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SD:/Downloads/sproject/Main/DataStructureCS163 -BD:/Downloads/sproject/Main/DataStructureCS163/build --check-stamp-file D:/Downloads/sproject/Main/DataStructureCS163/build/raylib/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Huyen/Documents/abc/DataStructureCS163 -BC:/Users/Huyen/Documents/abc/DataStructureCS163/build --check-stamp-file C:/Users/Huyen/Documents/abc/DataStructureCS163/build/raylib/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -146,12 +146,12 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDependentOption.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckFlagCommonConfig.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckSourceCompiles.cmake;D:\Downloads\sproject\Main\DataStructureCS163\raylib\CMakeOptions.txt;D:\Downloads\sproject\Main\DataStructureCS163\raylib\cmake\AddIfFlagCompiles.cmake;D:\Downloads\sproject\Main\DataStructureCS163\raylib\cmake\CompilerFlags.cmake;D:\Downloads\sproject\Main\DataStructureCS163\raylib\cmake\EnumOption.cmake;D:\Downloads\sproject\Main\DataStructureCS163\raylib\cmake\ParseConfigHeader.cmake;D:\Downloads\sproject\Main\DataStructureCS163\raylib\cmake\Uninstall.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Downloads\sproject\Main\DataStructureCS163\build\raylib\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-4.0\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\CMakeDependentOption.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\CheckCCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\Internal\CheckCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\Internal\CheckFlagCommonConfig.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\Internal\CheckSourceCompiles.cmake;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\CMakeOptions.txt;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\cmake\AddIfFlagCompiles.cmake;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\cmake\CompilerFlags.cmake;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\cmake\EnumOption.cmake;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\cmake\ParseConfigHeader.cmake;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\cmake\Uninstall.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule D:/Downloads/sproject/Main/DataStructureCS163/raylib/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/Huyen/Documents/abc/DataStructureCS163/raylib/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SD:/Downloads/sproject/Main/DataStructureCS163 -BD:/Downloads/sproject/Main/DataStructureCS163/build --check-stamp-file D:/Downloads/sproject/Main/DataStructureCS163/build/raylib/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Huyen/Documents/abc/DataStructureCS163 -BC:/Users/Huyen/Documents/abc/DataStructureCS163/build --check-stamp-file C:/Users/Huyen/Documents/abc/DataStructureCS163/build/raylib/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -159,8 +159,8 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDependentOption.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckFlagCommonConfig.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckSourceCompiles.cmake;D:\Downloads\sproject\Main\DataStructureCS163\raylib\CMakeOptions.txt;D:\Downloads\sproject\Main\DataStructureCS163\raylib\cmake\AddIfFlagCompiles.cmake;D:\Downloads\sproject\Main\DataStructureCS163\raylib\cmake\CompilerFlags.cmake;D:\Downloads\sproject\Main\DataStructureCS163\raylib\cmake\EnumOption.cmake;D:\Downloads\sproject\Main\DataStructureCS163\raylib\cmake\ParseConfigHeader.cmake;D:\Downloads\sproject\Main\DataStructureCS163\raylib\cmake\Uninstall.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Downloads\sproject\Main\DataStructureCS163\build\raylib\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-4.0\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\CMakeDependentOption.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\CheckCCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\Internal\CheckCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\Internal\CheckFlagCommonConfig.cmake;C:\Program Files\CMake\share\cmake-4.0\Modules\Internal\CheckSourceCompiles.cmake;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\CMakeOptions.txt;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\cmake\AddIfFlagCompiles.cmake;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\cmake\CompilerFlags.cmake;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\cmake\EnumOption.cmake;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\cmake\ParseConfigHeader.cmake;C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\cmake\Uninstall.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
@@ -168,20 +168,20 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="D:\Downloads\sproject\Main\DataStructureCS163\build\ZERO_CHECK.vcxproj">
-      <Project>{63F63731-D0FD-319B-9DC1-9A3B35BB2FB4}</Project>
+    <ProjectReference Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\ZERO_CHECK.vcxproj">
+      <Project>{C4EDD0A8-BF45-3D81-8F6E-54C21137A276}</Project>
       <Name>ZERO_CHECK</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
-    <ProjectReference Include="D:\Downloads\sproject\Main\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.vcxproj">
-      <Project>{E64E6256-7AB3-32B0-81A6-DE22039D1065}</Project>
+    <ProjectReference Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.vcxproj">
+      <Project>{73C13A7D-24F3-33EA-979A-A69C160A077E}</Project>
       <Name>glfw</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
-    <ProjectReference Include="D:\Downloads\sproject\Main\DataStructureCS163\build\raylib\raylib\raylib.vcxproj">
-      <Project>{932C7EE3-8739-3CAD-B51F-90E47D8C5481}</Project>
+    <ProjectReference Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\raylib.vcxproj">
+      <Project>{C53EB95C-7C80-3B98-8E0D-CF3B85E6B289}</Project>
       <Name>raylib</Name>
     </ProjectReference>
   </ItemGroup>

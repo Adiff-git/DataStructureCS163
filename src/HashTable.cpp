@@ -19,9 +19,7 @@ static char* ftc(float v) { // Add 'static' here
 HashTable::HashTable(int size) : size(size), selectedNode(nullptr), selectedValue(0), selectedNodeArea({0, 0, 0, 0}) {
     table.resize(size, nullptr);
     saveCurrentTable();
-    pathfile[0] = '\0';      // Initialize empty file path
     fileLoaded = false;      // No file loaded initially
-    showUploadPrompt = false;
     operation_type = -1;
     // Tải hình ảnh nút "Back"
     backButtonTexture = LoadTexture("..\\resources\\images\\BackButton.png");
@@ -73,8 +71,8 @@ void HashTable::saveCurrentTable() {
 }
 
 // Data structure area
-void HashTable::drawPrevTable() {
-    bool buttonClicked = false;
+void HashTable::drawPrevTable() { 
+	 bool buttonClicked = false;
     const char* buttonMessage = nullptr;
 
     for (int i = 0; i < size; i++) {
@@ -860,18 +858,26 @@ void HashTable::drawInitializeOptions() {
     }
     DrawButton("?", nRandomRect, GetFontDefault(), buttonClicked, buttonMessage);
 
-    Rectangle uploadRect = {30, 650, 80, 30};
-    if (IsButtonClicked(uploadRect)) {
-        showUploadPrompt = true;
-        fileLoaded = false;
-        TraceLog(LOG_INFO, "Upload button clicked, waiting for file drop");
+    // Replace Upload button with File button
+    Rectangle fileRect = {30, 650, 80, 30};
+    if (IsButtonClicked(fileRect)) {
+        // Open file dialog
+        const char* filterPatterns[1] = { "*.txt" };
+        const char* selectedFile = tinyfd_openFileDialog(
+            "Select Hash Table File", "", 1, filterPatterns, "Text Files (*.txt)", 0);
+        
+        if (selectedFile != NULL) {
+            selectedFilePath = selectedFile;
+            fileLoaded = true;
+            TraceLog(LOG_INFO, "File selected: %s", selectedFilePath.c_str());
+        }
     }
-    DrawButton("Upload", uploadRect, GetFontDefault(), buttonClicked, buttonMessage);
+    DrawButton("File", fileRect, GetFontDefault(), buttonClicked, buttonMessage);
 
     Rectangle okRect = {350, 650, 40, 30};
     if (IsButtonClicked(okRect)) {
         if (fileLoaded) {
-            std::ifstream fin(pathfile);
+            std::ifstream fin(selectedFilePath);
             if (fin.is_open()) {
                 int m, n;
                 fin >> m >> n;
@@ -895,20 +901,16 @@ void HashTable::drawInitializeOptions() {
                 doneAnimation = false;
                 totalStep = initCodeIndex.size();
                 operation_type = 4;
+				fileLoaded = false;
             } else {
                 fileLoaded = false;
-                showUploadPrompt = true;
+                // Show error message if needed
             }
         } else {
             Init(mValue, nValue);
         }
-        showUploadPrompt = false;
     }
     DrawButton("OK", okRect, GetFontDefault(), buttonClicked, buttonMessage);
-
-    if (showUploadPrompt) {
-        DrawText("Drop a file here", 120, 655, 20, GRAY);
-    }
 }
 
 void HashTable::drawInsertOptions() {
@@ -1241,7 +1243,7 @@ void HashTable::drawInsertAnimation() {
         return;
     }
     std::tuple<Rectangle, Color> path = insertPaths2[curStep][done];
-    Rectangle bounds = std::get<0>(path);
+    Rectangle bounds = std::get<0>(path); 
     Color color = std::get<1>(path);
     delta += speed;
     DrawRectangle(bounds.x, bounds.y, std::min(delta, bounds.width), bounds.height, Fade(color, 0.2f));
@@ -1545,6 +1547,13 @@ void HashTable::drawNodeDetailMenu() {
         
         static char valueText[4] = "0";
         static bool vInputEnabled = false;
+        static int lastSelectedKey = -1;
+        
+        // Update valueText when a different node is selected
+        if (lastSelectedKey != selectedNode->key) {
+            sprintf(valueText, "%d", selectedNode->value);
+            lastSelectedKey = selectedNode->key;
+        }
 
         DrawText("Node detail:", 1100, 610, 20, BLACK);
         DrawText(TextFormat("- Key: %d", selectedNode->key), 1100, 640, 20, BLACK);
@@ -1577,6 +1586,7 @@ void HashTable::drawNodeDetailMenu() {
             done = 0;
             delta = 0;
             selectedNode = nullptr;
+            lastSelectedKey = -1; // Reset last selected key
         }
         DrawButton("Delete", deleteRect, GetFontDefault(), buttonClicked, buttonMessage);
 
@@ -1586,6 +1596,7 @@ void HashTable::drawNodeDetailMenu() {
             done = 0;
             delta = 0;
             selectedNode = nullptr;
+            lastSelectedKey = -1; // Reset last selected key
         }
         DrawButton("Update", updateRect, GetFontDefault(), buttonClicked, buttonMessage);
     }
@@ -1598,7 +1609,7 @@ void HashTable::DrawScreen() {
     drawOperationMenu();
     drawAnimationMenu();
 
-    if ((operation_type < 0) || (curStep == totalStep - 1 && totalStep > 0)) {
+    if ((operation_type < 0) || (curStep == totalStep - 1 && totalStep > 0)) { 
         drawTable();
     } else {
         drawPrevTable();

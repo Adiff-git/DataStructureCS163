@@ -14,7 +14,6 @@ HashTableMain::~HashTableMain() {
 
 void HashTableMain::Run() {
     // Run the Hash Table visualization in the existing window
-    hashTable.handleFileDrop();
     BeginDrawing();
     ClearBackground(RAYWHITE);
     hashTable.DrawScreen();

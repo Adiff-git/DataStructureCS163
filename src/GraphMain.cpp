@@ -1696,14 +1696,6 @@ void GraphMain::DrawUI()
                             }
                         }
                     }
-                     // Also check edge being currently drawn if animation is running
-                     if (!mstDoneDrawing && mstEdgeIndex > 0 && mstEdgeIndex <= mstEdges.size()) {
-                         const auto& currentMSTEdge = mstEdges[mstEdgeIndex - 1];
-                         if ((edge.from == currentMSTEdge.from && edge.to == currentMSTEdge.to) || (edge.from == currentMSTEdge.to && edge.to == currentMSTEdge.from)) {
-                               // If the edge is the one being drawn *right now*, draw it highlighted below
-                         }
-                     }
-
 
                     if (!isMSTEdge) { // Only draw if it's not a confirmed MST edge
                         int fromIdx = edge.from - 1;

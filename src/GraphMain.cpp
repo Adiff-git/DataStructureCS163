@@ -100,7 +100,7 @@ void DrawEditPanelUI(const UIState& state) {
         case EditTool::TOOL_DELETE_EDGE: hintText = "Click near an edge to delete."; break;
         default: hintText = "Select a tool from the right panel."; break;
     }
-    DrawText(hintText, 50, 40, 20, RED);
+    DrawText(hintText, state.createButton.x, state.createButton.y-30, 20, RED);
 }
 
 void DrawErrorMessagesUI(const UIState& state) {

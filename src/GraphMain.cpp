@@ -1083,7 +1083,6 @@ void GraphMain::UpdateGraph()
                                      if (edge.to > deletedNodeId) edge.to--;
                                  }
                                  selectedNodeIndex = -1; // Deselect
-                                  // Keep currentTool = TOOL_DELETE_VERTEX
                              }
                              break;
                          case EditTool::TOOL_DELETE_EDGE:
@@ -1091,7 +1090,6 @@ void GraphMain::UpdateGraph()
                                  TraceLog(LOG_INFO, "EDIT: Deleting edge %d (%d-%d)", clickedEdgeIdx, edges[clickedEdgeIdx].from, edges[clickedEdgeIdx].to);
                                  edges.erase(edges.begin() + clickedEdgeIdx);
                                  selectedEdgeIndex = -1; // Deselect
-                                  // Keep currentTool = TOOL_DELETE_EDGE
                              }
                              break;
                          case EditTool::TOOL_NONE:

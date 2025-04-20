@@ -257,12 +257,10 @@ void GraphMain::UpdateGraph()
      if (!showMSTMenu && !showMatrixInput && !isEditingGraph) {
          if (CheckCollisionPointRec(mousePos, createButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
              clickedOnUI = true;
-             //ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
              isCreating = false;
              isRandomizing = false;
              isShowingExamples = false;
              showMatrixInput = false;
-             // graphDrawn = false; // Reset graphDrawn ONLY if appropriate for all calls
          
              // Reset input fields
              numNodesStr = "";
@@ -320,7 +318,6 @@ void GraphMain::UpdateGraph()
          }
          else if (CheckCollisionPointRec(mousePos, randomButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
              clickedOnUI = true;
-             //ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
              isCreating = false;
              isRandomizing = false;
              isShowingExamples = false;
@@ -391,7 +388,6 @@ void GraphMain::UpdateGraph()
          }
          else if (CheckCollisionPointRec(mousePos, exampleButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
              clickedOnUI = true;
-             //ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
              isCreating = false;
              isRandomizing = false;
              isShowingExamples = false;
@@ -440,7 +436,6 @@ void GraphMain::UpdateGraph()
          }
          else if (CheckCollisionPointRec(mousePos, fileButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
              clickedOnUI = true;
-             // ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
              isCreating = false;
              isRandomizing = false;
              isShowingExamples = false;
@@ -515,9 +510,6 @@ void GraphMain::UpdateGraph()
           else if (CheckCollisionPointRec(mousePos, editButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
               clickedOnUI = true;
               if (graphDrawn && !nodePositions.empty()) {
-                  // Enter Edit Mode
-                  // ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
-                  // Keep graphDrawn = true
                   isCreating = false;
                   isRandomizing = false;
                   isShowingExamples = false;
@@ -569,8 +561,6 @@ void GraphMain::UpdateGraph()
                   showExampleButtons = false;
                   isCreating = false;
               } else {
-                  // Show error: Cannot edit without a graph
-                  // ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
                   isCreating = false;
                   isRandomizing = false;
                   isShowingExamples = false;
@@ -621,9 +611,6 @@ void GraphMain::UpdateGraph()
          else if (CheckCollisionPointRec(mousePos, mstButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
              clickedOnUI = true;
              if (graphDrawn && !nodePositions.empty()) {
-                 // Enter MST Menu Mode
-                 // ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
-                 // Keep graph data, graphDrawn = true
                  isCreating = false;
                  isRandomizing = false;
                  isShowingExamples = false;
@@ -674,8 +661,6 @@ void GraphMain::UpdateGraph()
                  isCreating = false;
                  showExampleButtons = false;
              } else {
-                 // Show error: Cannot run MST without a graph
-                 // ResetStates(isCreating, isRandomizing, isShowingExamples, showMatrixInput, graphDrawn, numNodesStr, numEdgesStr, matrixInput, nodesFocused, edgesFocused, showMSTMenu, isEditingGraph, currentTool, showFileError, fileErrorMessage, showError, errorMessage, showMSTError, mstErrorMessage);
                  isCreating = false;
                  isRandomizing = false;
                  isShowingExamples = false;

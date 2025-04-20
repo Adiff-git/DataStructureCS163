@@ -994,7 +994,7 @@ void GraphMain::UpdateGraph()
                              if (clickedNodeIdx == -1 && clickedEdgeIdx == -1) {
                                  nodePositions.push_back(worldMousePos);
                                  TraceLog(LOG_INFO, "EDIT: Added vertex %zu", nodePositions.size());
-                                 // Optional: Update camera if graph expands significantly?
+                                 UpdateGraphCamera(graphCamera, nodePositions, 20.0f, screenWidth, screenHeight, uiLeftWidth, uiRightWidth);
                              }
                              break;
                          case EditTool::TOOL_ADD_EDGE_START:
@@ -1057,6 +1057,7 @@ void GraphMain::UpdateGraph()
                                  isDraggingNode = true;
                                  selectedNodeIndex = clickedNodeIdx;
                                  TraceLog(LOG_INFO, "EDIT: Started dragging node %d", clickedNodeIdx + 1);
+                                 UpdateGraphCamera(graphCamera, nodePositions, 20.0f, screenWidth, screenHeight, uiLeftWidth, uiRightWidth);
                              } else {
                                   isDraggingNode = false; // Stop dragging if clicked elsewhere
                                   selectedNodeIndex = -1; // Deselect node? Keep tool active.
@@ -1080,6 +1081,7 @@ void GraphMain::UpdateGraph()
                                      if (edge.from > deletedNodeId) edge.from--;
                                      if (edge.to > deletedNodeId) edge.to--;
                                  }
+                                 UpdateGraphCamera(graphCamera, nodePositions, 20.0f, screenWidth, screenHeight, uiLeftWidth, uiRightWidth);
                                  selectedNodeIndex = -1; // Deselect
                              }
                              break;
@@ -1087,6 +1089,7 @@ void GraphMain::UpdateGraph()
                              if (clickedEdgeIdx != -1) {
                                  TraceLog(LOG_INFO, "EDIT: Deleting edge %d (%d-%d)", clickedEdgeIdx, edges[clickedEdgeIdx].from, edges[clickedEdgeIdx].to);
                                  edges.erase(edges.begin() + clickedEdgeIdx);
+                                 UpdateGraphCamera(graphCamera, nodePositions, 20.0f, screenWidth, screenHeight, uiLeftWidth, uiRightWidth);
                                  selectedEdgeIndex = -1; // Deselect
                              }
                              break;

@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <sstream>
 #include <iomanip>
+#include "tinyfiledialogs.h"
 
 
 static char* ftc(float v) { 
@@ -1247,28 +1248,37 @@ void LinkedList::drawInitializeOptions() {
     
     Rectangle uploadRect = {30, 650, 80, 30};
     if (DrawButton("Upload", uploadRect, GetFontDefault(), uploadClicked, uploadMessage)) {
-        showUploadPrompt = true;
-        fileLoaded = false;
-        uploadClicked = false;
-    }
-    
-    Rectangle okRect = {350, 650, 40, 30};
-    if (DrawButton("OK", okRect, GetFontDefault(), okClicked, okMessage)) {
-        if (fileLoaded) {
+        // Sử dụng tinyfiledialogs để mở hộp thoại chọn file
+        const char *filters[] = { "*.txt" };
+        const char *filePath = tinyfd_openFileDialog(
+            "Select Input File", // aTitle
+            "",                 // aDefaultPathAndFile
+            1,                  // aNumOfFilterPatterns
+            filters,            // aFilterPatterns
+            "Text Files",       // aSingleFilterDescription
+            0                   // aAllowMultipleSelects (0: single file selection)
+        );
+        if (filePath) {
+            TextCopy(pathfile, filePath);
+            fileLoaded = true;
+            showUploadPrompt = false;
+
+            // Đọc file và khởi tạo linked list ngay lập tức
             std::ifstream fin(pathfile);
             if (fin.is_open()) {
                 int n;
                 fin >> n;
-                n = std::min(n, 20);
+                n = std::min(n, 20); // Giới hạn số lượng node tối đa là 20
                 while (head) {
                     ListNode* temp = head;
                     head = head->next;
                     delete temp;
                 }
+                head = nullptr; // Đảm bảo danh sách rỗng trước khi thêm mới
                 for (int i = 0; i < n && !fin.eof(); i++) {
                     int value;
                     if (fin >> value) {
-                        AddTail(value); // Sử dụng AddTail
+                        AddTail(value); // Thêm giá trị vào cuối danh sách
                     }
                 }
                 fin.close();
@@ -1278,15 +1288,19 @@ void LinkedList::drawInitializeOptions() {
                 delta = 0;
                 doneStep = true;
                 doneAnimation = false;
-                operation_type = 6; // Init
+                operation_type = 6; // Đặt operation_type để hiển thị animation khởi tạo
             } else {
                 fileLoaded = false;
                 showUploadPrompt = true;
             }
-        } else {
-            Init(nValue);
         }
-        showUploadPrompt = false;
+        uploadClicked = false;
+    }
+    
+    Rectangle okRect = {350, 650, 40, 30};
+    if (DrawButton("OK", okRect, GetFontDefault(), okClicked, okMessage)) {
+        // Chỉ khởi tạo danh sách ngẫu nhiên dựa trên nValue
+        Init(nValue);
         okClicked = false;
     }
     

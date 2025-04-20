@@ -1,9 +1,18 @@
 {
-	"archive" : {},
+	"archive" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "/machine:x64",
+				"role" : "flags"
+			}
+		]
+	},
 	"artifacts" : 
 	[
 		{
-			"path" : "raylib/raylib/libraylib.a"
+			"path" : "raylib/raylib/MinSizeRel/raylib.lib"
 		}
 	],
 	"backtrace" : 1,
@@ -145,7 +154,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "-fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -g -std=gnu99"
+					"fragment" : "/DWIN32 /D_WINDOWS /O1 /Ob1 /DNDEBUG -MD"
 				}
 			],
 			"defines" : 
@@ -167,20 +176,20 @@
 			[
 				{
 					"backtrace" : 14,
-					"path" : "C:/Users/trong/Downloads/DataStructureCS163/inc"
+					"path" : "D:/Downloads/sproject/Main/DataStructureCS163/inc"
 				},
 				{
 					"backtrace" : 15,
-					"path" : "C:/Users/trong/Downloads/DataStructureCS163/thirdparty/tinyfiledialogs"
+					"path" : "D:/Downloads/sproject/Main/DataStructureCS163/thirdparty/tinyfiledialogs"
 				},
 				{
 					"backtrace" : 16,
-					"path" : "C:/Users/trong/Downloads/DataStructureCS163/raylib/src"
+					"path" : "D:/Downloads/sproject/Main/DataStructureCS163/raylib/src"
 				},
 				{
 					"backtrace" : 19,
 					"isSystem" : true,
-					"path" : "C:/Users/trong/Downloads/DataStructureCS163/raylib/src/external/glfw/include"
+					"path" : "D:/Downloads/sproject/Main/DataStructureCS163/raylib/src/external/glfw/include"
 				}
 			],
 			"language" : "C",
@@ -209,6 +218,9 @@
 		{
 			"backtrace" : 5,
 			"id" : "glfw::@a896dd99b4a5c6eab3d9"
+		},
+		{
+			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
 		}
 	],
 	"id" : "raylib::@7d429ebd5d102775094d",
@@ -227,7 +239,7 @@
 		}
 	},
 	"name" : "raylib",
-	"nameOnDisk" : "libraylib.a",
+	"nameOnDisk" : "raylib.lib",
 	"paths" : 
 	{
 		"build" : "raylib/raylib",
@@ -333,127 +345,127 @@
 		{
 			"backtrace" : 1,
 			"isGenerated" : true,
-			"path" : "build/raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/context.c.obj",
+			"path" : "build/raylib/raylib/external/glfw/src/glfw.dir/$(Configuration)/context.obj",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
 			"isGenerated" : true,
-			"path" : "build/raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/init.c.obj",
+			"path" : "build/raylib/raylib/external/glfw/src/glfw.dir/$(Configuration)/init.obj",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
 			"isGenerated" : true,
-			"path" : "build/raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/input.c.obj",
+			"path" : "build/raylib/raylib/external/glfw/src/glfw.dir/$(Configuration)/input.obj",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
 			"isGenerated" : true,
-			"path" : "build/raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/monitor.c.obj",
+			"path" : "build/raylib/raylib/external/glfw/src/glfw.dir/$(Configuration)/monitor.obj",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
 			"isGenerated" : true,
-			"path" : "build/raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/platform.c.obj",
+			"path" : "build/raylib/raylib/external/glfw/src/glfw.dir/$(Configuration)/platform.obj",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
 			"isGenerated" : true,
-			"path" : "build/raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/vulkan.c.obj",
+			"path" : "build/raylib/raylib/external/glfw/src/glfw.dir/$(Configuration)/vulkan.obj",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
 			"isGenerated" : true,
-			"path" : "build/raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/window.c.obj",
+			"path" : "build/raylib/raylib/external/glfw/src/glfw.dir/$(Configuration)/window.obj",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
 			"isGenerated" : true,
-			"path" : "build/raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/egl_context.c.obj",
+			"path" : "build/raylib/raylib/external/glfw/src/glfw.dir/$(Configuration)/egl_context.obj",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
 			"isGenerated" : true,
-			"path" : "build/raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/osmesa_context.c.obj",
+			"path" : "build/raylib/raylib/external/glfw/src/glfw.dir/$(Configuration)/osmesa_context.obj",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
 			"isGenerated" : true,
-			"path" : "build/raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/null_init.c.obj",
+			"path" : "build/raylib/raylib/external/glfw/src/glfw.dir/$(Configuration)/null_init.obj",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
 			"isGenerated" : true,
-			"path" : "build/raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/null_monitor.c.obj",
+			"path" : "build/raylib/raylib/external/glfw/src/glfw.dir/$(Configuration)/null_monitor.obj",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
 			"isGenerated" : true,
-			"path" : "build/raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/null_window.c.obj",
+			"path" : "build/raylib/raylib/external/glfw/src/glfw.dir/$(Configuration)/null_window.obj",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
 			"isGenerated" : true,
-			"path" : "build/raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/null_joystick.c.obj",
+			"path" : "build/raylib/raylib/external/glfw/src/glfw.dir/$(Configuration)/null_joystick.obj",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
 			"isGenerated" : true,
-			"path" : "build/raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_module.c.obj",
+			"path" : "build/raylib/raylib/external/glfw/src/glfw.dir/$(Configuration)/win32_module.obj",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
 			"isGenerated" : true,
-			"path" : "build/raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_time.c.obj",
+			"path" : "build/raylib/raylib/external/glfw/src/glfw.dir/$(Configuration)/win32_time.obj",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
 			"isGenerated" : true,
-			"path" : "build/raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_thread.c.obj",
+			"path" : "build/raylib/raylib/external/glfw/src/glfw.dir/$(Configuration)/win32_thread.obj",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
 			"isGenerated" : true,
-			"path" : "build/raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_init.c.obj",
+			"path" : "build/raylib/raylib/external/glfw/src/glfw.dir/$(Configuration)/win32_init.obj",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
 			"isGenerated" : true,
-			"path" : "build/raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_joystick.c.obj",
+			"path" : "build/raylib/raylib/external/glfw/src/glfw.dir/$(Configuration)/win32_joystick.obj",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
 			"isGenerated" : true,
-			"path" : "build/raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_monitor.c.obj",
+			"path" : "build/raylib/raylib/external/glfw/src/glfw.dir/$(Configuration)/win32_monitor.obj",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
 			"isGenerated" : true,
-			"path" : "build/raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/win32_window.c.obj",
+			"path" : "build/raylib/raylib/external/glfw/src/glfw.dir/$(Configuration)/win32_window.obj",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
 			"isGenerated" : true,
-			"path" : "build/raylib/raylib/external/glfw/src/CMakeFiles/glfw.dir/wgl_context.c.obj",
+			"path" : "build/raylib/raylib/external/glfw/src/glfw.dir/$(Configuration)/wgl_context.obj",
 			"sourceGroupIndex" : 1
 		},
 		{

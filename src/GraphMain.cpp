@@ -70,8 +70,6 @@ void DrawExampleButtonsUI(const UIState& state) {
 }
 
 void DrawEditPanelUI(const UIState& state) {
-    DrawRectangle(state.editPanelX, 0, state.editPanelWidth, state.screenHeight, Fade(GRAY, 0.7f));
-
     DrawButtonUI("Add Vertex", state.addVertexButtonRect, GetFontDefault(), (state.currentTool == EditTool::TOOL_ADD_VERTEX) ? ORANGE : LIGHTGRAY);
     DrawButtonUI("Add Edge", state.addEdgeButtonRect, GetFontDefault(), (state.currentTool == EditTool::TOOL_ADD_EDGE_START || state.currentTool == EditTool::TOOL_ADD_EDGE_END) ? ORANGE : LIGHTGRAY);
     DrawButtonUI("Edit Weight", state.editWeightButtonRect, GetFontDefault(), (state.currentTool == EditTool::TOOL_EDIT_WEIGHT) ? ORANGE : LIGHTGRAY);

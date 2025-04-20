@@ -9,7 +9,7 @@ int main() {
 
     AVLTreeVisualizer visualizer;
 
-    while (!WindowShouldClose() && !visualizer.shouldClose) {
+    while (!WindowShouldClose() && !visualizer.ShouldClose()) {
         visualizer.handleInput();
         visualizer.updateAnimation(GetFrameTime());
         BeginDrawing();

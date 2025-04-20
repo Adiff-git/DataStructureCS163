@@ -70,7 +70,7 @@ void DrawExampleButtonsUI(const UIState& state) {
 }
 
 void DrawEditPanelUI(const UIState& state) {
-    DrawRectangle(state.editPanelX, 0, state.editPanelWidth, state.screenHeight, Fade(BLACK, 0.7f));
+    DrawRectangle(state.editPanelX, 0, state.editPanelWidth, state.screenHeight, Fade(GRAY, 0.7f));
 
     DrawButtonUI("Add Vertex", state.addVertexButtonRect, GetFontDefault(), (state.currentTool == EditTool::TOOL_ADD_VERTEX) ? ORANGE : LIGHTGRAY);
     DrawButtonUI("Add Edge", state.addEdgeButtonRect, GetFontDefault(), (state.currentTool == EditTool::TOOL_ADD_EDGE_START || state.currentTool == EditTool::TOOL_ADD_EDGE_END) ? ORANGE : LIGHTGRAY);
@@ -100,7 +100,7 @@ void DrawEditPanelUI(const UIState& state) {
         case EditTool::TOOL_DELETE_EDGE: hintText = "Click near an edge to delete."; break;
         default: hintText = "Select a tool from the right panel."; break;
     }
-    DrawText(hintText, 10, state.screenHeight - 60, 20, RAYWHITE);
+    DrawText(hintText, 50, 40, 20, RED);
 }
 
 void DrawErrorMessagesUI(const UIState& state) {

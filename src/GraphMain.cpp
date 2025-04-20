@@ -1061,7 +1061,7 @@ void GraphMain::UpdateGraph()
                                  TraceLog(LOG_INFO, "EDIT: Started dragging node %d", clickedNodeIdx + 1);
                              } else {
                                   isDraggingNode = false; // Stop dragging if clicked elsewhere
-                                  // selectedNodeIndex = -1; // Deselect node? Keep tool active.
+                                  selectedNodeIndex = -1; // Deselect node? Keep tool active.
                              }
                              break;
                          case EditTool::TOOL_DELETE_VERTEX:

@@ -909,7 +909,7 @@ void GraphMain::UpdateGraph()
                   isDraggingNode = false;
                   // Keep selectedNodeIndex if switching between ADD_EDGE_START/END? No, reset generally safer.
                   selectedNodeIndex = -1; // Reset unless specific tool logic needs it
-                  // selectedEdgeIndex = -1;
+                  selectedEdgeIndex = -1;
              }
 
           } // end if clickedOnEditUI

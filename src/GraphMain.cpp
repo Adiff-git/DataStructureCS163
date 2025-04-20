@@ -1112,12 +1112,6 @@ void GraphMain::UpdateGraph()
             if (mstDrawTimer >= drawInterval) {
                 if (mstEdgeIndex < mstEdges.size()) {
                     if (usePrim) {
-                        // Chu kỳ highlight cho Prim:
-                        // 4: Lấy cạnh từ PQ
-                        // 5: Kiểm tra v có trong Visited
-                        // 6: Thêm cạnh vào MST
-                        // 7: Thêm v vào Visited
-                        // 8: Thêm các cạnh mới vào PQ
                         switch (currentHighlightLine) {
                             case 3: // While loop
                                 currentHighlightLine = 4; // extract_min
@@ -1151,11 +1145,6 @@ void GraphMain::UpdateGraph()
                                 break;
                         }
                     } else if (useKruskal) {
-                        // Chu kỳ highlight cho Kruskal:
-                        // 4: Duyệt cạnh tiếp theo
-                        // 5: Kiểm tra findSet
-                        // 6: Thêm cạnh vào MST
-                        // 7: Union
                         switch (currentHighlightLine) {
                             case 4: // for each edge
                                 currentHighlightLine = 5; // findSet

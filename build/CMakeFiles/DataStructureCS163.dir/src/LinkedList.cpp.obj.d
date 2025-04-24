@@ -172,4 +172,5 @@ CMakeFiles/DataStructureCS163.dir/src/LinkedList.cpp.obj: \
  C:/msys64/ucrt64/include/c++/13.2.0/x86_64-w64-mingw32/bits/messages_members.h \
  C:/msys64/ucrt64/include/c++/13.2.0/bits/locale_facets_nonio.tcc \
  C:/msys64/ucrt64/include/c++/13.2.0/bits/locale_conv.h \
- C:/msys64/ucrt64/include/c++/13.2.0/bits/quoted_string.h
+ C:/msys64/ucrt64/include/c++/13.2.0/bits/quoted_string.h \
+ C:/Users/trong/Downloads/DataStructureCS163/thirdparty/tinyfiledialogs/tinyfiledialogs.h

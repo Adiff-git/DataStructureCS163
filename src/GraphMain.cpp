@@ -1411,15 +1411,7 @@ void GraphMain::UpdateGraph()
                }
            }
         }
-         // Allow clicking outside MST menu to close it? Maybe not, use Back button.
-         else if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            showMSTMenu = false; // Click outside closes
-         }
     } 
-
-     if (showMSTError) {
-        DrawText(mstErrorMessage.c_str(), mstMenuRect.x + 10, mstButtonsY - 25, 18, RED); // Position above buttons
-    }
 
     // Draw General/File Error Messages (if any) - Draw last over UI elements
      if (showError) {
@@ -1839,6 +1831,9 @@ void GraphMain::DrawUI()
             }
         }
      }
+     if (showMSTError) {
+        DrawText(mstErrorMessage.c_str(), mstMenuRect.x + 10, mstButtonsY - 25, 18, RED); // Position above buttons
+    }
 
 }
 bool GraphMain::ShouldClose() {

@@ -44,12 +44,15 @@ cmake --build ./build
 2. Copy the two files tinyfiledialogs.c and tinyfiledialogs.h into your project's directory structure. For example, place them alongside your own source code files, or in dedicated subdirectories like src/, include/.
 3. Navigate to your project's root directory and open a terminal (or command prompt).
 4. Compile your application's source code together with the tinyfiledialogs.c file. You will need to link against the system libraries required by tinyfiledialogs on your platform. Below is a general illustrative example using g++:
-### Running
-
-1. Navigate to the directory of the project.
-2. Run the executable file through terminal:
 ```console
-./src/DataVisual.exe
+ Compile your application source code (.cpp) together with tinyfiledialogs.c. Also, link against the necessary system libraries for your platform (e.g., -lcomdlg32 -lole32 -luuid on Windows).
+```
+### Running Raylib with Cmake
+
+1. Navigate to the build directory of the project.
+2. Run the executable file through the terminal:
+```console
+./src/build.exe
 ```
 or move the DataVisual.exe file in the "src/" folder to its parent folder and double-click it.
 

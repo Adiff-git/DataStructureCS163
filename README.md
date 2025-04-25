@@ -27,15 +27,15 @@ Main features included:
 - Tinyfiledialogs library installation instructions available on the [Tinyfiledialogs website](https://sourceforge.net/projects/tinyfiledialogs)
 - Cmake installation instructions available on the [Cmake Website](https://cmake.org/download/)
 
-### Building
+### Building RayLib With Cmake
 
 1. Download or clone the repository to your local machine.
-2. Install SFML library by following the instructions in SFML's official website.
+2. Install Raylib library by following the instructions in Raylib's official website or GitHub
 3. Navigate to the project directory and open a terminal.
 4. Compile the code using the following command:
 ```console
-cd src/
-g++ -fdiagnostics-color=always -g *.cpp -o DataVisual.exe -Ipath_to_SFML/include -Ipath_to_project/header -DSFML_STATIC -Lpath_to_SFML/lib -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lopengl32 -lfreetype -lwinmm -lgdi32 -mwindows
+cmake -S . -B ./build
+cmake --build ./build
 ```
 
 ### Running

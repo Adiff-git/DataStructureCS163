@@ -1,18 +1,15 @@
- Project_CS162_APCS22: Data Structure Visulization
+ Project_CS163_APCS24: Data Structure Visulization
 
 ## Introduction
 
-Data Structure Visualization is a program that allows users to visualize the behavior of common data structures such as linked lists, stacks, queues. This program is written in C++ and uses the SFML library for graphics rendering.
+Data Structure Visualization is a program that allows users to visualize the behavior of common data structures such as linked lists, hash table, tree and graph. This program is written in C++ and uses the Raylib library for graphics rendering.
 
 ## Features
 This program currently supports the following data structures:
-- Static Array
-- Dynamic Array (resize one element for each insertion or deletion only)
 - Singly Linked List
-- Doubly Linked List
-- Circular Linked List
-- Stack
-- Queue
+- Chaining Hash Table
+- AVL Tree
+- Minimum Spanning Tree (Graph)
 
 
 Main features included:

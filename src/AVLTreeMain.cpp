@@ -100,6 +100,7 @@ void AVLTreeVisualizer::handleInput() {
         Font defaultFont = GetFontDefault();
         const char* buttonMessage = nullptr;
 
+        // Always allow Init button
         if (DrawButton("Init", initButtonRect, defaultFont, initButtonClicked, buttonMessage)) {
             showInputWindow = false;
             operationType = "";
@@ -108,31 +109,31 @@ void AVLTreeVisualizer::handleInput() {
             showInputWindow = true;
             operationType = "init";
         }
-        if (isInitialized) {
-            if (DrawButton("Insert", insertButtonRect, defaultFont, insertButtonClicked, buttonMessage)) {
-                showInputWindow = false;
-                operationType = "";
-                inputText.clear();
-                notificationMessage = "Inserting";
-                showInputWindow = true;
-                operationType = "insert";
-            }
-            if (DrawButton("Delete", deleteButtonRect, defaultFont, deleteButtonClicked, buttonMessage)) {
-                showInputWindow = false;
-                operationType = "";
-                inputText.clear();
-                notificationMessage = "Deleting";
-                showInputWindow = true;
-                operationType = "delete";
-            }
-            if (DrawButton("Search", searchButtonRect, defaultFont, searchButtonClicked, buttonMessage)) {
-                showInputWindow = false;
-                operationType = "";
-                inputText.clear();
-                notificationMessage = "Searching";
-                showInputWindow = true;
-                operationType = "search";
-            }
+
+        // Allow Insert, Delete, and Search buttons unconditionally
+        if (DrawButton("Insert", insertButtonRect, defaultFont, insertButtonClicked, buttonMessage)) {
+            showInputWindow = false;
+            operationType = "";
+            inputText.clear();
+            notificationMessage = "Inserting";
+            showInputWindow = true;
+            operationType = "insert";
+        }
+        if (DrawButton("Delete", deleteButtonRect, defaultFont, deleteButtonClicked, buttonMessage)) {
+            showInputWindow = false;
+            operationType = "";
+            inputText.clear();
+            notificationMessage = "Deleting";
+            showInputWindow = true;
+            operationType = "delete";
+        }
+        if (DrawButton("Search", searchButtonRect, defaultFont, searchButtonClicked, buttonMessage)) {
+            showInputWindow = false;
+            operationType = "";
+            inputText.clear();
+            notificationMessage = "Searching";
+            showInputWindow = true;
+            operationType = "search";
         }
 
         if (CheckCollisionPointRec(mousePos, inputBox) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -238,34 +239,33 @@ void AVLTreeVisualizer::handleInput() {
     Font defaultFont = GetFontDefault();
     const char* buttonMessage = nullptr;
 
+    // Draw all buttons unconditionally
     if (DrawButton("Init", initButtonRect, defaultFont, initButtonClicked, buttonMessage)) {
         showInputWindow = true;
         operationType = "init";
         inputText.clear();
         notificationMessage = "Initializing: Clearing list";
     }
-    if (isInitialized) {
-        if (DrawButton("Insert", insertButtonRect, defaultFont, insertButtonClicked, buttonMessage)) {
-            showInputWindow = true;
-            operationType = "insert";
-            inputText.clear();
-            notificationMessage = "Inserting";
-        }
-        if (DrawButton("Delete", deleteButtonRect, defaultFont, deleteButtonClicked, buttonMessage)) {
-            showInputWindow = true;
-            operationType = "delete";
-            inputText.clear();
-            notificationMessage = "Deleting";
-        }
-        if (DrawButton("Search", searchButtonRect, defaultFont, searchButtonClicked, buttonMessage)) {
-            showInputWindow = true;
-            operationType = "search";
-            inputText.clear();
-            notificationMessage = "Searching";
-        }
+    if (DrawButton("Insert", insertButtonRect, defaultFont, insertButtonClicked, buttonMessage)) {
+        showInputWindow = true;
+        operationType = "insert";
+        inputText.clear();
+        notificationMessage = "Inserting";
+    }
+    if (DrawButton("Delete", deleteButtonRect, defaultFont, deleteButtonClicked, buttonMessage)) {
+        showInputWindow = true;
+        operationType = "delete";
+        inputText.clear();
+        notificationMessage = "Deleting";
+    }
+    if (DrawButton("Search", searchButtonRect, defaultFont, searchButtonClicked, buttonMessage)) {
+        showInputWindow = true;
+        operationType = "search";
+        inputText.clear();
+        notificationMessage = "Searching";
     }
 
-    // Animation control buttons
+    // Animation control buttons (unchanged)
     if (DrawButton("First", rewindButtonRect, defaultFont, rewindButtonClicked, buttonMessage)) {
         if (!treeUndoState.empty()) {
             paused = true;
@@ -297,7 +297,6 @@ void AVLTreeVisualizer::handleInput() {
         rewindButtonClicked = false;
     }
 
-    // Step Back (Previous)
     if (paused && !operationSteps.empty() && currentStepIndex > 0 && DrawButton("Prev", previousButtonRect, defaultFont, previousButtonClicked, buttonMessage)) {
         stepBackward();
         previousButtonClicked = false;
@@ -391,12 +390,8 @@ void AVLTreeVisualizer::handleInput() {
         fastForwardButtonClicked = false;
     }
 
-    if (DrawButton("Speed", speedButtonRect, defaultFont, speedButtonClicked, nullptr)) {
-        draggingSlider = true;
-        speedButtonClicked = false;
-    }
-    
-    if (draggingSlider || CheckCollisionPointRec(GetMousePosition(), speedBar)) {
+    // Speed slider handling (unchanged)
+    if (CheckCollisionPointRec(GetMousePosition(), speedBar)) {
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
             animationSpeed = UpdateSlider(speedBar, 0.05f, 5.0f, animationSpeed);
         } else {

@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Data Structure Visualization is a program that allows users to visualize the behavior of common data structures such as linked lists, hash table, tree and graph. This program is written in C++ and uses the Raylib library for graphics rendering.
+Data Structure Visualization is a program that allows users to visualize the behavior of common data structures such as linked lists, hash table, tree and graph. This program is written in C++ and uses the Raylib library (with Cmake) for graphics rendering.
 
 ## Features
 This program currently supports the following data structures:
@@ -23,6 +23,7 @@ Main features included:
 ### Prerequisites
 
 - C++ compiler: g++
+- RayLib library installation instructions available on the [RayLib Website](https://www.raylib.com/) or [GitHub](https://github.com/raysan5/raylib)
 - SFML library installation instructions available on the [SFML website](https://www.sfml-dev.org/download.php)
 
 ### Building

@@ -38,6 +38,12 @@ cmake -S . -B ./build
 cmake --build ./build
 ```
 
+### Integrating tinyfiledialogs
+
+1. Download or clone the tinyfiledialogs source code to your machine (e.g., from SourceForge). Extract if necessary.
+2. Copy the two files tinyfiledialogs.c and tinyfiledialogs.h into your project's directory structure. For example, place them alongside your own source code files, or in dedicated subdirectories like src/, include/.
+3. Navigate to your project's root directory and open a terminal (or command prompt).
+4. Compile your application's source code together with the tinyfiledialogs.c file. You will need to link against the system libraries required by tinyfiledialogs on your platform. Below is a general illustrative example using g++:
 ### Running
 
 1. Navigate to the directory of the project.

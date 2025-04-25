@@ -24,7 +24,8 @@ Main features included:
 
 - C++ compiler: g++
 - RayLib library installation instructions available on the [RayLib Website](https://www.raylib.com/) or [GitHub](https://github.com/raysan5/raylib)
-- SFML library installation instructions available on the [SFML website](https://www.sfml-dev.org/download.php)
+- Tinyfiledialogs library installation instructions available on the [Tinyfiledialogs website](https://sourceforge.net/projects/tinyfiledialogs)
+- Cmake installation instructions available on the [Cmake Website](https://cmake.org/download/)
 
 ### Building
 

@@ -215,13 +215,13 @@ void GraphMain::InitializeUI() {
     // Edit Mode Elements
     const float editPanelWidth = 130.0f;
     const float editPanelX = screenWidth - editPanelWidth;
-    addVertexButtonRect = { editPanelX + 10, 10, editPanelWidth - 20, 30 };
-    addEdgeButtonRect = { editPanelX + 10, 50, editPanelWidth - 20, 30 };
-    editWeightButtonRect = { editPanelX + 10, 90, editPanelWidth - 20, 30 };
-    moveNodeButtonRect = { editPanelX + 10, 130, editPanelWidth - 20, 30 };
-    deleteVertexButtonRect = { editPanelX + 10, 170, editPanelWidth - 20, 30 };
-    deleteEdgeButtonRect = { editPanelX + 10, 210, editPanelWidth - 20, 30 };
-    doneButtonRect = { editPanelX + 10, 250, editPanelWidth - 20, 30 };
+    addVertexButtonRect = { editPanelX - 20, 10, editPanelWidth + 10, 30 };
+    addEdgeButtonRect = { editPanelX - 20, 50, editPanelWidth + 10, 30 };
+    editWeightButtonRect = { editPanelX - 20, 90, editPanelWidth + 10, 30 };
+    moveNodeButtonRect = { editPanelX - 20, 130, editPanelWidth + 10, 30 };
+    deleteVertexButtonRect = { editPanelX - 20, 170, editPanelWidth + 10, 30 };
+    deleteEdgeButtonRect = { editPanelX - 20, 210, editPanelWidth + 10, 30 };
+    doneButtonRect = { editPanelX - 20, 250, editPanelWidth + 10, 30 };
     weightInputRect = {0, 0, 60, 25};
 }
 

@@ -43,19 +43,19 @@ cmake_force:
 SHELL = cmd.exe
 
 # The CMake executable.
-CMAKE_COMMAND = C:\msys64\mingw64\bin\cmake.exe
+CMAKE_COMMAND = "C:\Program Files\CMake\bin\cmake.exe"
 
 # The command to remove a file.
-RM = C:\msys64\mingw64\bin\cmake.exe -E rm -f
+RM = "C:\Program Files\CMake\bin\cmake.exe" -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "C:\Users\LAPTOP ACER\Desktop\test\DataStructureCS163"
+CMAKE_SOURCE_DIR = C:\Users\trong\Downloads\DataStructureCS163-1
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "C:\Users\LAPTOP ACER\Desktop\test\DataStructureCS163\build"
+CMAKE_BINARY_DIR = C:\Users\trong\Downloads\DataStructureCS163-1\build
 
 # Utility rule file for update_mappings.
 
@@ -66,8 +66,8 @@ include raylib/raylib/external/glfw/src/CMakeFiles/update_mappings.dir/compiler_
 include raylib/raylib/external/glfw/src/CMakeFiles/update_mappings.dir/progress.make
 
 raylib/raylib/external/glfw/src/CMakeFiles/update_mappings:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir="C:\Users\LAPTOP ACER\Desktop\test\DataStructureCS163\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Updating gamepad mappings from upstream repository"
-	cd /d C:\Users\LAPTOP~1\Desktop\test\DATAST~1\raylib\src\external\glfw\src && C:\msys64\mingw64\bin\cmake.exe -P "C:/Users/LAPTOP ACER/Desktop/test/DataStructureCS163/raylib/src/external/glfw/CMake/GenerateMappings.cmake" mappings.h.in mappings.h
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\trong\Downloads\DataStructureCS163-1\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Updating gamepad mappings from upstream repository"
+	cd /d C:\Users\trong\Downloads\DataStructureCS163-1\raylib\src\external\glfw\src && "C:\Program Files\CMake\bin\cmake.exe" -P C:/Users/trong/Downloads/DataStructureCS163-1/raylib/src/external/glfw/CMake/GenerateMappings.cmake mappings.h.in mappings.h
 
 raylib/raylib/external/glfw/src/CMakeFiles/update_mappings.dir/codegen:
 .PHONY : raylib/raylib/external/glfw/src/CMakeFiles/update_mappings.dir/codegen
@@ -81,10 +81,10 @@ raylib/raylib/external/glfw/src/CMakeFiles/update_mappings.dir/build: update_map
 .PHONY : raylib/raylib/external/glfw/src/CMakeFiles/update_mappings.dir/build
 
 raylib/raylib/external/glfw/src/CMakeFiles/update_mappings.dir/clean:
-	cd /d C:\Users\LAPTOP~1\Desktop\test\DATAST~1\build\raylib\raylib\external\glfw\src && $(CMAKE_COMMAND) -P CMakeFiles\update_mappings.dir\cmake_clean.cmake
+	cd /d C:\Users\trong\Downloads\DataStructureCS163-1\build\raylib\raylib\external\glfw\src && $(CMAKE_COMMAND) -P CMakeFiles\update_mappings.dir\cmake_clean.cmake
 .PHONY : raylib/raylib/external/glfw/src/CMakeFiles/update_mappings.dir/clean
 
 raylib/raylib/external/glfw/src/CMakeFiles/update_mappings.dir/depend:
-	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" "C:\Users\LAPTOP ACER\Desktop\test\DataStructureCS163" "C:\Users\LAPTOP ACER\Desktop\test\DataStructureCS163\raylib\src\external\glfw\src" "C:\Users\LAPTOP ACER\Desktop\test\DataStructureCS163\build" "C:\Users\LAPTOP ACER\Desktop\test\DataStructureCS163\build\raylib\raylib\external\glfw\src" "C:\Users\LAPTOP ACER\Desktop\test\DataStructureCS163\build\raylib\raylib\external\glfw\src\CMakeFiles\update_mappings.dir\DependInfo.cmake" "--color=$(COLOR)"
+	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" C:\Users\trong\Downloads\DataStructureCS163-1 C:\Users\trong\Downloads\DataStructureCS163-1\raylib\src\external\glfw\src C:\Users\trong\Downloads\DataStructureCS163-1\build C:\Users\trong\Downloads\DataStructureCS163-1\build\raylib\raylib\external\glfw\src C:\Users\trong\Downloads\DataStructureCS163-1\build\raylib\raylib\external\glfw\src\CMakeFiles\update_mappings.dir\DependInfo.cmake "--color=$(COLOR)"
 .PHONY : raylib/raylib/external/glfw/src/CMakeFiles/update_mappings.dir/depend
 

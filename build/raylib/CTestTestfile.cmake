@@ -1,6 +1,6 @@
 # CMake generated Testfile for 
-# Source directory: C:/Users/LAPTOP ACER/Desktop/test/DataStructureCS163/raylib
-# Build directory: C:/Users/LAPTOP ACER/Desktop/test/DataStructureCS163/build/raylib
+# Source directory: C:/Users/trong/Downloads/DataStructureCS163-1/raylib
+# Build directory: C:/Users/trong/Downloads/DataStructureCS163-1/build/raylib
 # 
 # This file includes the relevant testing commands required for 
 # testing this directory and lists subdirectories to be tested as well.

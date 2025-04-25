@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/LAPTOP ACER/Desktop/test/DataStructureCS163/raylib/src
+# Install script for directory: C:/Users/trong/Downloads/DataStructureCS163-1/raylib/src
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,42 +34,42 @@ endif()
 
 # Set path to fallback-tool for dependency-resolution.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "C:/msys64/mingw64/bin/objdump.exe")
+  set(CMAKE_OBJDUMP "C:/msys64/ucrt64/bin/objdump.exe")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/LAPTOP ACER/Desktop/test/DataStructureCS163/build/raylib/raylib/external/glfw/cmake_install.cmake")
+  include("C:/Users/trong/Downloads/DataStructureCS163-1/build/raylib/raylib/external/glfw/cmake_install.cmake")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/Users/LAPTOP ACER/Desktop/test/DataStructureCS163/build/raylib/raylib/libraylib.a")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/Users/trong/Downloads/DataStructureCS163-1/build/raylib/raylib/libraylib.a")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE FILE FILES
-    "C:/Users/LAPTOP ACER/Desktop/test/DataStructureCS163/raylib/src/raylib.h"
-    "C:/Users/LAPTOP ACER/Desktop/test/DataStructureCS163/raylib/src/rcamera.h"
-    "C:/Users/LAPTOP ACER/Desktop/test/DataStructureCS163/raylib/src/rlgl.h"
-    "C:/Users/LAPTOP ACER/Desktop/test/DataStructureCS163/raylib/src/raymath.h"
+    "C:/Users/trong/Downloads/DataStructureCS163-1/raylib/src/raylib.h"
+    "C:/Users/trong/Downloads/DataStructureCS163-1/raylib/src/rcamera.h"
+    "C:/Users/trong/Downloads/DataStructureCS163-1/raylib/src/rlgl.h"
+    "C:/Users/trong/Downloads/DataStructureCS163-1/raylib/src/raymath.h"
     )
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "C:/Users/LAPTOP ACER/Desktop/test/DataStructureCS163/build/raylib/raylib/raylib.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "C:/Users/trong/Downloads/DataStructureCS163-1/build/raylib/raylib/raylib.pc")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/raylib" TYPE FILE FILES "C:/Users/LAPTOP ACER/Desktop/test/DataStructureCS163/build/raylib/raylib/raylib-config-version.cmake")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/raylib" TYPE FILE FILES "C:/Users/trong/Downloads/DataStructureCS163-1/build/raylib/raylib/raylib-config-version.cmake")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/raylib" TYPE FILE FILES "C:/Users/LAPTOP ACER/Desktop/test/DataStructureCS163/raylib/src/../cmake/raylib-config.cmake")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/raylib" TYPE FILE FILES "C:/Users/trong/Downloads/DataStructureCS163-1/raylib/src/../cmake/raylib-config.cmake")
 endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "C:/Users/LAPTOP ACER/Desktop/test/DataStructureCS163/build/raylib/raylib/install_local_manifest.txt"
+  file(WRITE "C:/Users/trong/Downloads/DataStructureCS163-1/build/raylib/raylib/install_local_manifest.txt"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

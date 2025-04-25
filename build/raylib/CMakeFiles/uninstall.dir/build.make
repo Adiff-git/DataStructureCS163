@@ -43,19 +43,19 @@ cmake_force:
 SHELL = cmd.exe
 
 # The CMake executable.
-CMAKE_COMMAND = C:\msys64\mingw64\bin\cmake.exe
+CMAKE_COMMAND = "C:\Program Files\CMake\bin\cmake.exe"
 
 # The command to remove a file.
-RM = C:\msys64\mingw64\bin\cmake.exe -E rm -f
+RM = "C:\Program Files\CMake\bin\cmake.exe" -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "C:\Users\LAPTOP ACER\Desktop\test\DataStructureCS163"
+CMAKE_SOURCE_DIR = C:\Users\trong\Downloads\DataStructureCS163-1
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "C:\Users\LAPTOP ACER\Desktop\test\DataStructureCS163\build"
+CMAKE_BINARY_DIR = C:\Users\trong\Downloads\DataStructureCS163-1\build
 
 # Utility rule file for uninstall.
 
@@ -66,7 +66,7 @@ include raylib/CMakeFiles/uninstall.dir/compiler_depend.make
 include raylib/CMakeFiles/uninstall.dir/progress.make
 
 raylib/CMakeFiles/uninstall:
-	cd /d C:\Users\LAPTOP~1\Desktop\test\DATAST~1\build\raylib && C:\msys64\mingw64\bin\cmake.exe -P "C:/Users/LAPTOP ACER/Desktop/test/DataStructureCS163/build/raylib/cmake_uninstall.cmake"
+	cd /d C:\Users\trong\Downloads\DataStructureCS163-1\build\raylib && "C:\Program Files\CMake\bin\cmake.exe" -P C:/Users/trong/Downloads/DataStructureCS163-1/build/raylib/cmake_uninstall.cmake
 
 raylib/CMakeFiles/uninstall.dir/codegen:
 .PHONY : raylib/CMakeFiles/uninstall.dir/codegen
@@ -80,10 +80,10 @@ raylib/CMakeFiles/uninstall.dir/build: uninstall
 .PHONY : raylib/CMakeFiles/uninstall.dir/build
 
 raylib/CMakeFiles/uninstall.dir/clean:
-	cd /d C:\Users\LAPTOP~1\Desktop\test\DATAST~1\build\raylib && $(CMAKE_COMMAND) -P CMakeFiles\uninstall.dir\cmake_clean.cmake
+	cd /d C:\Users\trong\Downloads\DataStructureCS163-1\build\raylib && $(CMAKE_COMMAND) -P CMakeFiles\uninstall.dir\cmake_clean.cmake
 .PHONY : raylib/CMakeFiles/uninstall.dir/clean
 
 raylib/CMakeFiles/uninstall.dir/depend:
-	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" "C:\Users\LAPTOP ACER\Desktop\test\DataStructureCS163" "C:\Users\LAPTOP ACER\Desktop\test\DataStructureCS163\raylib" "C:\Users\LAPTOP ACER\Desktop\test\DataStructureCS163\build" "C:\Users\LAPTOP ACER\Desktop\test\DataStructureCS163\build\raylib" "C:\Users\LAPTOP ACER\Desktop\test\DataStructureCS163\build\raylib\CMakeFiles\uninstall.dir\DependInfo.cmake" "--color=$(COLOR)"
+	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" C:\Users\trong\Downloads\DataStructureCS163-1 C:\Users\trong\Downloads\DataStructureCS163-1\raylib C:\Users\trong\Downloads\DataStructureCS163-1\build C:\Users\trong\Downloads\DataStructureCS163-1\build\raylib C:\Users\trong\Downloads\DataStructureCS163-1\build\raylib\CMakeFiles\uninstall.dir\DependInfo.cmake "--color=$(COLOR)"
 .PHONY : raylib/CMakeFiles/uninstall.dir/depend
 

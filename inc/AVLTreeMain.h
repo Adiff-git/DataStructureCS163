@@ -60,6 +60,8 @@ private:
     Rectangle fastForwardButtonRect;
     Rectangle speedBar;
     Rectangle sliderHandle;
+    Rectangle speedButtonRect; 
+    bool speedButtonClicked;
     State currentState;
     std::vector<Node*> currentPath;
     int pathIndex;

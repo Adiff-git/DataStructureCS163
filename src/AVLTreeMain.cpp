@@ -54,17 +54,6 @@ AVLTreeVisualizer::AVLTreeVisualizer()
       playPauseButtonClicked(false),
       nextButtonClicked(false),
       fastForwardButtonClicked(false),
-      randomButtonClicked(false),
-      initButtonMessage("Init"),
-      insertButtonMessage("Insert"),
-      deleteButtonMessage("Delete"),
-      searchButtonMessage("Search"),
-      loadFileButtonMessage("Upload"),
-      rewindButtonMessage("|<<"),
-      previousButtonMessage("Prev"),
-      playPauseButtonMessage("Pause"),
-      nextButtonMessage("Next"),
-      fastForwardButtonMessage(">>|"),
       randomButtonMessage("?"),
       manualStepping(false),
       stateHistoryIndex(0),
@@ -76,7 +65,7 @@ AVLTreeVisualizer::AVLTreeVisualizer()
       okButtonMessage("OK"),
       operationType(""),
       currentStepIndex(-1),
-      isInitialized(false) // Initialize isInitialized to false
+      isInitialized(false)
 {
     sliderHandle = { speedBar.x + (speedBar.width - sliderHandle.width) / 2.0f, speedBar.y + 2.0f, 10.0f, 16.0f };
     backButtonTexture = LoadTexture("..\\resources\\images\\BackButton.png");
@@ -277,7 +266,7 @@ void AVLTreeVisualizer::handleInput() {
     }
 
     // Animation control buttons
-    if (DrawButton("|<<", rewindButtonRect, defaultFont, rewindButtonClicked, buttonMessage)) {
+    if (DrawButton("First", rewindButtonRect, defaultFont, rewindButtonClicked, buttonMessage)) {
         if (!treeUndoState.empty()) {
             paused = true;
             playPauseButtonMessage = "Play";
@@ -329,7 +318,7 @@ void AVLTreeVisualizer::handleInput() {
         nextButtonClicked = false;
     }
 
-    if (DrawButton(">>|", fastForwardButtonRect, defaultFont, fastForwardButtonClicked, buttonMessage)) {
+    if (DrawButton("Last", fastForwardButtonRect, defaultFont, fastForwardButtonClicked, buttonMessage)) {
         if (currentState != IDLE || !treeRedoState.empty()) {
             paused = true;
             playPauseButtonMessage = "Play";
@@ -402,8 +391,17 @@ void AVLTreeVisualizer::handleInput() {
         fastForwardButtonClicked = false;
     }
 
-    if (CheckCollisionPointRec(GetMousePosition(), speedBar) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-        animationSpeed = UpdateSlider(speedBar, 0.05f, 5.0f, animationSpeed);
+    if (DrawButton("Speed", speedButtonRect, defaultFont, speedButtonClicked, nullptr)) {
+        draggingSlider = true;
+        speedButtonClicked = false;
+    }
+    
+    if (draggingSlider || CheckCollisionPointRec(GetMousePosition(), speedBar)) {
+        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+            animationSpeed = UpdateSlider(speedBar, 0.05f, 5.0f, animationSpeed);
+        } else {
+            draggingSlider = false;
+        }
     }
 }
 
@@ -452,6 +450,7 @@ void AVLTreeVisualizer::stepBackward() {
 
     inputText.clear();
 }
+
 void AVLTreeVisualizer::stepForward() {
     if (!paused || currentState == SHOWING_RESULT || currentState == IDLE) {
         return;
@@ -739,92 +738,48 @@ void AVLTreeVisualizer::updateAnimation(float deltaTime) {
 }
 
 void AVLTreeVisualizer::drawTree(Node* node, float x, float y, float offset, const std::set<Node*>& highlight) {
-
     if (!node) return;
 
-
-
     Color nodeColor = WHITE;
-
     if (highlight.count(node)) {
-
         if (currentState == SEARCHING && node->data == operationValue && searchFound) {
-
             nodeColor = GREEN;
-
         } else if (currentState == HIGHLIGHTING_BEFORE_DELETE && node->data == operationValue) {
-
             nodeColor = ORANGE;
-
         } else {
-
-            nodeColor = YELLOW;
-
+            nodeColor = BLUE;
         }
-
     } else if (currentState == SHOWING_RESULT && node->data == operationValue) {
-
         if (currentOperation == "insert") {
-
             nodeColor = GREEN;
-
         } else if (currentOperation == "delete") {
-
             nodeColor = RED;
-
         }
-
     }
-
-
 
     DrawCircle(x, y, NODE_RADIUS, nodeColor);
-
     DrawCircleLines(x, y, NODE_RADIUS, BLACK);
-
     std::string valueStr = std::to_string(node->data);
-
     DrawText(valueStr.c_str(), x - static_cast<float>(MeasureText(valueStr.c_str(), 20)) / 2.0f, y - 10.0f, 20, BLACK);
 
-
-
     if (node->left) {
-
         float leftX = tree.getSubtreeWidth(node->left->right);
-
         float hypotenuse = sqrt(60.0f * 60.0f + leftX * leftX);
-
         float startLineX = x - NODE_RADIUS * leftX / hypotenuse;
-
         float startLineY = y + NODE_RADIUS * 60.0f / hypotenuse;
-
         DrawLine(startLineX, startLineY, x - leftX, y + 60.0f, BLACK);
-
         drawTree(node->left, x - leftX, y + 60.0f, offset / 2.0f, highlight);
-
     }
-
-
 
     if (node->right) {
-
         float rightX = tree.getSubtreeWidth(node->right->left);
-
         float hypotenuse = sqrt(60.0f * 60.0f + rightX * rightX);
-
         float startLineX = x + NODE_RADIUS * rightX / hypotenuse;
-
         float startLineY = y + NODE_RADIUS * 60.0f / hypotenuse;
-
         DrawLine(startLineX, startLineY, x + rightX, y + 60.0f, BLACK);
-
         drawTree(node->right, x + rightX, y + 60.0f, offset / 2.0f, highlight);
-
     }
-
 }
-
-
 
 void AVLTreeVisualizer::draw() {
     std::set<Node*> highlightNodes(currentPath.begin(), currentPath.begin() + pathIndex);
@@ -854,18 +809,16 @@ void AVLTreeVisualizer::draw() {
     float titleY = 37.0f;
     DrawText("AVL Tree Visualizer", titleX, titleY, 30, BLACK);
     int speedLabelSize = MeasureText("Speed", 20);
-    Rectangle speedLabelBgRect = { speedBar.x - 35.0f, speedBar.y - 20.0f - 5.0f, static_cast<float>(speedLabelSize) + 10.0f, 30.0f };
+    Rectangle speedLabelBgRect = { speedBar.x - speedLabelSize - 15.0f, speedBar.y - 5.0f, static_cast<float>(speedLabelSize) + 10.0f, 30.0f };
     DrawRectangleRec(speedLabelBgRect, Fade(LIGHTGRAY, 0.8f));
-    DrawText("Speed", speedBar.x - 30.0f, speedBar.y - 20.0f, 20, BLACK);
+    DrawText("Speed", speedBar.x - speedLabelSize - 10.0f, speedBar.y, 20, BLACK);
     char* speedText = (char*)malloc(20);
     sprintf(speedText, "x%.2f", animationSpeed);
     DrawText(speedText, speedBar.x + speedBar.width + 10.0f, speedBar.y, 20, BLACK);
     free(speedText);
 
     DrawRectangleRec(speedBar, LIGHTGRAY);
-    float middleX = speedBar.x + speedBar.width / 2.0f;
-    DrawLineEx({middleX, speedBar.y - 5.0f}, {middleX, speedBar.y + speedBar.height + 5.0f}, 2.0f, BLACK);
-    DrawRectangleRec(sliderHandle, DARKGRAY);
+DrawRectangleRec(sliderHandle, DARKGRAY);
 
     if (showInputWindow) {
         inputBox = { 30.0f, 620.0f, 50.0f, 25.0f };
@@ -892,16 +845,14 @@ void AVLTreeVisualizer::draw() {
     Font defaultFont = GetFontDefault();
     const char* buttonMessage = nullptr;
     DrawButton("Init", initButtonRect, defaultFont, initButtonClicked, buttonMessage);
-    if (isInitialized) {
-        DrawButton("Insert", insertButtonRect, defaultFont, insertButtonClicked, buttonMessage);
-        DrawButton("Delete", deleteButtonRect, defaultFont, deleteButtonClicked, buttonMessage);
-        DrawButton("Search", searchButtonRect, defaultFont, searchButtonClicked, buttonMessage);
-    }
-    DrawButton("|<<", rewindButtonRect, defaultFont, rewindButtonClicked, buttonMessage);
+    DrawButton("Insert", insertButtonRect, defaultFont, insertButtonClicked, buttonMessage);
+    DrawButton("Delete", deleteButtonRect, defaultFont, deleteButtonClicked, buttonMessage);
+    DrawButton("Search", searchButtonRect, defaultFont, searchButtonClicked, buttonMessage);
+    DrawButton("First", rewindButtonRect, defaultFont, rewindButtonClicked, buttonMessage);
     DrawButton("Prev", previousButtonRect, defaultFont, previousButtonClicked, buttonMessage);
     DrawButton(paused ? "Play" : "Pause", playPauseButtonRect, defaultFont, playPauseButtonClicked, buttonMessage);
     DrawButton("Next", nextButtonRect, defaultFont, nextButtonClicked, buttonMessage);
-    DrawButton(">>|", fastForwardButtonRect, defaultFont, fastForwardButtonClicked, buttonMessage);
+    DrawButton("Last", fastForwardButtonRect, defaultFont, fastForwardButtonClicked, buttonMessage);
 
     Rectangle backButtonBounds = { 20.0f, 20.0f, 65.0f, 65.0f };
     DrawBackButton(backButtonTexture, backButtonBounds, backButtonClicked);
@@ -927,8 +878,6 @@ void AVLTreeVisualizer::draw() {
         DrawRectangleRec(bgRect, Fade(LIGHTGRAY, 0.8f));
         DrawText(displayMessage.c_str(), xPos, yPos, 20, operationType == "init" ? RED : BLACK);
     }
-    Rectangle pseudoCodeBgRect = { 10.0f - 5.0f, static_cast<float>(pseudoCodeTopY) - 5.0f, static_cast<float>(maxLineWidth) + 10.0f, static_cast<float>(lineCount * lineHeight) + 10.0f };
-    DrawRectangleRec(pseudoCodeBgRect, Fade(LIGHTGRAY, 0.8f));
     int startY = pseudoCodeTopY;
     int lineIndex = 0;
     int activeLine = -1;
@@ -975,7 +924,7 @@ void AVLTreeVisualizer::draw() {
         }
     }
     for (const auto& l : lines) {
-        Color textColor = (lineIndex == activeLine) ? YELLOW : BLACK;
+        Color textColor = (lineIndex == activeLine) ? RED : BLACK;
         DrawText(l.c_str(), 10, startY, 20, textColor);
         startY += lineHeight;
         lineIndex++;
@@ -1085,6 +1034,7 @@ void AVLTreeVisualizer::animateLoadFile() {
     stateTimer = 0.0f;
     resultTimer = 0.0f;
 }
+
 void AVLTreeVisualizer::animatePrevious() {
     if (!treeUndoState.empty()) {
         // If in the middle of an animation, undo the current command
@@ -1175,123 +1125,65 @@ void AVLTreeVisualizer::animateNext() {
         notificationMessage = "No further tree states to redo";
     }
 }
+
 std::string AVLTreeVisualizer::getPseudocode() {
-
     std::stringstream pseudocode;
-
     if (currentOperation == "insert") {
-
         pseudocode << "Node* insert(Node* root, int value) {\n"
-
                    << "  Node* curr = root;\n"
-
                    << "  while (curr != nullptr) {\n"
-
                    << "    if (value < curr->data)\n"
-
                    << "      curr = curr->left;\n"
-
                    << "    else if (value > curr->data)\n"
-
                    << "      curr = curr->right;\n"
-
                    << "    else return curr; // Duplicate\n"
-
                    << "  }\n"
-
                    << "  curr = new Node(value);\n"
-
                    << "  rebalance(root);\n"
-
                    << "  return curr;\n"
-
                    << "}";
-
     } else if (currentOperation == "delete") {
-
         pseudocode << "Node* remove(Node* root, int value) {\n"
-
                    << "  Node* curr = root;\n"
-
                    << "  while (curr != nullptr) {\n"
-
                    << "    if (value < curr->data)\n"
-
                    << "      curr = curr->left;\n"
-
                    << "    else if (value > curr->data)\n"
-
                    << "      curr = curr->right;\n"
-
                    << "    else break; // Found\n"
-
                    << "  }\n"
-
                    << "  if (curr == nullptr) return root;\n"
-
                    << "  root = deleteNode(curr);\n"
-
                    << "  rebalance(root);\n"
-
                    << "  return root;\n"
-
                    << "}";
-
     } else if (currentOperation == "search") {
-
         pseudocode << "Node* search(Node* root, int value) {\n"
-
                    << "  Node* curr = root;\n"
-
                    << "  while (curr != nullptr) {\n"
-
                    << "    if (value < curr->data)\n"
-
                    << "      curr = curr->left;\n"
-
                    << "    else if (value > curr->data)\n"
-
                    << "      curr = curr->right;\n"
-
                    << "    else return curr; // Found\n"
-
                    << "  }\n"
-
                    << "  return nullptr; // Not found\n"
-
                    << "}";
-
     } else {
-
         pseudocode << "No operation selected;";
-
     }
-
     return pseudocode.str();
-
 }
-
-
 
 void AVLTreeVisualizer::setNotificationMessage(const std::string& message) {
-
     notificationMessage = message;
-
     stateTimer = 0.0f;
-
     currentState = SHOWING_RESULT;
-
 }
-
-
 
 std::string AVLTreeVisualizer::getNotificationMessage() const {
-
     return notificationMessage;
-
 }
-
-
 
 float AVLTreeVisualizer::UpdateSlider(Rectangle slider, float minValue, float maxValue, float currentValue) {
     Vector2 mousePos = GetMousePosition();
@@ -1345,6 +1237,7 @@ void AVLTreeVisualizer::animateInsert(int value) {
     operationSteps.push_back(step);
     currentStepIndex = operationSteps.size() - 1;
 }
+
 void AVLTreeVisualizer::animateDelete(int value) {
     currentOperation = "delete";
     operationValue = value;
@@ -1364,6 +1257,7 @@ void AVLTreeVisualizer::animateDelete(int value) {
     operationSteps.push_back(step);
     currentStepIndex = operationSteps.size() - 1;
 }
+
 void AVLTreeVisualizer::animateSearch(int value) {
     currentOperation = "search";
     operationValue = value;

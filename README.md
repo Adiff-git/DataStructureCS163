@@ -58,12 +58,12 @@ or move the DataVisual.exe file in the "src/" folder to its parent folder and do
 
 ## Demo Video
 
-[Here is the demo video](https://youtu.be/XL3D9DG7r-0)
+Here is the [demo video](https://www.youtube.com/watch?v=s8QoRXBRysU&list=RDyzCVlbVtpbc&index=3)
 
 ## Credits
 
-This program was created by 22125074 - Le Duc Phu (dphu2609) as a project for CS162 - Introduction to Computer Science 2 at VNU - University of Science.
+This program was created by Group 1 - 24A02 as a project for CS163 - Introduction to Computer Science 2 at VNU - University of Science.
 
 ## License
 
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+This project is licensed under the [MIT License](https://opensource.org/license/MIT)

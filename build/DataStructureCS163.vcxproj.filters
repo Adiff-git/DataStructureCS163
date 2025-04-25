@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\src\AVLTree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\src\AVLTreeMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\src\Button.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\src\Graph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\src\GraphMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\src\HashTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\src\HashTableMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\src\LinkedList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\src\MainInterFace.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\src\SLLmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\thirdparty\tinyfiledialogs\tinyfiledialogs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{C652F700-52D0-37FC-AF69-81E53B06350B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

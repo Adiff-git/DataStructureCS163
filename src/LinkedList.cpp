@@ -1064,7 +1064,7 @@ void LinkedList::drawOperationMenu() {
     if (showAddOption) {
         float subMenuPosX = opPosX + (opWidth + 20);
         float subMenuPosY = opPosY - opHeight; // Đặt ngay trên nút Add
-        float subMenuWidth = opWidth;
+        float subMenuWidth = opWidth+12;
         float subMenuHeight = opHeight;
 
         // Đảm bảo các nút trong menu con không bị chồng lấp và có thể nhận sự kiện click
@@ -1643,7 +1643,7 @@ void LinkedList::drawUpdateOptions() {
     static bool oldValueInputEnabled = false, newValueInputEnabled = false;
     static int valueMax = 99;
     
-    DrawText("Old: ", 20, 610, 20, BLACK);
+    DrawText("Old: ", 18, 610, 20, BLACK);
     Rectangle oldRect = {50, 610, 100, 25};
     DrawRectangleRec(oldRect, WHITE);
     DrawRectangleLinesEx(oldRect, 1, BLACK);
@@ -1680,7 +1680,7 @@ void LinkedList::drawUpdateOptions() {
         oldRandomClicked = false;
     }
     
-    DrawText("New: ", 200, 610, 20, BLACK);
+    DrawText("New: ", 193, 610, 20, BLACK);
     Rectangle newRect = {230, 610, 100, 25};
     DrawRectangleRec(newRect, WHITE);
     DrawRectangleLinesEx(newRect, 1, BLACK);

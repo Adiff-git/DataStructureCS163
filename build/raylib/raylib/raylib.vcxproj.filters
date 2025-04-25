@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\src\raudio.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\src\rcore.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\src\rmodels.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\src\rshapes.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\src\rtext.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\src\rtextures.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\src\utils.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\src\raylib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\src\rcamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\src\rlgl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\src\raymath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\raylib\src\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\context.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\init.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\input.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\monitor.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\platform.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\vulkan.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\window.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\egl_context.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\osmesa_context.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\null_init.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\null_monitor.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\null_window.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\null_joystick.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\win32_module.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\win32_time.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\win32_thread.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\win32_init.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\win32_joystick.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\win32_monitor.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\win32_window.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Huyen\Documents\abc\DataStructureCS163\build\raylib\raylib\external\glfw\src\glfw.dir\$(Configuration)\wgl_context.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{83B52E6E-14FD-3A05-8F0C-8D1718F82F13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object Libraries">
+      <UniqueIdentifier>{E8B6BC42-D394-324B-9FE9-918586642D96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{C652F700-52D0-37FC-AF69-81E53B06350B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

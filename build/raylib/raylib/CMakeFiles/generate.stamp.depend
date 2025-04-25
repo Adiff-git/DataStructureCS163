@@ -1,0 +1,19 @@
+# CMake generation dependency list for this directory.
+C:/Program Files/CMake/share/cmake-4.0/Modules/CPack.cmake
+C:/Program Files/CMake/share/cmake-4.0/Modules/CPackComponent.cmake
+C:/Program Files/CMake/share/cmake-4.0/Modules/FindOpenGL.cmake
+C:/Program Files/CMake/share/cmake-4.0/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files/CMake/share/cmake-4.0/Modules/FindPackageMessage.cmake
+C:/Program Files/CMake/share/cmake-4.0/Modules/GNUInstallDirs.cmake
+C:/Program Files/CMake/share/cmake-4.0/Templates/CPackConfig.cmake.in
+C:/Users/Huyen/Documents/abc/DataStructureCS163/raylib/cmake/CompileDefinitions.cmake
+C:/Users/Huyen/Documents/abc/DataStructureCS163/raylib/cmake/GlfwImport.cmake
+C:/Users/Huyen/Documents/abc/DataStructureCS163/raylib/cmake/InstallConfigurations.cmake
+C:/Users/Huyen/Documents/abc/DataStructureCS163/raylib/cmake/JoinPaths.cmake
+C:/Users/Huyen/Documents/abc/DataStructureCS163/raylib/cmake/LibraryConfigurations.cmake
+C:/Users/Huyen/Documents/abc/DataStructureCS163/raylib/cmake/LibraryPathToLinkerFlags.cmake
+C:/Users/Huyen/Documents/abc/DataStructureCS163/raylib/cmake/PackConfigurations.cmake
+C:/Users/Huyen/Documents/abc/DataStructureCS163/raylib/cmake/PopulateConfigVariablesLocally.cmake
+C:/Users/Huyen/Documents/abc/DataStructureCS163/raylib/cmake/raylib-config-version.cmake
+C:/Users/Huyen/Documents/abc/DataStructureCS163/raylib/raylib.pc.in
+C:/Users/Huyen/Documents/abc/DataStructureCS163/raylib/src/CMakeLists.txt

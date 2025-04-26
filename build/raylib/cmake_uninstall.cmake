@@ -1,14 +1,14 @@
-if(NOT EXISTS "D:/Downloads/sproject/Main/DataStructureCS163/build/install_manifest.txt")
-  message(FATAL_ERROR "Cannot find install manifest: D:/Downloads/sproject/Main/DataStructureCS163/build/install_manifest.txt")
+if(NOT EXISTS "C:/Users/LAPTOP ACER/Desktop/test1/build/install_manifest.txt")
+  message(FATAL_ERROR "Cannot find install manifest: C:/Users/LAPTOP ACER/Desktop/test1/build/install_manifest.txt")
 endif()
 
-file(READ "D:/Downloads/sproject/Main/DataStructureCS163/build/install_manifest.txt" files)
+file(READ "C:/Users/LAPTOP ACER/Desktop/test1/build/install_manifest.txt" files)
 string(REGEX REPLACE "\n" ";" files "${files}")
 foreach(file ${files})
   message(STATUS "Uninstalling $ENV{DESTDIR}${file}")
   if(IS_SYMLINK "$ENV{DESTDIR}${file}" OR EXISTS "$ENV{DESTDIR}${file}")
     exec_program(
-      "C:/Program Files/CMake/bin/cmake.exe" ARGS "-E remove \"$ENV{DESTDIR}${file}\""
+      "C:/msys64/mingw64/bin/cmake.exe" ARGS "-E remove \"$ENV{DESTDIR}${file}\""
       OUTPUT_VARIABLE rm_out
       RETURN_VALUE rm_retval
       )

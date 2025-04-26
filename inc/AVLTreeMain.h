@@ -18,14 +18,15 @@ enum State {
     ROTATING,
     SHOWING_RESULT,
     SEARCHING,
-    SEARCH_NOT_FOUND
+    SEARCH_NOT_FOUND,
+    UPDATING
 };
 
 class AVLTreeVisualizer {
 private:
     struct OperationStep {
-        std::string operation; // "insert", "delete", "search", "loadfile", "random"
-        State currentState; // TRAVERSING, INSERTING, etc.
+        std::string operation;
+        State currentState;
         std::vector<Node*> currentPath;
         int pathIndex;
         std::set<Node*> highlightNodes;
@@ -38,20 +39,23 @@ private:
         std::string currentOperation;
         int rotationIndex;
         AVLTree treeSnapshot;
-
     };
 
     float UpdateSlider(Rectangle slider, float minValue, float maxValue, float currentValue);
     AVLTree tree;
     AVLTree initialTreeState;
-    std::string inputText;
-    bool inputActive;
+    std::string inputText; // For the first input box (used for all operations)
+    std::string inputTextNew; // For the second input box (used only for "Update")
+    bool inputActive; // For the first input box
+    bool inputActiveNew; // For the second input box (used only for "Update")
     Rectangle handleSpace;
-    Rectangle inputBox;
+    Rectangle inputBox; // First input box (Old V. for Update, V: for others)
+    Rectangle inputBoxNew; // Second input box (New V. for Update only)
     Rectangle initButtonRect;
     Rectangle insertButtonRect;
     Rectangle deleteButtonRect;
     Rectangle searchButtonRect;
+    Rectangle updateButtonRect;
     Rectangle loadFileButtonRect;
     Rectangle rewindButtonRect;
     Rectangle previousButtonRect;
@@ -81,6 +85,7 @@ private:
     bool insertButtonClicked;
     bool deleteButtonClicked;
     bool searchButtonClicked;
+    bool updateButtonClicked;
     bool loadFileButtonClicked;
     bool rewindButtonClicked;
     bool previousButtonClicked;
@@ -88,17 +93,20 @@ private:
     bool nextButtonClicked;
     bool fastForwardButtonClicked;
     bool randomButtonClicked;
+    bool randomButtonClickedNew; // For the second "?" button (Update only)
     std::string initButtonMessage;
     std::string insertButtonMessage;
     std::string deleteButtonMessage;
     std::string searchButtonMessage;
+    std::string updateButtonMessage;
     std::string loadFileButtonMessage;
     std::string rewindButtonMessage;
     std::string previousButtonMessage;
     std::string playPauseButtonMessage;
     std::string nextButtonMessage;
     std::string fastForwardButtonMessage;
-    Rectangle randomButtonRect;
+    Rectangle randomButtonRect; // First "?" button (for first input box)
+    Rectangle randomButtonRectNew; // Second "?" button (for second input box, Update only)
     std::string randomButtonMessage;
     bool manualStepping;
     std::vector<State> stateHistory;
@@ -112,11 +120,10 @@ private:
     std::string operationType;
     bool isInitialized;
     
-    std::vector<OperationStep> operationSteps; // Moved to class
-    int currentStepIndex; // Moved to class
+    std::vector<OperationStep> operationSteps;
+    int currentStepIndex;
 
 public:
-
     bool shouldClose;
     AVLTreeVisualizer();
     ~AVLTreeVisualizer();
@@ -128,6 +135,7 @@ public:
     void animateInsert(int value);
     void animateDelete(int value);
     void animateSearch(int value);
+    void animateUpdate(int oldValue, int newValue);
     void animateRandom();
     void animateClear();
     void animateLoadFile();

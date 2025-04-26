@@ -1,3 +1,7 @@
+
+
+
+
 #include "../inc/AVLTreeMain.h"
 #include "../inc/AVLTree.h"
 #include "../inc/Button.h"
@@ -17,20 +21,25 @@ std::stack<AVLTree> treeRedoState;
 
 AVLTreeVisualizer::AVLTreeVisualizer() 
     : inputText(""),
+      inputTextNew(""), // Initialize second input text
       inputActive(false),
+      inputActiveNew(false), // Initialize second input active flag
       handleSpace{0.0f, 0.0f, 1500.0f, 75.0f},
       inputBox{10.0f, 610.0f, 100.0f, 25.0f},
+      inputBoxNew{120.0f, 610.0f, 100.0f, 25.0f}, // Initialize second input box (adjacent to the first)
       initButtonRect{30.0f, 700.0f, 80.0f, 30.0f},
       insertButtonRect{130.0f, 700.0f, 80.0f, 30.0f},
       deleteButtonRect{230.0f, 700.0f, 80.0f, 30.0f},
       searchButtonRect{330.0f, 700.0f, 80.0f, 30.0f},
-      loadFileButtonRect{430.0f, 700.0f, 80.0f, 30.0f},
+      updateButtonRect{430.0f, 700.0f, 80.0f, 30.0f},
+      loadFileButtonRect{530.0f, 700.0f, 80.0f, 30.0f},
       rewindButtonRect{600.0f, 700.0f, 80.0f, 30.0f},
       previousButtonRect{700.0f, 700.0f, 80.0f, 30.0f},
       playPauseButtonRect{800.0f, 700.0f, 80.0f, 30.0f},
       nextButtonRect{900.0f, 700.0f, 80.0f, 30.0f},
       fastForwardButtonRect{1000.0f, 700.0f, 80.0f, 30.0f},
       randomButtonRect{120.0f, 610.0f, 25.0f, 25.0f},
+      randomButtonRectNew{230.0f, 610.0f, 25.0f, 25.0f}, // Initialize second "?" button
       speedBar{600.0f + 35, 670.0f, 280.0f, 20.0f},
       sliderHandle{0.0f, 0.0f, 10.0f, 16.0f},
       currentState(IDLE),
@@ -48,12 +57,15 @@ AVLTreeVisualizer::AVLTreeVisualizer()
       insertButtonClicked(false),
       deleteButtonClicked(false),
       searchButtonClicked(false),
+      updateButtonClicked(false),
       loadFileButtonClicked(false),
       rewindButtonClicked(false),
       previousButtonClicked(false),
       playPauseButtonClicked(false),
       nextButtonClicked(false),
       fastForwardButtonClicked(false),
+      randomButtonClicked(false),
+      randomButtonClickedNew(false), // Initialize second "?" button click flag
       randomButtonMessage("?"),
       manualStepping(false),
       stateHistoryIndex(0),
@@ -86,10 +98,13 @@ AVLTreeVisualizer::~AVLTreeVisualizer() {
 }
 
 void AVLTreeVisualizer::handleInput() {
+    // Declare variables once at the function scope to avoid redeclaration
     Vector2 mousePos = GetMousePosition();
+    Rectangle backButtonBounds = { 20.0f, 20.0f, 65.0f, 65.0f };
+    Font defaultFont = GetFontDefault();
+    const char* buttonMessage = nullptr;
 
     // Handle Back button
-    Rectangle backButtonBounds = { 20.0f, 20.0f, 65.0f, 65.0f };
     if (DrawBackButton(backButtonTexture, backButtonBounds, backButtonClicked)) {
         shouldClose = true;
         backButtonClicked = false;
@@ -97,24 +112,23 @@ void AVLTreeVisualizer::handleInput() {
     }
 
     if (showInputWindow) {
-        Font defaultFont = GetFontDefault();
-        const char* buttonMessage = nullptr;
-
         // Always allow Init button
         if (DrawButton("Init", initButtonRect, defaultFont, initButtonClicked, buttonMessage)) {
             showInputWindow = false;
             operationType = "";
             inputText.clear();
+            inputTextNew.clear();
             notificationMessage = "Initializing: Clearing list";
             showInputWindow = true;
             operationType = "init";
         }
 
-        // Allow Insert, Delete, and Search buttons unconditionally
+        // Allow Insert, Delete, Search, and Update buttons unconditionally
         if (DrawButton("Insert", insertButtonRect, defaultFont, insertButtonClicked, buttonMessage)) {
             showInputWindow = false;
             operationType = "";
             inputText.clear();
+            inputTextNew.clear();
             notificationMessage = "Inserting";
             showInputWindow = true;
             operationType = "insert";
@@ -123,6 +137,7 @@ void AVLTreeVisualizer::handleInput() {
             showInputWindow = false;
             operationType = "";
             inputText.clear();
+            inputTextNew.clear();
             notificationMessage = "Deleting";
             showInputWindow = true;
             operationType = "delete";
@@ -131,17 +146,46 @@ void AVLTreeVisualizer::handleInput() {
             showInputWindow = false;
             operationType = "";
             inputText.clear();
+            inputTextNew.clear();
             notificationMessage = "Searching";
             showInputWindow = true;
             operationType = "search";
         }
-
-        if (CheckCollisionPointRec(mousePos, inputBox) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            inputActive = true;
-        } else if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            inputActive = false;
+        if (DrawButton("Update", updateButtonRect, defaultFont, updateButtonClicked, buttonMessage)) {
+            showInputWindow = false;
+            operationType = "";
+            inputText.clear();
+            inputTextNew.clear();
+            notificationMessage = "Updating: Enter old and new values";
+            showInputWindow = true;
+            operationType = "update";
         }
 
+        // Handle input for the first box (Old V. for Update, V: for others)
+        if (CheckCollisionPointRec(mousePos, inputBox) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            inputActive = true;
+            if (operationType == "update") {
+                inputActiveNew = false; // Deactivate the other box
+            }
+        }
+
+        // Handle input for the second box (New V., only for Update)
+        if (operationType == "update") {
+            if (CheckCollisionPointRec(mousePos, inputBoxNew) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                inputActiveNew = true;
+                inputActive = false; // Deactivate the other box
+            }
+        }
+
+        // Deactivate both boxes if clicking outside
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && 
+            !CheckCollisionPointRec(mousePos, inputBox) && 
+            (operationType != "update" || !CheckCollisionPointRec(mousePos, inputBoxNew))) {
+            inputActive = false;
+            inputActiveNew = false;
+        }
+
+        // Process input for the first box
         if (inputActive) {
             int key = GetCharPressed();
             while (key > 0) {
@@ -155,10 +199,34 @@ void AVLTreeVisualizer::handleInput() {
             }
         }
 
+        // Process input for the second box (only for Update)
+        if (inputActiveNew && operationType == "update") {
+            int key = GetCharPressed();
+            while (key > 0) {
+                if ((key >= 48 && key <= 57) && inputTextNew.length() < 6) {
+                    inputTextNew += (char)key;
+                }
+                key = GetCharPressed();
+            }
+            if (IsKeyPressed(KEY_BACKSPACE) && !inputTextNew.empty()) {
+                inputTextNew.pop_back();
+            }
+        }
+
+        // Handle first "?" button (random value for first box)
         if (DrawButton("?", randomButtonRect, defaultFont, randomButtonClicked, buttonMessage)) {
             int randomValue = (operationType == "init") ? GetRandomValue(1, 20) : GetRandomValue(1, 100);
             inputText = std::to_string(randomValue);
             inputActive = false;
+        }
+
+        // Handle second "?" button (random value for second box, only for Update)
+        if (operationType == "update") {
+            if (DrawButton("?", randomButtonRectNew, defaultFont, randomButtonClickedNew, buttonMessage)) {
+                int randomValue = GetRandomValue(1, 100);
+                inputTextNew = std::to_string(randomValue);
+                inputActiveNew = false;
+            }
         }
 
         if (operationType == "init") {
@@ -166,14 +234,16 @@ void AVLTreeVisualizer::handleInput() {
             if (DrawButton("Upload", loadFileButtonRect, defaultFont, loadFileButtonClicked, buttonMessage)) {
                 animateLoadFile();
                 inputText.clear();
+                inputTextNew.clear();
                 showInputWindow = false;
                 operationType = "";
                 isInitialized = true;
             }
         }
 
-        if (DrawButton("OK", okButtonRect, defaultFont, okButtonClicked, buttonMessage) && !inputText.empty()) {
-            if (operationType == "init") {
+        // Handle OK button
+        if (DrawButton("OK", okButtonRect, defaultFont, okButtonClicked, buttonMessage)) {
+            if (operationType == "init" && !inputText.empty()) {
                 int numNodes = std::stoi(inputText);
                 if (numNodes > 0) {
                     tree.~AVLTree();
@@ -200,19 +270,24 @@ void AVLTreeVisualizer::handleInput() {
                     notificationMessage = "Initialization complete";
                     isInitialized = true;
                 }
-            } else if (operationType == "insert") {
+            } else if (operationType == "insert" && !inputText.empty()) {
                 int insertValue = std::stoi(inputText);
                 animateInsert(insertValue);
-            } else if (operationType == "delete") {
+            } else if (operationType == "delete" && !inputText.empty()) {
                 int deleteValue = std::stoi(inputText);
                 animateDelete(deleteValue);
-            } else if (operationType == "search") {
+            } else if (operationType == "search" && !inputText.empty()) {
                 int searchValue = std::stoi(inputText);
                 animateSearch(searchValue);
+            } else if (operationType == "update" && !inputText.empty() && !inputTextNew.empty()) {
+                int oldValue = std::stoi(inputText);
+                int newValue = std::stoi(inputTextNew);
+                animateUpdate(oldValue, newValue);
             }
             showInputWindow = false;
             operationType = "";
             inputText.clear();
+            inputTextNew.clear();
         }
         return;
     }
@@ -236,36 +311,44 @@ void AVLTreeVisualizer::handleInput() {
         }
     }
 
-    Font defaultFont = GetFontDefault();
-    const char* buttonMessage = nullptr;
-
     // Draw all buttons unconditionally
     if (DrawButton("Init", initButtonRect, defaultFont, initButtonClicked, buttonMessage)) {
         showInputWindow = true;
         operationType = "init";
         inputText.clear();
+        inputTextNew.clear();
         notificationMessage = "Initializing: Clearing list";
     }
     if (DrawButton("Insert", insertButtonRect, defaultFont, insertButtonClicked, buttonMessage)) {
         showInputWindow = true;
         operationType = "insert";
         inputText.clear();
+        inputTextNew.clear();
         notificationMessage = "Inserting";
     }
     if (DrawButton("Delete", deleteButtonRect, defaultFont, deleteButtonClicked, buttonMessage)) {
         showInputWindow = true;
         operationType = "delete";
         inputText.clear();
+        inputTextNew.clear();
         notificationMessage = "Deleting";
     }
     if (DrawButton("Search", searchButtonRect, defaultFont, searchButtonClicked, buttonMessage)) {
         showInputWindow = true;
         operationType = "search";
         inputText.clear();
+        inputTextNew.clear();
         notificationMessage = "Searching";
     }
+    if (DrawButton("Update", updateButtonRect, defaultFont, updateButtonClicked, buttonMessage)) {
+        showInputWindow = true;
+        operationType = "update";
+        inputText.clear();
+        inputTextNew.clear();
+        notificationMessage = "Updating: Enter old and new values";
+    }
 
-    // Animation control buttons (unchanged)
+    // Animation control buttons
     if (DrawButton("First", rewindButtonRect, defaultFont, rewindButtonClicked, buttonMessage)) {
         if (!treeUndoState.empty()) {
             paused = true;
@@ -294,6 +377,7 @@ void AVLTreeVisualizer::handleInput() {
             notificationMessage = "No previous tree state available";
         }
         inputText.clear();
+        inputTextNew.clear();
         rewindButtonClicked = false;
     }
 
@@ -378,6 +462,24 @@ void AVLTreeVisualizer::handleInput() {
                     operationSteps.push_back(step);
                     currentStepIndex = operationSteps.size() - 1;
                     currentState = SHOWING_RESULT;
+                } else if (currentOperation == "update") {
+                    if (!tree.search(operationValue)) {
+                        notificationMessage = "Node " + std::to_string(operationValue) + " Not Found";
+                    } else {
+                        tree.remove(tree.root, operationValue);
+                        tree.insert(tree.root, pendingInsertValue);
+                        AVLTree treeReplica(tree);
+                        treeUndoState.push(treeReplica);
+                        notificationMessage = "Updated " + std::to_string(operationValue) + " to " + std::to_string(pendingInsertValue);
+                    }
+                    OperationStep step = {
+                        "update", SHOWING_RESULT, currentPath, pathIndex, highlightNodes,
+                        notificationMessage, operationValue, pendingInsertValue, searchFound, 0.0f, 0.0f,
+                        currentOperation, rotationIndex, tree
+                    };
+                    operationSteps.push_back(step);
+                    currentStepIndex = operationSteps.size() - 1;
+                    currentState = SHOWING_RESULT;
                 }
                 stateTimer = 0.0f;
                 resultTimer = 0.0f;
@@ -390,344 +492,12 @@ void AVLTreeVisualizer::handleInput() {
         fastForwardButtonClicked = false;
     }
 
-    // Speed slider handling (unchanged)
+    // Speed slider handling
     if (CheckCollisionPointRec(GetMousePosition(), speedBar)) {
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
             animationSpeed = UpdateSlider(speedBar, 0.05f, 5.0f, animationSpeed);
         } else {
             draggingSlider = false;
-        }
-    }
-}
-
-void AVLTreeVisualizer::stepBackward() {
-    if (!paused || operationSteps.empty() || currentStepIndex <= 0) {
-        notificationMessage = "Cannot step back further";
-        return;
-    }
-
-    // Store current tree state for redo
-    AVLTree treeReplica(tree);
-    treeRedoState.push(treeReplica);
-
-    // Decrement step index
-    currentStepIndex--;
-    const OperationStep& step = operationSteps[currentStepIndex];
-    currentOperation = step.operation;
-    currentState = step.currentState;
-    currentPath = step.currentPath;
-    pathIndex = step.pathIndex;
-    highlightNodes = step.highlightNodes;
-    notificationMessage = step.notificationMessage;
-    operationValue = step.operationValue;
-    pendingInsertValue = step.pendingInsertValue;
-    searchFound = step.searchFound;
-    stateTimer = step.stateTimer;
-    resultTimer = step.resultTimer;
-    rotationIndex = step.rotationIndex;
-
-    // Restore tree state from snapshot
-    tree = step.treeSnapshot;
-    isInitialized = tree.root != nullptr;
-
-    // Update notification based on context
-    if (currentState == TRAVERSING || currentState == SEARCHING) {
-        if (pathIndex < currentPath.size()) {
-            notificationMessage = "Stepped back: Traversing " + std::to_string(currentPath[pathIndex]->data);
-        } else {
-            notificationMessage = "Stepped back: Traversing complete";
-        }
-    } else if (currentState == SHOWING_RESULT || currentState == IDLE) {
-        notificationMessage = "Stepped back to: " + step.notificationMessage;
-    } else {
-        notificationMessage = "Stepped back: " + step.notificationMessage;
-    }
-
-    inputText.clear();
-}
-
-void AVLTreeVisualizer::stepForward() {
-    if (!paused || currentState == SHOWING_RESULT || currentState == IDLE) {
-        return;
-    }
-
-    if (currentStepIndex < static_cast<int>(operationSteps.size()) - 1) {
-        currentStepIndex++;
-        const OperationStep& step = operationSteps[currentStepIndex];
-
-        currentOperation = step.operation;
-        currentState = step.currentState;
-        currentPath = step.currentPath;
-        pathIndex = step.pathIndex;
-        highlightNodes = step.highlightNodes;
-        notificationMessage = step.notificationMessage;
-        operationValue = step.operationValue;
-        pendingInsertValue = step.pendingInsertValue;
-        searchFound = step.searchFound;
-        stateTimer = step.stateTimer;
-        resultTimer = step.resultTimer;
-    }
-}
-
-void AVLTreeVisualizer::updateAnimation(float deltaTime) {
-    if (currentState == IDLE || paused) {
-        return;
-    }
-
-    stateTimer += deltaTime * (animationSpeed * 5.0f);
-
-    float duration = 0.0f;
-
-    switch (currentState) {
-        case TRAVERSING: {
-            if (stateTimer >= 0.5f && pathIndex < currentPath.size()) {
-                Node* currentNode = currentPath[pathIndex];
-                highlightNodes.insert(currentNode);
-                notificationMessage = "Traverse: " + std::to_string(currentNode->data);
-                pathIndex++;
-                stateTimer = 0.0f;
-
-                AVLTree treeSnapshot(tree);
-                OperationStep step = {
-                    currentOperation, currentState, currentPath, pathIndex, highlightNodes,
-                    notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
-                    currentOperation, rotationIndex, treeSnapshot
-                };
-                operationSteps.push_back(step);
-                currentStepIndex = operationSteps.size() - 1;
-            }
-            if (pathIndex >= currentPath.size()) {
-                if (currentOperation == "insert") {
-                    currentState = INSERTING;
-                    notificationMessage = "Inserting " + std::to_string(pendingInsertValue);
-
-                    AVLTree treeSnapshot(tree);
-                    OperationStep step = {
-                        currentOperation, currentState, currentPath, pathIndex, highlightNodes,
-                        notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
-                        currentOperation, rotationIndex, treeSnapshot
-                    };
-                    operationSteps.push_back(step);
-                    currentStepIndex = operationSteps.size() - 1;
-                } else if (currentOperation == "delete") {
-                    if (!tree.search(operationValue)) {
-                        notificationMessage = "Node " + std::to_string(operationValue) + " Not Found";
-                        stateTimer = 0.0f;
-                        currentState = SHOWING_RESULT;
-
-                        AVLTree treeSnapshot(tree);
-                        OperationStep step = {
-                            currentOperation, currentState, currentPath, pathIndex, highlightNodes,
-                            notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
-                            currentOperation, rotationIndex, treeSnapshot
-                        };
-                        operationSteps.push_back(step);
-                        currentStepIndex = operationSteps.size() - 1;
-                    } else {
-                        currentState = HIGHLIGHTING_BEFORE_DELETE;
-                        notificationMessage = "Deleting " + std::to_string(operationValue);
-
-                        AVLTree treeSnapshot(tree);
-                        OperationStep step = {
-                            currentOperation, currentState, currentPath, pathIndex, highlightNodes,
-                            notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
-                            currentOperation, rotationIndex, treeSnapshot
-                        };
-                        operationSteps.push_back(step);
-                        currentStepIndex = operationSteps.size() - 1;
-                    }
-                } else if (currentOperation == "search") {
-                    currentState = SEARCHING;
-                    stateTimer = 0.0f;
-
-                    AVLTree treeSnapshot(tree);
-                    OperationStep step = {
-                        currentOperation, currentState, currentPath, pathIndex, highlightNodes,
-                        notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
-                        currentOperation, rotationIndex, treeSnapshot
-                    };
-                    operationSteps.push_back(step);
-                    currentStepIndex = operationSteps.size() - 1;
-                }
-            }
-            break;
-        }
-
-        case INSERTING: {
-            if (stateTimer >= 0.5f) {
-                if (!tree.search(pendingInsertValue)) {
-                    tree.insert(tree.root, pendingInsertValue);
-                    AVLTree treeReplica(tree);
-                    treeUndoState.push(treeReplica);
-                    notificationMessage = "Inserted " + std::to_string(pendingInsertValue);
-                } else {
-                    notificationMessage = "Duplicate " + std::to_string(pendingInsertValue) + " Not Inserted";
-                }
-                currentPath = tree.getInsertionPath(pendingInsertValue);
-                pathIndex = currentPath.size();
-                currentState = SHOWING_RESULT;
-                resultTimer = 0.0f;
-                stateTimer = 0.0f;
-
-                AVLTree treeSnapshot(tree);
-                OperationStep step = {
-                    currentOperation, currentState, currentPath, pathIndex, highlightNodes,
-                    notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
-                    currentOperation, rotationIndex, treeSnapshot
-                };
-                operationSteps.push_back(step);
-                currentStepIndex = operationSteps.size() - 1;
-            }
-            break;
-        }
-
-        case HIGHLIGHTING_BEFORE_DELETE: {
-            if (stateTimer >= 0.5f) {
-                notificationMessage = "Deleting " + std::to_string(operationValue);
-                currentState = DELETING;
-                stateTimer = 0.0f;
-
-                AVLTree treeSnapshot(tree);
-                OperationStep step = {
-                    currentOperation, currentState, currentPath, pathIndex, highlightNodes,
-                    notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
-                    currentOperation, rotationIndex, treeSnapshot
-                };
-                operationSteps.push_back(step);
-                currentStepIndex = operationSteps.size() - 1;
-            }
-            break;
-        }
-
-        case DELETING: {
-            if (stateTimer >= 0.5f) {
-                tree.remove(tree.root, operationValue);
-                AVLTree treeReplica(tree);
-                treeUndoState.push(treeReplica);
-                notificationMessage = "Node " + std::to_string(operationValue) + " Deleted";
-                currentState = SHOWING_RESULT;
-                resultTimer = 0.0f;
-                stateTimer = 0.0f;
-
-                AVLTree treeSnapshot(tree);
-                OperationStep step = {
-                    currentOperation, currentState, currentPath, pathIndex, highlightNodes,
-                    notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
-                    currentOperation, rotationIndex, treeSnapshot
-                };
-                operationSteps.push_back(step);
-                currentStepIndex = operationSteps.size() - 1;
-            }
-            break;
-        }
-
-        case ROTATING: {
-            notificationMessage = "Executing rotation";
-            currentState = SHOWING_RESULT;
-            resultTimer = 0.0f;
-
-            AVLTree treeSnapshot(tree);
-            OperationStep step = {
-                currentOperation, currentState, currentPath, pathIndex, highlightNodes,
-                notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
-                currentOperation, rotationIndex, treeSnapshot
-            };
-            operationSteps.push_back(step);
-            currentStepIndex = operationSteps.size() - 1;
-            break;
-        }
-
-        case SHOWING_RESULT: {
-            resultTimer += deltaTime;
-            duration = (currentOperation == "search" || currentOperation == "delete") && !searchFound ? 4.0f : 2.0f;
-            if (resultTimer >= duration) {
-                currentState = IDLE;
-                currentPath.clear();
-                pathIndex = 0;
-                rotationIndex = 0;
-                searchFound = false;
-                highlightNodes.clear();
-
-                AVLTree treeSnapshot(tree);
-                OperationStep step = {
-                    currentOperation, currentState, currentPath, pathIndex, highlightNodes,
-                    notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
-                    currentOperation, rotationIndex, treeSnapshot
-                };
-                operationSteps.push_back(step);
-                currentStepIndex = operationSteps.size() - 1;
-            }
-            break;
-        }
-
-        case SEARCHING: {
-            if (stateTimer >= 0.5f) {
-                if (pathIndex < currentPath.size()) {
-                    Node* currentNode = currentPath[pathIndex];
-                    highlightNodes.insert(currentNode);
-                    notificationMessage = "Searching: " + std::to_string(currentNode->data);
-                    pathIndex++;
-                    stateTimer = 0.0f;
-
-                    AVLTree treeSnapshot(tree);
-                    OperationStep step = {
-                        currentOperation, currentState, currentPath, pathIndex, highlightNodes,
-                        notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
-                        currentOperation, rotationIndex, treeSnapshot
-                    };
-                    operationSteps.push_back(step);
-                    currentStepIndex = operationSteps.size() - 1;
-                } else {
-                    if (searchFound) {
-                        notificationMessage = "Found " + std::to_string(operationValue);
-                        currentState = SHOWING_RESULT;
-                        stateTimer = 0.0f;
-                        resultTimer = 0.0f;
-
-                        AVLTree treeSnapshot(tree);
-                        OperationStep step = {
-                            currentOperation, currentState, currentPath, pathIndex, highlightNodes,
-                            notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
-                            currentOperation, rotationIndex, treeSnapshot
-                        };
-                        operationSteps.push_back(step);
-                        currentStepIndex = operationSteps.size() - 1;
-                    } else {
-                        notificationMessage = "Node " + std::to_string(operationValue) + " Not Found";
-                        currentState = SEARCH_NOT_FOUND;
-                        stateTimer = 0.0f;
-
-                        AVLTree treeSnapshot(tree);
-                        OperationStep step = {
-                            currentOperation, currentState, currentPath, pathIndex, highlightNodes,
-                            notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
-                            currentOperation, rotationIndex, treeSnapshot
-                        };
-                        operationSteps.push_back(step);
-                        currentStepIndex = operationSteps.size() - 1;
-                    }
-                }
-            }
-            break;
-        }
-
-        case SEARCH_NOT_FOUND: {
-            if (stateTimer >= 1.0f) {
-                currentState = SHOWING_RESULT;
-                highlightNodes.clear();
-                stateTimer = 0.0f;
-                resultTimer = 0.0f;
-
-                AVLTree treeSnapshot(tree);
-                OperationStep step = {
-                    currentOperation, currentState, currentPath, pathIndex, highlightNodes,
-                    notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
-                    currentOperation, rotationIndex, treeSnapshot
-                };
-                operationSteps.push_back(step);
-                currentStepIndex = operationSteps.size() - 1;
-            }
-            break;
         }
     }
 }
@@ -739,8 +509,10 @@ void AVLTreeVisualizer::drawTree(Node* node, float x, float y, float offset, con
     if (highlight.count(node)) {
         if (currentState == SEARCHING && node->data == operationValue && searchFound) {
             nodeColor = GREEN;
-        } else if (currentState == HIGHLIGHTING_BEFORE_DELETE && node->data == operationValue) {
+        } else if ((currentState == HIGHLIGHTING_BEFORE_DELETE || currentState == DELETING) && node->data == operationValue) {
             nodeColor = ORANGE;
+        } else if (currentState == INSERTING && node->data == pendingInsertValue && currentOperation == "update") {
+            nodeColor = GREEN;
         } else {
             nodeColor = BLUE;
         }
@@ -750,6 +522,8 @@ void AVLTreeVisualizer::drawTree(Node* node, float x, float y, float offset, con
         } else if (currentOperation == "delete") {
             nodeColor = RED;
         }
+    } else if (currentState == SHOWING_RESULT && node->data == pendingInsertValue && currentOperation == "update") {
+        nodeColor = GREEN;
     }
 
     DrawCircle(x, y, NODE_RADIUS, nodeColor);
@@ -779,6 +553,10 @@ void AVLTreeVisualizer::drawTree(Node* node, float x, float y, float offset, con
 void AVLTreeVisualizer::draw() {
     std::set<Node*> highlightNodes(currentPath.begin(), currentPath.begin() + pathIndex);
     ClearBackground(WHITE);
+
+    // Declare variables at function scope to ensure they are accessible throughout
+    Font defaultFont = GetFontDefault();
+    const char* buttonMessage = nullptr;
 
     std::string pseudocodeText = getPseudocode();
     int lineHeight = 20;
@@ -813,23 +591,44 @@ void AVLTreeVisualizer::draw() {
     free(speedText);
 
     DrawRectangleRec(speedBar, LIGHTGRAY);
-DrawRectangleRec(sliderHandle, DARKGRAY);
+    DrawRectangleRec(sliderHandle, DARKGRAY);
 
     if (showInputWindow) {
+        // Adjust positions for input boxes and buttons
         inputBox = { 30.0f, 620.0f, 50.0f, 25.0f };
         randomButtonRect = { 80.0f, 620.0f, 25.0f, 25.0f };
-        okButtonRect = { 350.0f, 655.0f, 40.0f, 30.0f };
+        if (operationType == "update") {
+            inputBoxNew = { 140.0f, 620.0f, 50.0f, 25.0f }; // Second box for New V.
+            randomButtonRectNew = { 190.0f, 620.0f, 25.0f, 25.0f }; // Second "?" button
+            okButtonRect = { 400.0f, 655.0f, 40.0f, 30.0f }; // Adjust OK button position
+        } else {
+            okButtonRect = { 350.0f, 655.0f, 40.0f, 30.0f };
+        }
         loadFileButtonRect = { 30.0f, 647.0f, 80.0f, 30.0f };
 
-        std::string label = operationType == "init" ? "N: " : "V: ";
-        DrawText(label.c_str(), 10.0f, 625.0f, 20, BLACK);
-        DrawRectangleRec(inputBox, LIGHTGRAY);
-        DrawRectangleLinesEx(inputBox, 2, inputActive ? BLUE : GRAY);
-        DrawText(inputText.c_str(), inputBox.x + 5.0f, inputBox.y + 5.0f, 20, BLACK);
+        // Draw labels and input boxes
+        if (operationType == "update") {
+            DrawText("O", 10.0f, 625.0f, 20, BLACK); // Label for first box
+            DrawText("N", 110.0f, 625.0f, 20, BLACK); // Label for second box
+            DrawRectangleRec(inputBox, LIGHTGRAY);
+            DrawRectangleLinesEx(inputBox, 2, inputActive ? BLUE : GRAY);
+            DrawText(inputText.c_str(), inputBox.x + 5.0f, inputBox.y + 5.0f, 20, BLACK);
+            DrawRectangleRec(inputBoxNew, LIGHTGRAY);
+            DrawRectangleLinesEx(inputBoxNew, 2, inputActiveNew ? BLUE : GRAY);
+            DrawText(inputTextNew.c_str(), inputBoxNew.x + 5.0f, inputBoxNew.y + 5.0f, 20, BLACK);
+        } else {
+            std::string label = operationType == "init" ? "N:" : "V:";
+            DrawText(label.c_str(), 10.0f, 625.0f, 20, BLACK);
+            DrawRectangleRec(inputBox, LIGHTGRAY);
+            DrawRectangleLinesEx(inputBox, 2, inputActive ? BLUE : GRAY);
+            DrawText(inputText.c_str(), inputBox.x + 5.0f, inputBox.y + 5.0f, 20, BLACK);
+        }
 
-        Font defaultFont = GetFontDefault();
-        const char* buttonMessage = nullptr;
+        // Draw "?" buttons and OK button
         DrawButton("?", randomButtonRect, defaultFont, randomButtonClicked, buttonMessage);
+        if (operationType == "update") {
+            DrawButton("?", randomButtonRectNew, defaultFont, randomButtonClickedNew, buttonMessage);
+        }
         DrawButton("OK", okButtonRect, defaultFont, okButtonClicked, buttonMessage);
 
         if (operationType == "init") {
@@ -837,12 +636,12 @@ DrawRectangleRec(sliderHandle, DARKGRAY);
         }
     }
 
-    Font defaultFont = GetFontDefault();
-    const char* buttonMessage = nullptr;
+    // Draw operation buttons (using defaultFont and buttonMessage)
     DrawButton("Init", initButtonRect, defaultFont, initButtonClicked, buttonMessage);
     DrawButton("Insert", insertButtonRect, defaultFont, insertButtonClicked, buttonMessage);
     DrawButton("Delete", deleteButtonRect, defaultFont, deleteButtonClicked, buttonMessage);
     DrawButton("Search", searchButtonRect, defaultFont, searchButtonClicked, buttonMessage);
+    DrawButton("Update", updateButtonRect, defaultFont, updateButtonClicked, buttonMessage);
     DrawButton("First", rewindButtonRect, defaultFont, rewindButtonClicked, buttonMessage);
     DrawButton("Prev", previousButtonRect, defaultFont, previousButtonClicked, buttonMessage);
     DrawButton(paused ? "Play" : "Pause", playPauseButtonRect, defaultFont, playPauseButtonClicked, buttonMessage);
@@ -917,6 +716,23 @@ DrawRectangleRec(sliderHandle, DARKGRAY);
         } else if (currentState == SHOWING_RESULT && searchFound) {
             activeLine = 7;
         }
+    } else if (currentOperation == "update") {
+        if (currentState == TRAVERSING || currentState == HIGHLIGHTING_BEFORE_DELETE) {
+            if (pathIndex == 0) activeLine = 1;
+            else if (pathIndex <= currentPath.size()) {
+                int traversalLine = 2 + (pathIndex - 1) % 5;
+                if (traversalLine <= 6) activeLine = traversalLine;
+                else activeLine = 7;
+            }
+        } else if (currentState == DELETING) {
+            activeLine = 10;
+        } else if (currentState == INSERTING) {
+            activeLine = 12;
+        } else if (currentState == SEARCH_NOT_FOUND) {
+            activeLine = 9;
+        } else if (currentState == SHOWING_RESULT) {
+            activeLine = 13;
+        }
     }
     for (const auto& l : lines) {
         Color textColor = (lineIndex == activeLine) ? RED : BLACK;
@@ -928,7 +744,6 @@ DrawRectangleRec(sliderHandle, DARKGRAY);
         shouldClose = true;
     }
 }
-
 void AVLTreeVisualizer::animateLoadFile() {
     const char* filterPatterns[] = {"*.txt"};
     const char* filePath = tinyfd_openFileDialog(
@@ -1164,6 +979,23 @@ std::string AVLTreeVisualizer::getPseudocode() {
                    << "  }\n"
                    << "  return nullptr; // Not found\n"
                    << "}";
+    } else if (currentOperation == "update") {
+        pseudocode << "Node* update(Node* root, int oldValue, int newValue) {\n"
+                   << "  Node* curr = root;\n"
+                   << "  while (curr != nullptr) {\n"
+                   << "    if (oldValue < curr->data)\n"
+                   << "      curr = curr->left;\n"
+                   << "    else if (oldValue > curr->data)\n"
+                   << "      curr = curr->right;\n"
+                   << "    else break; // Found\n"
+                   << "  }\n"
+                   << "  if (curr == nullptr) return root;\n"
+                   << "  root = deleteNode(curr);\n"
+                   << "  rebalance(root);\n"
+                   << "  root = insert(root, newValue);\n"
+                   << "  rebalance(root);\n"
+                   << "  return root;\n"
+                   << "}";
     } else {
         pseudocode << "No operation selected;";
     }
@@ -1274,6 +1106,28 @@ void AVLTreeVisualizer::animateSearch(int value) {
     currentStepIndex = operationSteps.size() - 1;
 }
 
+void AVLTreeVisualizer::animateUpdate(int oldValue, int newValue) {
+    currentOperation = "update";
+    operationValue = oldValue;
+    pendingInsertValue = newValue;
+    currentPath = tree.getInsertionPath(oldValue);
+    pathIndex = 0;
+    searchFound = tree.search(oldValue);
+    highlightNodes.clear();
+    notificationMessage = "Updating: Traversing to " + std::to_string(oldValue);
+    currentState = TRAVERSING;
+
+    // Store initial tree snapshot
+    AVLTree treeSnapshot(tree);
+    OperationStep step = {
+        "update", currentState, currentPath, pathIndex, highlightNodes,
+        notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
+        currentOperation, rotationIndex, treeSnapshot
+    };
+    operationSteps.push_back(step);
+    currentStepIndex = operationSteps.size() - 1;
+}
+
 void AVLTreeVisualizer::animateClear() {
     tree.~AVLTree();
     new (&tree) AVLTree();
@@ -1283,4 +1137,375 @@ void AVLTreeVisualizer::animateClear() {
     currentState = IDLE;
     stateTimer = 0.0f;
     resultTimer = 0.0f;
+}
+void AVLTreeVisualizer::stepBackward() {
+    if (!paused || operationSteps.empty() || currentStepIndex <= 0) {
+        notificationMessage = "Cannot step back further";
+        return;
+    }
+
+    // Store current tree state for redo
+    AVLTree treeReplica(tree);
+    treeRedoState.push(treeReplica);
+
+    // Decrement step index
+    currentStepIndex--;
+    const OperationStep& step = operationSteps[currentStepIndex];
+    currentOperation = step.operation;
+    currentState = step.currentState;
+    currentPath = step.currentPath;
+    pathIndex = step.pathIndex;
+    highlightNodes = step.highlightNodes;
+    notificationMessage = step.notificationMessage;
+    operationValue = step.operationValue;
+    pendingInsertValue = step.pendingInsertValue;
+    searchFound = step.searchFound;
+    stateTimer = step.stateTimer;
+    resultTimer = step.resultTimer;
+    rotationIndex = step.rotationIndex;
+
+    // Restore tree state from snapshot
+    tree = step.treeSnapshot;
+    isInitialized = tree.root != nullptr;
+
+    // Update notification based on context
+    if (currentState == TRAVERSING || currentState == SEARCHING) {
+        if (pathIndex < currentPath.size()) {
+            notificationMessage = "Stepped back: Traversing " + std::to_string(currentPath[pathIndex]->data);
+        } else {
+            notificationMessage = "Stepped back: Traversing complete";
+        }
+    } else if (currentState == SHOWING_RESULT || currentState == IDLE) {
+        notificationMessage = "Stepped back to: " + step.notificationMessage;
+    } else {
+        notificationMessage = "Stepped back: " + step.notificationMessage;
+    }
+
+    inputText.clear();
+}
+
+void AVLTreeVisualizer::stepForward() {
+    if (!paused || currentState == SHOWING_RESULT || currentState == IDLE) {
+        return;
+    }
+
+    if (currentStepIndex < static_cast<int>(operationSteps.size()) - 1) {
+        currentStepIndex++;
+        const OperationStep& step = operationSteps[currentStepIndex];
+
+        currentOperation = step.operation;
+        currentState = step.currentState;
+        currentPath = step.currentPath;
+        pathIndex = step.pathIndex;
+        highlightNodes = step.highlightNodes;
+        notificationMessage = step.notificationMessage;
+        operationValue = step.operationValue;
+        pendingInsertValue = step.pendingInsertValue;
+        searchFound = step.searchFound;
+        stateTimer = step.stateTimer;
+        resultTimer = step.resultTimer;
+    }
+}
+void AVLTreeVisualizer::updateAnimation(float deltaTime) {
+    if (currentState == IDLE || paused) {
+        return;
+    }
+
+    stateTimer += deltaTime * (animationSpeed * 5.0f);
+
+    float duration = 0.0f;
+
+    switch (currentState) {
+        case TRAVERSING: {
+            if (stateTimer >= 0.5f && pathIndex < currentPath.size()) {
+                Node* currentNode = currentPath[pathIndex];
+                highlightNodes.insert(currentNode);
+                notificationMessage = "Traverse: " + std::to_string(currentNode->data);
+                pathIndex++;
+                stateTimer = 0.0f;
+
+                AVLTree treeSnapshot(tree);
+                OperationStep step = {
+                    currentOperation, currentState, currentPath, pathIndex, highlightNodes,
+                    notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
+                    currentOperation, rotationIndex, treeSnapshot
+                };
+                operationSteps.push_back(step);
+                currentStepIndex = operationSteps.size() - 1;
+            }
+            if (pathIndex >= currentPath.size()) {
+                if (currentOperation == "insert") {
+                    currentState = INSERTING;
+                    notificationMessage = "Inserting " + std::to_string(pendingInsertValue);
+
+                    AVLTree treeSnapshot(tree);
+                    OperationStep step = {
+                        currentOperation, currentState, currentPath, pathIndex, highlightNodes,
+                        notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
+                        currentOperation, rotationIndex, treeSnapshot
+                    };
+                    operationSteps.push_back(step);
+                    currentStepIndex = operationSteps.size() - 1;
+                } else if (currentOperation == "delete") {
+                    if (!tree.search(operationValue)) {
+                        notificationMessage = "Node " + std::to_string(operationValue) + " Not Found";
+                        stateTimer = 0.0f;
+                        currentState = SHOWING_RESULT;
+
+                        AVLTree treeSnapshot(tree);
+                        OperationStep step = {
+                            currentOperation, currentState, currentPath, pathIndex, highlightNodes,
+                            notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
+                            currentOperation, rotationIndex, treeSnapshot
+                        };
+                        operationSteps.push_back(step);
+                        currentStepIndex = operationSteps.size() - 1;
+                    } else {
+                        currentState = HIGHLIGHTING_BEFORE_DELETE;
+                        notificationMessage = "Deleting " + std::to_string(operationValue);
+
+                        AVLTree treeSnapshot(tree);
+                        OperationStep step = {
+                            currentOperation, currentState, currentPath, pathIndex, highlightNodes,
+                            notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
+                            currentOperation, rotationIndex, treeSnapshot
+                        };
+                        operationSteps.push_back(step);
+                        currentStepIndex = operationSteps.size() - 1;
+                    }
+                } else if (currentOperation == "search") {
+                    currentState = SEARCHING;
+                    stateTimer = 0.0f;
+
+                    AVLTree treeSnapshot(tree);
+                    OperationStep step = {
+                        currentOperation, currentState, currentPath, pathIndex, highlightNodes,
+                        notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
+                        currentOperation, rotationIndex, treeSnapshot
+                    };
+                    operationSteps.push_back(step);
+                    currentStepIndex = operationSteps.size() - 1;
+                } else if (currentOperation == "update") {
+                    if (!tree.search(operationValue)) {
+                        notificationMessage = "Node " + std::to_string(operationValue) + " Not Found";
+                        stateTimer = 0.0f;
+                        currentState = SHOWING_RESULT;
+
+                        AVLTree treeSnapshot(tree);
+                        OperationStep step = {
+                            currentOperation, currentState, currentPath, pathIndex, highlightNodes,
+                            notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
+                            currentOperation, rotationIndex, treeSnapshot
+                        };
+                        operationSteps.push_back(step);
+                        currentStepIndex = operationSteps.size() - 1;
+                    } else {
+                        currentState = HIGHLIGHTING_BEFORE_DELETE;
+                        notificationMessage = "Updating: Removing " + std::to_string(operationValue);
+
+                        AVLTree treeSnapshot(tree);
+                        OperationStep step = {
+                            currentOperation, currentState, currentPath, pathIndex, highlightNodes,
+                            notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
+                            currentOperation, rotationIndex, treeSnapshot
+                        };
+                        operationSteps.push_back(step);
+                        currentStepIndex = operationSteps.size() - 1;
+                    }
+                }
+            }
+            break;
+        }
+
+        case INSERTING: {
+            if (stateTimer >= 0.5f) {
+                if (!tree.search(pendingInsertValue)) {
+                    tree.insert(tree.root, pendingInsertValue);
+                    AVLTree treeReplica(tree);
+                    treeUndoState.push(treeReplica);
+                    notificationMessage = (currentOperation == "update") 
+                        ? "Inserted " + std::to_string(pendingInsertValue) 
+                        : "Inserted " + std::to_string(pendingInsertValue);
+                } else {
+                    notificationMessage = "Duplicate " + std::to_string(pendingInsertValue) + " Not Inserted";
+                }
+                currentPath = tree.getInsertionPath(pendingInsertValue);
+                pathIndex = currentPath.size();
+                currentState = SHOWING_RESULT;
+                resultTimer = 0.0f;
+                stateTimer = 0.0f;
+
+                AVLTree treeSnapshot(tree);
+                OperationStep step = {
+                    currentOperation, currentState, currentPath, pathIndex, highlightNodes,
+                    notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
+                    currentOperation, rotationIndex, treeSnapshot
+                };
+                operationSteps.push_back(step);
+                currentStepIndex = operationSteps.size() - 1;
+            }
+            break;
+        }
+
+        case HIGHLIGHTING_BEFORE_DELETE: {
+            if (stateTimer >= 0.5f) {
+                if (currentOperation == "update") {
+                    notificationMessage = "Updating: Removing " + std::to_string(operationValue);
+                    currentState = DELETING;
+                } else {
+                    notificationMessage = "Deleting " + std::to_string(operationValue);
+                    currentState = DELETING;
+                }
+                stateTimer = 0.0f;
+
+                AVLTree treeSnapshot(tree);
+                OperationStep step = {
+                    currentOperation, currentState, currentPath, pathIndex, highlightNodes,
+                    notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
+                    currentOperation, rotationIndex, treeSnapshot
+                };
+                operationSteps.push_back(step);
+                currentStepIndex = operationSteps.size() - 1;
+            }
+            break;
+        }
+
+        case DELETING: {
+            if (stateTimer >= 0.5f) {
+                tree.remove(tree.root, operationValue);
+                AVLTree treeReplica(tree);
+                treeUndoState.push(treeReplica);
+                if (currentOperation == "update") {
+                    notificationMessage = "Removed " + std::to_string(operationValue) + ", inserting new value";
+                    currentState = INSERTING;
+                    currentPath = tree.getInsertionPath(pendingInsertValue);
+                    pathIndex = 0;
+                } else {
+                    notificationMessage = "Node " + std::to_string(operationValue) + " Deleted";
+                    currentState = SHOWING_RESULT;
+                    resultTimer = 0.0f;
+                }
+                stateTimer = 0.0f;
+
+                AVLTree treeSnapshot(tree);
+                OperationStep step = {
+                    currentOperation, currentState, currentPath, pathIndex, highlightNodes,
+                    notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
+                    currentOperation, rotationIndex, treeSnapshot
+                };
+                operationSteps.push_back(step);
+                currentStepIndex = operationSteps.size() - 1;
+            }
+            break;
+        }
+
+        case ROTATING: {
+            notificationMessage = "Executing rotation";
+            currentState = SHOWING_RESULT;
+            resultTimer = 0.0f;
+
+            AVLTree treeSnapshot(tree);
+            OperationStep step = {
+                currentOperation, currentState, currentPath, pathIndex, highlightNodes,
+                notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
+                currentOperation, rotationIndex, treeSnapshot
+            };
+            operationSteps.push_back(step);
+            currentStepIndex = operationSteps.size() - 1;
+            break;
+        }
+
+        case SHOWING_RESULT: {
+            resultTimer += deltaTime;
+            duration = (currentOperation == "search" || currentOperation == "delete" || currentOperation == "update") && !searchFound ? 4.0f : 2.0f;
+            if (resultTimer >= duration) {
+                currentState = IDLE;
+                currentPath.clear();
+                pathIndex = 0;
+                rotationIndex = 0;
+                searchFound = false;
+                highlightNodes.clear();
+
+                AVLTree treeSnapshot(tree);
+                OperationStep step = {
+                    currentOperation, currentState, currentPath, pathIndex, highlightNodes,
+                    notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
+                    currentOperation, rotationIndex, treeSnapshot
+                };
+                operationSteps.push_back(step);
+                currentStepIndex = operationSteps.size() - 1;
+            }
+            break;
+        }
+
+        case SEARCHING: {
+            if (stateTimer >= 0.5f) {
+                if (pathIndex < currentPath.size()) {
+                    Node* currentNode = currentPath[pathIndex];
+                    highlightNodes.insert(currentNode);
+                    notificationMessage = "Searching: " + std::to_string(currentNode->data);
+                    pathIndex++;
+                    stateTimer = 0.0f;
+
+                    AVLTree treeSnapshot(tree);
+                    OperationStep step = {
+                        currentOperation, currentState, currentPath, pathIndex, highlightNodes,
+                        notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
+                        currentOperation, rotationIndex, treeSnapshot
+                    };
+                    operationSteps.push_back(step);
+                    currentStepIndex = operationSteps.size() - 1;
+                } else {
+                    if (searchFound) {
+                        notificationMessage = "Found " + std::to_string(operationValue);
+                        currentState = SHOWING_RESULT;
+                        stateTimer = 0.0f;
+                        resultTimer = 0.0f;
+
+                        AVLTree treeSnapshot(tree);
+                        OperationStep step = {
+                            currentOperation, currentState, currentPath, pathIndex, highlightNodes,
+                            notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
+                            currentOperation, rotationIndex, treeSnapshot
+                        };
+                        operationSteps.push_back(step);
+                        currentStepIndex = operationSteps.size() - 1;
+                    } else {
+                        notificationMessage = "Node " + std::to_string(operationValue) + " Not Found";
+                        currentState = SEARCH_NOT_FOUND;
+                        stateTimer = 0.0f;
+
+                        AVLTree treeSnapshot(tree);
+                        OperationStep step = {
+                            currentOperation, currentState, currentPath, pathIndex, highlightNodes,
+                            notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
+                            currentOperation, rotationIndex, treeSnapshot
+                        };
+                        operationSteps.push_back(step);
+                        currentStepIndex = operationSteps.size() - 1;
+                    }
+                }
+            }
+            break;
+        }
+
+        case SEARCH_NOT_FOUND: {
+            if (stateTimer >= 1.0f) {
+                currentState = SHOWING_RESULT;
+                highlightNodes.clear();
+                stateTimer = 0.0f;
+                resultTimer = 0.0f;
+
+                AVLTree treeSnapshot(tree);
+                OperationStep step = {
+                    currentOperation, currentState, currentPath, pathIndex, highlightNodes,
+                    notificationMessage, operationValue, pendingInsertValue, searchFound, stateTimer, resultTimer,
+                    currentOperation, rotationIndex, treeSnapshot
+                };
+                operationSteps.push_back(step);
+                currentStepIndex = operationSteps.size() - 1;
+            }
+            break;
+        }
+    }
 }

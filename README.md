@@ -58,7 +58,7 @@ or move the DataVisual.exe file in the "src/" folder to its parent folder and do
 
 ## Demo Video
 
-Here is the [demo video](https://www.youtube.com/watch?v=s8QoRXBRysU&list=RDyzCVlbVtpbc&index=3)
+Here is the [demo video](https://www.youtube.com/watch?v=_w4Hls86Sy8&t=330s)
 
 ## Credits
 

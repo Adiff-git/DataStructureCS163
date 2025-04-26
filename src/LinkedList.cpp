@@ -93,7 +93,6 @@ void LinkedList::drawList() {
     int idx = 0;
     float radius = nodeWidth / 2;
 
-    // Đếm số lượng node thực tế để xác định vị trí cuối cùng
     int nodeCount = 0;
     ListNode* temp = head;
     while (temp) {
@@ -128,7 +127,9 @@ void LinkedList::drawList() {
             selectedNodeArea = {nodeCenter.x - radius, nodeCenter.y - radius, nodeWidth, nodeHeight};
         }
         bool isSelected = (selectedNode == current);
-        DrawCircleV(nodeCenter, radius, isSelected ? BLUE : (isHovered ? GRAY : WHITE));
+        bool isFound = (current == foundNode); // Highlight found node until another operation
+        Color nodeColor = isSelected ? BLUE : (isFound ? GREEN : (isHovered ? GRAY : WHITE));
+        DrawCircleV(nodeCenter, radius, nodeColor);
         DrawCircleLines(nodeCenter.x, nodeCenter.y, radius, BLACK);
         Vector2 textSize = MeasureTextEx(GetFontDefault(), TextFormat("%d", current->value), 20, 1);
         DrawTextEx(GetFontDefault(), TextFormat("%d", current->value), {nodeCenter.x - textSize.x / 2, nodeCenter.y - textSize.y / 2}, 20, 1, BLACK);
@@ -142,7 +143,6 @@ void LinkedList::drawList() {
         idx++;
     }
 
-    // Chỉ vẽ node "NULL" ở vị trí cuối cùng dựa trên nodeCount
     Vector2 nullCenter = calNodeCenter(nodeCount);
     float dxNull = GetMousePosition().x - nullCenter.x;
     float dyNull = GetMousePosition().y - nullCenter.y;
@@ -626,12 +626,14 @@ bool LinkedList::Search(int value) {
     }
     
     if (curr) {
-        searchDescriptions.push_back("Value found");
+        foundNode = curr; // Store the found node
+        searchDescriptions.push_back("Value " + std::to_string(value) + " found");
         searchCodeIndex.push_back(1);
         searchPaths1.push_back({std::make_tuple(calNodeCenter(idx), BLUE)});
         searchPaths2.push_back({std::make_tuple(calNodeCenter(idx), GREEN)});
     } else {
-        searchDescriptions.push_back("Value not found");
+        foundNode = nullptr;
+        searchDescriptions.push_back("Value " + std::to_string(value) + " not found");
         searchCodeIndex.push_back(2);
         searchPaths1.push_back({std::make_tuple(calNodeCenter(idx), BLUE)});
         searchPaths2.push_back({std::make_tuple(calNodeCenter(idx), RED)});
@@ -645,7 +647,7 @@ bool LinkedList::Search(int value) {
     curStep = 0;
     totalStep = searchCodeIndex.size();
     doneAnimation = false;
-    operation_type = 5; // Search
+    operation_type = 5;
     return curr != nullptr;
 }
 
@@ -2088,14 +2090,16 @@ void LinkedList::drawSearchDescription() {
         DrawText(searchDescriptions[curStep].c_str(), 500, 640, 20, BLACK);
     }
     int stt = searchCodeIndex.size() > curStep ? searchCodeIndex[curStep] : 0;
+    bool valueFound = (curStep == totalStep - 1 && foundNode != nullptr); // Check if value was found at the end of animation
     for (int i = 0; i < searchCodes.size(); i++) {
-        Color c = stt == i ? RED : BLACK;
+        // Highlight "return true" only if value is found and animation is complete
+        Color c = (i == stt || (valueFound && i == 1)) ? RED : BLACK;
         DrawText(searchCodes[i].c_str(), codePosX, codePosY + i * codePosSpace, 20, c);
-        if (stt == i) {
+        if (i == stt || (valueFound && i == 1)) {
             DrawText(">>", codePosX - 20, codePosY + i * codePosSpace, 20, RED);
         }
     }
-    float radius = nodeWidth / 2;;
+    float radius = nodeWidth / 2;
     if (searchPaths1.size() > curStep) {
         for (size_t i = 0; i < searchPaths1[curStep].size(); i++) {
             Vector2 center = std::get<0>(searchPaths1[curStep][i]);

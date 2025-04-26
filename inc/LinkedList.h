@@ -23,6 +23,7 @@ private:
     float scrollBarWidth = 20; // Chiều rộng của nút kéo (thumb) trên thanh kéo
     ListNode* head;
     ListNode* prevHead; // Để lưu trạng thái trước đó
+    ListNode* foundNode = nullptr; // To store the node found during search
     
     // Visualization parameters
     float listPosX = 550;
@@ -120,14 +121,10 @@ private:
         "if (cur) cur->val = newValue;"
     };
     
-
-    // dùng vector 2 chiều để lưu trữ các đoạn mã và mô tả cho từng bước của từng hàm
-    std::vector<std::string> initDescriptions; // vector này chứa các mô tả cho từng bước
-    std::vector<int> initCodeIndex; // vector này chứa các chỉ số của các đoạn mã tương ứng với từng bước
-    std::vector<std::vector<std::tuple<Vector2, Color>>> initPaths1; // vector này chứa các đường đi cho từng bước
-    std::vector<std::vector<std::tuple<Vector2, Color>>> initPaths2; // vector này chứa các đường đi cho từng bước
-    // init paths1 và paths2 khác nhau ở chỗ paths1 là đường đi của các node trong danh sách, còn paths2 là đường đi của các đường nối giữa các node
-
+    std::vector<std::string> initDescriptions;
+    std::vector<int> initCodeIndex;
+    std::vector<std::vector<std::tuple<Vector2, Color>>> initPaths1;
+    std::vector<std::vector<std::tuple<Vector2, Color>>> initPaths2;
 
     std::vector<std::string> addHeadDescriptions;
     std::vector<int> addHeadCodeIndex;
@@ -188,7 +185,7 @@ public:
     void AddIndex(int value, int index);
     void AddTail(int value);
     void Delete(int value);
-    bool Search(int value); // Thay đổi trả về bool thay vì ListNode*
+    bool Search(int value);
     void Update(int oldValue, int newValue);
     void DrawScreen();
     void handleFileDrop();

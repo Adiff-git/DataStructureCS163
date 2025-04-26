@@ -6,10 +6,10 @@ C:/Program Files/CMake/share/cmake-3.31/Modules/CheckCSourceCompiles.cmake
 C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CheckCompilerFlag.cmake
 C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CheckFlagCommonConfig.cmake
 C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake
-D:/Downloads/sproject/Main/DataStructureCS163/raylib/CMakeLists.txt
-D:/Downloads/sproject/Main/DataStructureCS163/raylib/CMakeOptions.txt
-D:/Downloads/sproject/Main/DataStructureCS163/raylib/cmake/AddIfFlagCompiles.cmake
-D:/Downloads/sproject/Main/DataStructureCS163/raylib/cmake/CompilerFlags.cmake
-D:/Downloads/sproject/Main/DataStructureCS163/raylib/cmake/EnumOption.cmake
-D:/Downloads/sproject/Main/DataStructureCS163/raylib/cmake/ParseConfigHeader.cmake
-D:/Downloads/sproject/Main/DataStructureCS163/raylib/cmake/Uninstall.cmake
+D:/Downloads/sproject/Test/DataStructureCS163/raylib/CMakeLists.txt
+D:/Downloads/sproject/Test/DataStructureCS163/raylib/CMakeOptions.txt
+D:/Downloads/sproject/Test/DataStructureCS163/raylib/cmake/AddIfFlagCompiles.cmake
+D:/Downloads/sproject/Test/DataStructureCS163/raylib/cmake/CompilerFlags.cmake
+D:/Downloads/sproject/Test/DataStructureCS163/raylib/cmake/EnumOption.cmake
+D:/Downloads/sproject/Test/DataStructureCS163/raylib/cmake/ParseConfigHeader.cmake
+D:/Downloads/sproject/Test/DataStructureCS163/raylib/cmake/Uninstall.cmake

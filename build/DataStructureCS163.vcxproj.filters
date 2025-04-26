@@ -1,46 +1,46 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="D:\Downloads\sproject\Main\DataStructureCS163\src\AVLTree.cpp">
+    <ClCompile Include="D:\Downloads\sproject\Test\DataStructureCS163\src\AVLTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\Main\DataStructureCS163\src\AVLTreeMain.cpp">
+    <ClCompile Include="D:\Downloads\sproject\Test\DataStructureCS163\src\AVLTreeMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\Main\DataStructureCS163\src\Button.cpp">
+    <ClCompile Include="D:\Downloads\sproject\Test\DataStructureCS163\src\Button.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\Main\DataStructureCS163\src\Graph.cpp">
+    <ClCompile Include="D:\Downloads\sproject\Test\DataStructureCS163\src\Graph.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\Main\DataStructureCS163\src\GraphMain.cpp">
+    <ClCompile Include="D:\Downloads\sproject\Test\DataStructureCS163\src\GraphMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\Main\DataStructureCS163\src\HashTable.cpp">
+    <ClCompile Include="D:\Downloads\sproject\Test\DataStructureCS163\src\HashTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\Main\DataStructureCS163\src\HashTableMain.cpp">
+    <ClCompile Include="D:\Downloads\sproject\Test\DataStructureCS163\src\HashTableMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\Main\DataStructureCS163\src\LinkedList.cpp">
+    <ClCompile Include="D:\Downloads\sproject\Test\DataStructureCS163\src\LinkedList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\Main\DataStructureCS163\src\MainInterFace.cpp">
+    <ClCompile Include="D:\Downloads\sproject\Test\DataStructureCS163\src\MainInterFace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\Main\DataStructureCS163\src\SLLmain.cpp">
+    <ClCompile Include="D:\Downloads\sproject\Test\DataStructureCS163\src\SLLmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Downloads\sproject\Main\DataStructureCS163\thirdparty\tinyfiledialogs\tinyfiledialogs.c">
+    <ClCompile Include="D:\Downloads\sproject\Test\DataStructureCS163\thirdparty\tinyfiledialogs\tinyfiledialogs.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="D:\Downloads\sproject\Main\DataStructureCS163\CMakeLists.txt" />
+    <CustomBuild Include="D:\Downloads\sproject\Test\DataStructureCS163\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{6BB95C9D-893B-39B7-B0FE-C91F4C427799}</UniqueIdentifier>
+      <UniqueIdentifier>{A3C10B38-ACB0-3661-9D0F-F6DFB5DA5329}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

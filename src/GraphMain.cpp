@@ -171,7 +171,7 @@ GraphMain::~GraphMain() {
 
 void GraphMain::InitializeUI() {
     // Left Panel Buttons
-    const float buttonWidth = 80.0f;
+    const float buttonWidth = 90.0f;
     const float buttonHeight = 30.0f;
     const float leftPadding = 30.0f;
     const float buttonSpacing = 10.0f;

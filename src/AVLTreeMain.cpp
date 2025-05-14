@@ -144,13 +144,9 @@ AVLTreeVisualizer::AVLTreeVisualizer()
 
     // Tải hình ảnh nút "Back"
 
-    backButtonTexture = LoadTexture("D:\\Downloads\\sproject\\DataStructureCS163\\resources\\images\\back_button.png");
+    backButtonTexture = LoadTexture("D:\\Downloads\\sproject\\DataStructureCS163\\resources\\images\\BackButton.png");
 
-    if (backButtonTexture.id == 0) {
-
-        std::cerr << "Failed to load back_button.png for AVLTree\n";
-
-    }
+    
 
 }
 
